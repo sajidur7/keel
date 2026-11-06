@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "types": ["vite/client"],
+    "paths": {
+      "@keel/components": ["./components/index.ts"],
+      "@keel/components/*": ["./components/*"],
+      "@keel/templates": ["./templates/index.ts"],
+      "@keel/templates/*": ["./templates/*"],
+      "@keel/tokens/*": ["./tokens/*"]
+    }
+  },
+  "include": ["components", "templates", "scripts", "docs-site/src", "docs-site/vite.config.ts"]
+}
