@@ -3,16 +3,18 @@
 A tactile, dense design system for admin products and AI-assistant screens.
 **React 19 · Radix · StyleX (no Tailwind) · Lucide · light & dark.**
 
-- **140+ documented components** covering every [Astryx](https://astryx.atmeta.com/components) category — Action, Chat, Container,
+- **160+ documented pages / 400+ exports** covering every [Astryx](https://astryx.atmeta.com/components) category — Action, Chat, Container,
   Content, Feedback, Form Controls, Layout, Navigation, Overlay, Table & List, Utility — plus everything from Keel v1
   (Stat, charts, Transfer, Cascader, OTP, Popconfirm, Coachmark…) and a set of AI primitives (Thinking, ApprovalCard, DiffTable,
   TaskList, InsightCard, PromptBar, ToolChips…).
-- **Tactile look**: buttons and tiles have a top highlight, a hairline ring and a soft drop and sink when pressed; inputs are
+- **Black, white and one flat blue**; no gradients or glows. **Tactile look**: buttons and tiles have a top highlight, a hairline ring and a soft drop and sink when pressed; inputs are
   recessed wells; primary actions are ink (black on light, white on dark).
 - **Tokens** in one StyleX file (`tokens/tokens.stylex.ts`); every color is `light-dark()`, so themes switch with
   `color-scheme` — no classes, no flash.
 - **Docs site** with live demos, copyable code for every example, *All states* demos, API tables generated from TypeScript,
   and full component source.
+- **105 screens** (`templates/screens/`): dashboards, 20 record lists, 10 record pages, inbox, kanban, calendar, workflow builder,
+  12 settings pages, pricing & checkout, AI agents, 18 auth/onboarding screens and system pages — all responsive.
 - **Templates**: overview, customers (table + drawer), new invoice, settings, members & roles, audit log, AI assistant, sign in,
   forgot password.
 - **Agent skills** for Claude Code, Claude (web/desktop), Codex and Cursor.

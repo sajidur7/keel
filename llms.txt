@@ -1,6 +1,6 @@
 # Keel v2
 
-> Tactile, dense admin design system for React 19 — StyleX styling (no Tailwind), Radix behavior, Lucide icons, light/dark tokens via light-dark(), 140+ documented components including chat and AI-agent primitives, and complete page templates.
+> Tactile, dense admin design system for React 19 — StyleX styling (no Tailwind), Radix behavior, Lucide icons, light/dark tokens via light-dark(), 160+ documented components, 105 screens including chat and AI-agent primitives, and complete page templates.
 
 ## Start here
 - [Agent skill](skills/keel/SKILL.md): rules and how to build a screen
@@ -16,3 +16,4 @@
 - [components/](components/): one file per category (action, chat, ai, container, content, feedback, inputs, choice, select, dates, pickers, layout, navigation, overlay, table, lists, data, utility)
 - [tokens/tokens.stylex.ts](tokens/tokens.stylex.ts)
 - [templates/](templates/): overview, customers, invoices, settings, members, audit-log, assistant, auth
+- [templates/screens/](templates/screens/): 105 full SaaS screens (dashboards, lists, records, work, settings, billing, AI, auth, onboarding, system)

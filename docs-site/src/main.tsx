@@ -3,8 +3,8 @@ import * as stylex from "@stylexjs/stylex";
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  AppShell, Breadcrumbs, Button, CommandPalette, Header, IconBook, IconButton, IconExternal, IconFile, IconGrid, IconHome, IconLayers, IconMoon, IconPackage, IconSearch,
-  IconSparkles, IconSun, KeelProvider, Kbd, Page, Sidebar, SidebarBrand, SidebarContent, SidebarFooter, SidebarItem, SidebarSection, SidebarTrigger, Tag, Text,
+  AppShell, Breadcrumbs, Button, CommandPalette, Header, IconBook, IconLayoutDashboard as IconLayout, IconButton, IconExternal, IconFile, IconGrid, IconHome, IconLayers, IconMoon, IconPackage, IconSearch,
+  IconSun, KeelProvider, Kbd, Page, Sidebar, SidebarBrand, SidebarContent, SidebarFooter, SidebarItem, SidebarSection, SidebarTrigger, Tag, Text,
   useCommandShortcut, useTheme, type CommandItem,
 } from "@keel/components";
 import { color, font } from "@keel/tokens/tokens.stylex";
@@ -12,6 +12,8 @@ import { DocPageView } from "./docs/kit";
 import { Home } from "./pages/home";
 import { componentGroups, componentPages, pageBySlug, pages } from "./registry";
 import { templateById, templates, TemplatesPage } from "./templates";
+import { ScreensPage } from "./screens";
+import { GoProvider, screenById, screens } from "@keel/templates/screens";
 
 function useHash() {
   const [hash, setHash] = useState(() => location.hash || "#/");
@@ -42,36 +44,41 @@ function Docs() {
   const route = hash.replace(/^#/, "");
   const slug = route.startsWith("/docs/") ? route.slice(6) : null;
   const tid = route.startsWith("/t/") ? route.slice(3) : null;
+  const sid = route.startsWith("/s/") ? route.slice(3).split("?")[0] : null;
   const page = slug ? pageBySlug.get(slug) : null;
 
   const items: CommandItem[] = useMemo(() => [
     { id: "home", label: "Overview", group: "Pages", icon: <IconHome />, onSelect: () => go("#/") },
+    { id: "screens", label: "Screens", group: "Pages", icon: <IconLayout />, onSelect: () => go("#/screens") },
     { id: "templates", label: "Templates", group: "Pages", icon: <IconGrid />, onSelect: () => go("#/templates") },
+    ...screens.map((x) => ({ id: `s-${x.id}`, label: x.title, group: `Screens · ${x.category}`, icon: <IconFile />, onSelect: () => go(`#/s/${x.id}`) })),
     ...pages.map((p) => ({ id: p.slug, label: p.title, group: p.group, icon: p.render ? <IconBook /> : <IconPackage />, keywords: p.components, onSelect: () => go(`#/docs/${p.slug}`) })),
     ...templates.map((t) => ({ id: `t-${t.id}`, label: t.title, group: "Templates", icon: <IconFile />, onSelect: () => go(`#/t/${t.id}`) })),
   ], []);
 
   if (tid) { const t = templateById.get(tid); if (t) { const R = t.render; return <R go={(to: string) => go(to)} />; } }
+  if (sid) { const sc = screenById.get(sid); if (sc) return <GoProvider go={(id) => go(screenById.has(id) ? `#/s/${id}` : "#/screens")}>{sc.render()}</GoProvider>; }
 
   const guidesBy = (g: string) => pages.filter((p) => p.group === g && p.render);
-  const title = page?.title ?? (route === "/templates" ? "Templates" : "Overview");
+  const title = page?.title ?? (route === "/templates" ? "Templates" : route === "/screens" ? "Screens" : "Overview");
   return (
     <AppShell sideNav={
       <Sidebar label="Documentation">
-        <SidebarBrand logo="K" name="Keel" meta="v2 · StyleX" action={<Tag size="sm" tone="blue" shape="pill">Preview</Tag>} />
+        <SidebarBrand logo="K" name="Keel" meta="v2 · StyleX" action={<Tag size="sm" variant="outline" shape="pill">Preview</Tag>} />
         <SidebarContent>
           <SidebarSection>
             <SidebarItem icon={<IconHome />} label="Overview" active={route === "/" || route === ""} onClick={() => go("#/")} />
+            <SidebarItem icon={<IconLayout />} label="Screens" count={screens.length} active={route === "/screens"} onClick={() => go("#/screens")} />
             <SidebarItem icon={<IconGrid />} label="Templates" count={templates.length} active={route === "/templates"} onClick={() => go("#/templates")} />
           </SidebarSection>
           {["Get started", "Foundations"].map((g) => (
             <SidebarSection key={g} title={g}>
-              {guidesBy(g).map((p) => <SidebarItem key={p.slug} icon={g === "Get started" ? <IconSparkles /> : <IconLayers />} label={p.title} active={slug === p.slug} onClick={() => go(`#/docs/${p.slug}`)} />)}
+              {guidesBy(g).map((p) => <SidebarItem key={p.slug} icon={g === "Get started" ? <IconBook /> : <IconLayers />} label={p.title} active={slug === p.slug} onClick={() => go(`#/docs/${p.slug}`)} />)}
             </SidebarSection>
           ))}
           {componentGroups.map((g) => (
             <SidebarSection key={g} title={g}>
-              {componentPages.filter((p) => p.group === g).map((p) => <SidebarItem key={p.slug} label={p.title} active={slug === p.slug} onClick={() => go(`#/docs/${p.slug}`)} trailing={p.badge ? <Tag size="sm" tone="blue" shape="pill">New</Tag> : undefined} />)}
+              {componentPages.filter((p) => p.group === g).map((p) => <SidebarItem key={p.slug} label={p.title} active={slug === p.slug} onClick={() => go(`#/docs/${p.slug}`)} trailing={p.badge ? <Tag size="sm" variant="outline" shape="pill">New</Tag> : undefined} />)}
             </SidebarSection>
           ))}
         </SidebarContent>
@@ -86,7 +93,7 @@ function Docs() {
           <Button size="sm" variant="ghost" trailing={<IconExternal />} onClick={() => window.open("https://github.com/sajidur7/keel", "_blank")}>GitHub</Button>
         </>} />
       <Page>
-        {page ? <DocPageView key={page.slug} page={page} /> : route === "/templates" ? <TemplatesPage go={go} /> : <Home go={go} />}
+        {page ? <DocPageView key={page.slug} page={page} /> : route === "/templates" ? <TemplatesPage go={go} /> : route === "/screens" ? <ScreensPage go={go} /> : <Home go={go} />}
       </Page>
       <CommandPalette open={cmd} onOpenChange={setCmd} items={items} placeholder="Search components, guides, templates…" />
     </AppShell>

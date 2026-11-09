@@ -7,8 +7,7 @@ import type { Nav } from "./shell";
 const s = stylex.create({
   page: {
     minHeight: "100dvh", display: "grid", placeItems: "center", padding: 16, backgroundColor: color.canvas,
-    backgroundImage: `radial-gradient(60% 50% at 50% 0%, ${color.accentSoft}, transparent 70%), radial-gradient(${color.border} 1px, transparent 1px)`,
-    backgroundSize: "100% 100%, 18px 18px",
+    backgroundImage: `radial-gradient(${color.border} 1px, transparent 1px)`, backgroundSize: "18px 18px",
   },
   card: { width: "100%", maxWidth: 400, display: "flex", flexDirection: "column", gap: 20, padding: 28, borderRadius: radius.xxl, backgroundColor: color.surfaceRaised, boxShadow: depth.dialog },
   logo: {

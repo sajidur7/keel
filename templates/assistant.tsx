@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import {
-  ApprovalCard, ChatComposer, ChatLayout, ChatMessage, ChatSystemMessage, ChatToolCalls, ContextChips, DiffTable, IconDatabase, IconGlobe, IconMail, IconSparkles,
+  ApprovalCard, ChatComposer, ChatLayout, ChatMessage, ChatSystemMessage, ChatToolCalls, ContextChips, DiffTable, IconDatabase, IconGlobe, IconMail, IconAgent,
   PromptSuggestions, RecommendationCard, Select, TaskList, Text, Thinking, ToolChips, Button, IconChartBar, IconSearch, type ApprovalState, type DiffRow, type ToolChip,
 } from "@keel/components";
 import { AdminShell, type Nav } from "./shell";
@@ -41,7 +41,7 @@ export function AssistantTemplate({ go }: { go?: (to: Nav) => void }) {
               tools={<ToolChips tools={tools} onToggle={(id) => setTools((x) => x.map((y) => (y.id === id ? { ...y, state: y.state === "on" ? "off" : "on" } : y)))} />} />
           </div>}
           footer="The assistant drafts changes; people approve them.">
-          <ChatSystemMessage icon={<IconSparkles />}>Connected to Fernhill · 12 customers, 14 invoices</ChatSystemMessage>
+          <ChatSystemMessage icon={<IconAgent />}>Connected to Fernhill · 12 customers, 14 invoices</ChatSystemMessage>
           {turns.map((x) => {
             if (x.role === "user") return <ChatMessage key={x.id} role="user" content={x.content} />;
             if (x.kind === "plan") return <ChatMessage key={x.id} role="assistant" author={{ name: "Keel AI" }} content={x.content}

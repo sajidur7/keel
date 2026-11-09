@@ -9,14 +9,17 @@ React 19 · TypeScript · Radix primitives (`radix-ui`) · Lucide icons via Keel
 ## Where things are
 - `tokens/tokens.stylex.ts` — design tokens (`color`, `tone`, `depth`, `radius`, `font`, `motion`, `size`, `z`). Colors use `light-dark()`.
 - `components/*.tsx` — every component, grouped by category; `components/index.ts` exports all of them (`@keel/components`).
-- `templates/*.tsx` — complete screens: overview, customers, invoices, settings, members, audit log, assistant, auth.
+- `templates/*.tsx` — annotated templates; `templates/screens/` — 105 full SaaS screens (dashboards, lists, records, work,
+  settings, billing, AI, auth, onboarding, system). Copy the closest screen before designing a new one.
 - `docs-site/` — the docs (built with Keel). `npm run dev` / `npm run build`.
 - `skills/keel/` — the agent skill. Read `skills/keel/SKILL.md` first, then `references/components.md` for the full catalog.
 
 ## Rules
 1. Compose Keel components first; check `skills/keel/references/components.md` before writing new markup.
 2. Style gaps with `stylex.create` + tokens; pass overrides to components via `xstyle`.
-3. One primary (ink) button per view. Accent blue only for selection, focus, links, progress.
+3. Black, white and one flat blue. One primary (ink) button per view. Blue (`color.accent`) only for selection, focus, links,
+   progress and chart series 1 — never a gradient. Red only for errors/destructive. No sparkle icons (use `IconAgent`), no
+   gradient text or glows. Keys via `<Kbd>`/`shortcut` (drawn as icons). Use `Bezel` for proposals/insights.
 4. Wrap form controls in `<Field>`. Label every `IconButton`. Give charts a `label`.
 5. Cover hover, focus-visible, pressed, disabled, loading, empty and error states.
 6. AI features: agents propose (`DiffTable`, `ApprovalCard`), people approve.

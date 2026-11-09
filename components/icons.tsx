@@ -155,7 +155,6 @@ import {
   ShoppingCart,
   Sigma,
   Smile,
-  Sparkles,
   Square,
   SquareKanban,
   Store,
@@ -176,6 +175,101 @@ import {
   Workflow,
   Wrench,
   ZoomIn,
+  ArrowBigUp,
+  Option,
+  Delete,
+  ArrowRightToLine,
+  Space,
+  Briefcase,
+  Headphones,
+  LifeBuoy,
+  Ticket,
+  Plug,
+  Users2,
+  UserCheck,
+  UserX,
+  UserCog,
+  ShieldAlert,
+  Gift,
+  Boxes,
+  Warehouse,
+  Factory,
+  Banknote,
+  PiggyBank,
+  Landmark,
+  ChartPie,
+  ChartArea,
+  ChartScatter,
+  Funnel,
+  GanttChart,
+  CalendarDays,
+  CalendarCheck,
+  AlarmClock,
+  Hourglass,
+  MailOpen,
+  Reply,
+  Forward,
+  Link2,
+  QrCode,
+  Smartphone,
+  Laptop,
+  Monitor,
+  HardDrive,
+  CloudUpload,
+  ScanFace,
+  BadgeCheck,
+  Medal,
+  Trophy,
+  Crown,
+  Wand2,
+  Puzzle,
+  Blocks,
+  Braces,
+  GitPullRequest,
+  GitMerge,
+  GitCommit,
+  MapPin,
+  Navigation,
+  Route,
+  Plane,
+  Car,
+  ShoppingBag,
+  Tags,
+  Coins,
+  CircleDollarSign,
+  FileSpreadsheet,
+  FileCheck,
+  FileClock,
+  FolderOpen,
+  RotateCcw,
+  ListChecks,
+  ListTodo,
+  SquareCheck,
+  LayoutDashboard,
+  LayoutList,
+  LayoutTemplate,
+  AppWindow,
+  PhoneCall,
+  Contact,
+  IdCard,
+  GraduationCap,
+  Stethoscope,
+  HeartPulse,
+  Utensils,
+  Newspaper,
+  Rss,
+  MessageCircle,
+  MessagesSquare,
+  ToggleLeft,
+  BrainCircuit,
+  Merge,
+  Repeat,
+  TimerReset,
+  Signal,
+  Battery,
+  CloudSun,
+  Thermometer,
+  Ship,
 } from "lucide-react";
 
 /*
@@ -333,7 +427,20 @@ export const IconStrikethrough = keelIcon(Strikethrough, "Strikethrough");
 export const IconListOrdered = keelIcon(ListOrdered, "ListOrdered");
 export const IconQuote = keelIcon(Quote, "Quote");
 export const IconHeading = keelIcon(Heading2, "Heading2");
-export const IconSparkles = keelIcon(Sparkles, "Sparkles");
+/** Keel's AI mark: a 2×2 grid of rounded cells, one solid — the same motif as PixelLoader. Use it for assistant/agent things. */
+export const IconAgent = forwardRef<SVGSVGElement, IconProps>(function IconAgent({ size, label, strokeWidth = 1.5, ...props }, ref) {
+  const ctx = useContext(IconSizeContext);
+  const s = size ?? ctx ?? 16;
+  return (
+    <svg ref={ref} width={s} height={s} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={Number(strokeWidth) * (16 / Number(s))}
+      role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : true} focusable="false" {...(props as object)}>
+      <rect x="2.25" y="2.25" width="5" height="5" rx="1.6" fill="currentColor" stroke="none" />
+      <rect x="9.25" y="2.75" width="4" height="4" rx="1.3" />
+      <rect x="2.75" y="9.25" width="4" height="4" rx="1.3" />
+      <rect x="9.25" y="9.25" width="4" height="4" rx="1.3" />
+    </svg>
+  );
+});
 export const IconBot = keelIcon(Bot, "Bot");
 export const IconMic = keelIcon(Mic, "Mic");
 export const IconPaperclip = keelIcon(Paperclip, "Paperclip");
@@ -409,5 +516,103 @@ export const IconLeaf = keelIcon(Leaf, "Leaf");
 export const IconFlame = keelIcon(Flame, "Flame");
 export const IconShapes = keelIcon(Shapes, "Shapes");
 
+export const IconShift = keelIcon(ArrowBigUp, "ArrowBigUp");
+export const IconOption = keelIcon(Option, "Option");
+export const IconBackspace = keelIcon(Delete, "Delete");
+export const IconTabKey = keelIcon(ArrowRightToLine, "ArrowRightToLine");
+export const IconSpace = keelIcon(Space, "Space");
+export const IconBriefcase = keelIcon(Briefcase, "Briefcase");
+export const IconHeadphones = keelIcon(Headphones, "Headphones");
+export const IconLifeBuoy = keelIcon(LifeBuoy, "LifeBuoy");
+export const IconTicket = keelIcon(Ticket, "Ticket");
+export const IconPlug = keelIcon(Plug, "Plug");
+export const IconUsersRound = keelIcon(Users2, "Users2");
+export const IconUserCheck = keelIcon(UserCheck, "UserCheck");
+export const IconUserX = keelIcon(UserX, "UserX");
+export const IconUserCog = keelIcon(UserCog, "UserCog");
+export const IconShieldAlert = keelIcon(ShieldAlert, "ShieldAlert");
+export const IconGift = keelIcon(Gift, "Gift");
+export const IconBoxes = keelIcon(Boxes, "Boxes");
+export const IconWarehouse = keelIcon(Warehouse, "Warehouse");
+export const IconFactory = keelIcon(Factory, "Factory");
+export const IconBanknote = keelIcon(Banknote, "Banknote");
+export const IconPiggyBank = keelIcon(PiggyBank, "PiggyBank");
+export const IconLandmark = keelIcon(Landmark, "Landmark");
+export const IconChartPie = keelIcon(ChartPie, "ChartPie");
+export const IconChartArea = keelIcon(ChartArea, "ChartArea");
+export const IconChartScatter = keelIcon(ChartScatter, "ChartScatter");
+export const IconFunnelIcon = keelIcon(Funnel, "Funnel");
+export const IconGanttChart = keelIcon(GanttChart, "GanttChart");
+export const IconCalendarDays = keelIcon(CalendarDays, "CalendarDays");
+export const IconCalendarCheck = keelIcon(CalendarCheck, "CalendarCheck");
+export const IconAlarmClock = keelIcon(AlarmClock, "AlarmClock");
+export const IconHourglass = keelIcon(Hourglass, "Hourglass");
+export const IconMailOpen = keelIcon(MailOpen, "MailOpen");
+export const IconReply = keelIcon(Reply, "Reply");
+export const IconForward = keelIcon(Forward, "Forward");
+export const IconLink2 = keelIcon(Link2, "Link2");
+export const IconQrCode = keelIcon(QrCode, "QrCode");
+export const IconSmartphone = keelIcon(Smartphone, "Smartphone");
+export const IconLaptop = keelIcon(Laptop, "Laptop");
+export const IconMonitor = keelIcon(Monitor, "Monitor");
+export const IconHardDrive = keelIcon(HardDrive, "HardDrive");
+export const IconCloudUpload = keelIcon(CloudUpload, "CloudUpload");
+export const IconScanFace = keelIcon(ScanFace, "ScanFace");
+export const IconBadgeCheck = keelIcon(BadgeCheck, "BadgeCheck");
+export const IconMedal = keelIcon(Medal, "Medal");
+export const IconTrophy = keelIcon(Trophy, "Trophy");
+export const IconCrown = keelIcon(Crown, "Crown");
+export const IconWand2 = keelIcon(Wand2, "Wand2");
+export const IconPuzzle = keelIcon(Puzzle, "Puzzle");
+export const IconBlocks = keelIcon(Blocks, "Blocks");
+export const IconBraces = keelIcon(Braces, "Braces");
+export const IconGitPullRequest = keelIcon(GitPullRequest, "GitPullRequest");
+export const IconGitMerge = keelIcon(GitMerge, "GitMerge");
+export const IconGitCommit = keelIcon(GitCommit, "GitCommit");
+export const IconMapPin = keelIcon(MapPin, "MapPin");
+export const IconNavigation = keelIcon(Navigation, "Navigation");
+export const IconRoute = keelIcon(Route, "Route");
+export const IconPlane = keelIcon(Plane, "Plane");
+export const IconCar = keelIcon(Car, "Car");
+export const IconShoppingBag = keelIcon(ShoppingBag, "ShoppingBag");
+export const IconTags = keelIcon(Tags, "Tags");
+export const IconCoins = keelIcon(Coins, "Coins");
+export const IconCircleDollarSign = keelIcon(CircleDollarSign, "CircleDollarSign");
+export const IconFileSpreadsheet = keelIcon(FileSpreadsheet, "FileSpreadsheet");
+export const IconFileCheck = keelIcon(FileCheck, "FileCheck");
+export const IconFileClock = keelIcon(FileClock, "FileClock");
+export const IconFolderOpen = keelIcon(FolderOpen, "FolderOpen");
+export const IconRotateCcw = keelIcon(RotateCcw, "RotateCcw");
+export const IconListChecks = keelIcon(ListChecks, "ListChecks");
+export const IconListTodo = keelIcon(ListTodo, "ListTodo");
+export const IconCheckSquare = keelIcon(SquareCheck, "SquareCheck");
+export const IconTable2 = keelIcon(Table2, "Table2");
+export const IconLayoutDashboard = keelIcon(LayoutDashboard, "LayoutDashboard");
+export const IconLayoutList = keelIcon(LayoutList, "LayoutList");
+export const IconLayoutTemplate = keelIcon(LayoutTemplate, "LayoutTemplate");
+export const IconAppWindow = keelIcon(AppWindow, "AppWindow");
+export const IconPhoneCall = keelIcon(PhoneCall, "PhoneCall");
+export const IconContact = keelIcon(Contact, "Contact");
+export const IconIdCard = keelIcon(IdCard, "IdCard");
+export const IconBookOpen = keelIcon(BookOpen, "BookOpen");
+export const IconGraduationCap = keelIcon(GraduationCap, "GraduationCap");
+export const IconStethoscope = keelIcon(Stethoscope, "Stethoscope");
+export const IconHeartPulse = keelIcon(HeartPulse, "HeartPulse");
+export const IconUtensils = keelIcon(Utensils, "Utensils");
+export const IconNewspaper = keelIcon(Newspaper, "Newspaper");
+export const IconRss = keelIcon(Rss, "Rss");
+export const IconMessageCircle = keelIcon(MessageCircle, "MessageCircle");
+export const IconMessagesSquare = keelIcon(MessagesSquare, "MessagesSquare");
+export const IconToggleLeft = keelIcon(ToggleLeft, "ToggleLeft");
+export const IconBrainCircuit = keelIcon(BrainCircuit, "BrainCircuit");
+export const IconMerge = keelIcon(Merge, "Merge");
+export const IconRepeat = keelIcon(Repeat, "Repeat");
+export const IconTimerReset = keelIcon(TimerReset, "TimerReset");
+export const IconSignal = keelIcon(Signal, "Signal");
+export const IconBattery = keelIcon(Battery, "Battery");
+export const IconCloudSun = keelIcon(CloudSun, "CloudSun");
+export const IconThermometer = keelIcon(Thermometer, "Thermometer");
+export const IconShip = keelIcon(Ship, "Ship");
+
 /** Every Keel icon by name (v1 + v2). */
-export const allIcons = { ...icons, IconZoomIn, IconBold, IconItalic, IconUnderline, IconStrikethrough, IconListOrdered, IconQuote, IconHeading, IconSparkles, IconBot, IconMic, IconPaperclip, IconSend, IconThumbsUp, IconThumbsDown, IconUndo, IconRedo, IconStop, IconWrench, IconBrain, IconTimer, IconHash, IconPin, IconBookmark, IconShare, IconHeart, IconMaximize, IconMinimize, IconAtSign, IconSmile, IconLayers, IconPalette, IconType, IconVideo, IconMusic, IconRocket, IconTarget, IconTrendingUp, IconTrendingDown, IconWallet, IconShoppingCart, IconCloud, IconCpu, IconBug, IconGitBranch, IconCompass, IconMap, IconMegaphone, IconMessageSquare, IconWorkflow, IconBook, IconLightbulb, IconGauge, IconCircle, IconCircleDashed, IconCircleDot, IconClipboard, IconFingerprint, IconScale, IconSigma, IconTable, IconKanban, IconSplit, IconExpand, IconFilePlus, IconFileCode, IconFileImage, IconSliders2, IconRadio, IconStore, IconTruck, IconAward, IconPercent, IconDollarSign, IconLanguages, IconAccessibility, IconKeyboard, IconMousePointer, IconFeather, IconCoffee, IconLeaf, IconFlame, IconShapes } as const;
+export const allIcons = { ...icons, IconZoomIn, IconBold, IconItalic, IconUnderline, IconStrikethrough, IconListOrdered, IconQuote, IconHeading, IconAgent, IconBot, IconMic, IconPaperclip, IconSend, IconThumbsUp, IconThumbsDown, IconUndo, IconRedo, IconStop, IconWrench, IconBrain, IconTimer, IconHash, IconPin, IconBookmark, IconShare, IconHeart, IconMaximize, IconMinimize, IconAtSign, IconSmile, IconLayers, IconPalette, IconType, IconVideo, IconMusic, IconRocket, IconTarget, IconTrendingUp, IconTrendingDown, IconWallet, IconShoppingCart, IconCloud, IconCpu, IconBug, IconGitBranch, IconCompass, IconMap, IconMegaphone, IconMessageSquare, IconWorkflow, IconBook, IconLightbulb, IconGauge, IconCircle, IconCircleDashed, IconCircleDot, IconClipboard, IconFingerprint, IconScale, IconSigma, IconTable, IconKanban, IconSplit, IconExpand, IconFilePlus, IconFileCode, IconFileImage, IconSliders2, IconRadio, IconStore, IconTruck, IconAward, IconPercent, IconDollarSign, IconLanguages, IconAccessibility, IconKeyboard, IconMousePointer, IconFeather, IconCoffee, IconLeaf, IconFlame, IconShapes, IconShift, IconOption, IconBackspace, IconTabKey, IconSpace, IconBriefcase, IconHeadphones, IconLifeBuoy, IconTicket, IconPlug, IconUsersRound, IconUserCheck, IconUserX, IconUserCog, IconShieldAlert, IconGift, IconBoxes, IconWarehouse, IconFactory, IconBanknote, IconPiggyBank, IconLandmark, IconChartPie, IconChartArea, IconChartScatter, IconFunnelIcon, IconGanttChart, IconCalendarDays, IconCalendarCheck, IconAlarmClock, IconHourglass, IconMailOpen, IconReply, IconForward, IconLink2, IconQrCode, IconSmartphone, IconLaptop, IconMonitor, IconHardDrive, IconCloudUpload, IconScanFace, IconBadgeCheck, IconMedal, IconTrophy, IconCrown, IconWand2, IconPuzzle, IconBlocks, IconBraces, IconGitPullRequest, IconGitMerge, IconGitCommit, IconMapPin, IconNavigation, IconRoute, IconPlane, IconCar, IconShoppingBag, IconTags, IconCoins, IconCircleDollarSign, IconFileSpreadsheet, IconFileCheck, IconFileClock, IconFolderOpen, IconRotateCcw, IconListChecks, IconListTodo, IconCheckSquare, IconTable2, IconLayoutDashboard, IconLayoutList, IconLayoutTemplate, IconAppWindow, IconPhoneCall, IconContact, IconIdCard, IconBookOpen, IconGraduationCap, IconStethoscope, IconHeartPulse, IconUtensils, IconNewspaper, IconRss, IconMessageCircle, IconMessagesSquare, IconToggleLeft, IconBrainCircuit, IconMerge, IconRepeat, IconTimerReset, IconSignal, IconBattery, IconCloudSun, IconThermometer, IconShip } as const;

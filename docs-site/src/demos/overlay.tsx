@@ -6,6 +6,7 @@ import {
   Tag, Text, Textarea, Tooltip, useCommandShortcut, Kbd, type CommandItem, Thumbnail,
 } from "@keel/components";
 import { Row } from "../docs/kit";
+import { useInPreview } from "../docs/kit";
 
 const IMG = (c1: string, c2: string) => "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='960' height='640'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs><rect width='960' height='640' fill='url(#g)'/></svg>`);
 
@@ -122,12 +123,13 @@ export function HoverCardDemo() {
 
 /* ---------------- Tooltip ---------------- */
 export function TooltipDemo() {
+  const preview = useInPreview();
   return (
     <Row gap={16}>
       <Tooltip content="Edit customer"><Button>Hover me</Button></Tooltip>
       <Tooltip content="Search" shortcut="/"><Button>With shortcut</Button></Tooltip>
       <Tooltip content="Shown on the right" side="right"><Button>Right</Button></Tooltip>
-      <Tooltip content="Always visible here" open><Button variant="ghost">Pinned open</Button></Tooltip>
+      <Tooltip content="Always visible here" open={!preview}><Button variant="ghost">Pinned open</Button></Tooltip>
     </Row>
   );
 }

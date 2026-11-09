@@ -45,3 +45,18 @@ Rule: **the agent proposes, a person approves.**
 ## Auth — `templates/auth.tsx`
 Centered `surfaceRaised` card, `Field`s, `PasswordInput`, `Checkbox`, primary `Button fullWidth`, `Divider label="or"`, SSO buttons,
 `OtpInput` for codes, `Alert` for errors.
+
+## 105 screens — `templates/screens/`
+Before building a page, copy the closest screen. All use `ScreenShell` (workspace switcher, quick search with ⌘K, grouped nav
+with counts, plan card, account menu) and the `Cols` helper (columns that collapse to one on phones — never leaves holes).
+- `dashboards.tsx` — home, product analytics, sales, marketing, finance, support, store, customer health
+- `lists.tsx` — one `ListScreen` config per record type (people, companies, deals, leads, invoices, orders, products, tickets,
+  employees, candidates, subscriptions, transactions, campaigns, projects, files, API keys, webhooks, assets, vendors, audit log):
+  count tabs (`TabMenu`), search, filter, saved views, `DataTable`, bulk actions, detail `Drawer`
+- `details.tsx` — person, company, deal, invoice document, ticket thread, project, order, employee, candidate, product
+- `work.tsx` — inbox, kanban, calendar, workflow builder (canvas + inspector), files, notifications, tasks, team chat, roadmap,
+  doc editor, report builder (`Resizable` + `CommandMenu`), activity
+- `settings.tsx` — 12 settings pages behind one sub-nav
+- `more.tsx` — pricing, compare, checkout, usage, upgrade, pay invoice · assistant, agent runs/run, prompts, knowledge,
+  approvals, AI search, assistant settings · 404/500/403, maintenance, offline, empty, status, changelog, help, search
+- `entry.tsx` — 11 auth screens and 7 onboarding screens

@@ -1,12 +1,15 @@
 /**
  * Data — numbers and charts. Plain SVG drawn from tokens; every chart has a screen-reader table.
- * Stat · StatGroup · Sparkline · LineChart · AreaChart · BarChart · DonutChart · ChartLegend
+ * Stat · StatGroup · Sparkline · LineChart · AreaChart · BarChart · DonutChart · ChartLegend ·
+ * BarList · BreakdownBar · GaugeChart · Heatmap · FunnelChart · ScatterChart · BulletChart · ComboChart · RadarChart
+ *
+ * Look: series 1 is flat blue, the rest a grey ramp. Areas are filled with a fine dot texture, never a gradient.
  */
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
-import { ProgressBar, type ProgressTone } from "./feedback";
-import { IconArrowDownRight, IconArrowUpRight, IconSizeContext } from "./icons";
+import { ProgressBar, ProgressRing, SegmentBar, type ProgressTone } from "./feedback";
+import { IconArrowDownRight, IconArrowRight, IconArrowUpRight, IconSizeContext } from "./icons";
 import { px, sx, type StyleProps } from "./lib/sx";
 import { Tooltip } from "./overlay";
 
@@ -17,6 +20,36 @@ const d = stylex.create({
   // stat
   stat: { display: "flex", flexDirection: "column", gap: 8, minWidth: 0 },
   statCard: { padding: 16, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card },
+  statOutline: { padding: 16, borderRadius: radius.xl, boxShadow: `inset 0 0 0 1px ${color.border}` },
+  statSunken: { padding: 16, borderRadius: radius.xl, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}, inset 0 1px 2px ${color.shadeXs}` },
+  statBezel: { padding: 4, gap: 0, borderRadius: radius.xxl, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}` },
+  bezelInner: { display: "flex", flexDirection: "column", gap: 8, padding: 14, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, minWidth: 0 },
+  bezelFoot: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, paddingInline: 10, paddingTop: 8, paddingBottom: 4, fontSize: font.sm, color: color.fgMuted },
+  statInk: {
+    padding: 16, borderRadius: radius.xl, color: color.onInk, backgroundImage: `linear-gradient(180deg, ${color.inkTop}, ${color.inkBottom})`, boxShadow: depth.ink,
+  },
+  inkText: { color: color.onInk }, inkQuiet: { color: `color-mix(in srgb, ${color.onInk} 62%, transparent)` },
+  inkDelta: { color: color.onInk, backgroundColor: color.inkWash, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${color.onInk} 16%, transparent)` },
+  clickable: {
+    cursor: "pointer", textAlign: "start", outline: "none", transitionProperty: "box-shadow, transform", transitionDuration: motion.base,
+    transform: { default: null, ":hover": "translateY(-1px)" }, ":focus-visible": { boxShadow: depth.focus },
+  },
+  tile: {
+    display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: radius.lg, flexShrink: 0, color: color.fg,
+    backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`, boxShadow: depth.raised,
+  },
+  tileRow: { display: "flex", alignItems: "center", gap: 10, minWidth: 0 },
+  badgeSlot: { display: "inline-flex", alignItems: "center", marginInlineStart: 4 },
+  cmp: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: font.sm, color: color.fgMuted, paddingTop: 8, borderTopWidth: 1, borderTopStyle: "dashed", borderTopColor: color.border },
+  cmpVal: { color: color.fgSoft, fontWeight: font.medium, fontVariantNumeric: "tabular-nums" },
+  side: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, minWidth: 0 },
+  arrowOnly: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.medium },
+  textDelta: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.semibold },
+  targetWrap: { position: "relative" },
+  targetMark: { position: "absolute", top: -3, bottom: -3, width: 2, borderRadius: 1, backgroundColor: color.fg, transform: "translateX(-1px)" },
+  miniBars: { display: "flex", alignItems: "flex-end", gap: 3, height: 32 },
+  miniBar: { flex: 1, borderRadius: 2, backgroundColor: color.chart3, minHeight: 2 },
+  miniBarLast: { backgroundColor: color.chart1 },
   top: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, minHeight: 20 },
   labelRow: { display: "flex", alignItems: "center", gap: 6, minWidth: 0, color: color.fgMuted },
   label: { fontSize: font.sm, fontWeight: font.medium, color: color.fgMuted },
@@ -28,9 +61,10 @@ const d = stylex.create({
   vsm: { fontSize: font.h3 }, vmd: { fontSize: "26px" }, vlg: { fontSize: "34px" },
   deltaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 6, rowGap: 2, fontSize: font.sm, fontVariantNumeric: "tabular-nums" },
   delta: { display: "inline-flex", alignItems: "center", gap: 2, height: 20, paddingInline: 6, borderRadius: radius.full, fontWeight: font.medium },
-  up: { color: color.success, backgroundColor: color.successSoft },
-  down: { color: color.danger, backgroundColor: color.dangerSoft },
+  up: { color: color.fg, backgroundColor: color.muted, boxShadow: `inset 0 0 0 1px ${color.border}` },
+  down: { color: color.danger, backgroundColor: color.dangerSoft, boxShadow: `inset 0 0 0 1px ${color.dangerBorder}` },
   flat: { color: color.fgMuted, backgroundColor: color.muted },
+  upText: { color: color.fg }, downText: { color: color.danger }, flatText: { color: color.fgMuted },
   quiet: { color: color.fgMuted },
   prog: { display: "flex", flexDirection: "column", gap: 6, paddingTop: 2 },
   chart: { minWidth: 0, paddingTop: 2 },
@@ -77,12 +111,18 @@ export type StatProps = StyleProps & {
   /** Explanation in a tooltip; gives the label a dashed underline. */
   help?: ReactNode;
   icon?: ReactNode;
+  /** Put the icon in a raised tile beside the label. */
+  iconTile?: boolean;
+  /** Small thing after the label: a StatusPill "Live", a Tag. */
+  badge?: ReactNode;
   /** Top-right: a MoreMenu, a "View" link, a period Select. */
   action?: ReactNode;
   /** Change vs the baseline, e.g. 6.2 for +6.2%. */
   delta?: number;
   /** "%" (default), "pt" for points, "" for counts. */
   deltaUnit?: string;
+  /** pill (default) · text (colored number) · arrow (icon + number, no fill). */
+  deltaStyle?: "pill" | "text" | "arrow";
   /** "vs Oct", "vs last week". */
   baseline?: ReactNode;
   /** Cost, churn, latency: a drop is good. */
@@ -91,65 +131,116 @@ export type StatProps = StyleProps & {
   neutral?: boolean;
   /** Quiet text in the delta row: "of $102.8k". */
   meta?: ReactNode;
-  /** Progress toward a target. */
-  progress?: { value: number; max?: number; label?: ReactNode; tone?: ProgressTone };
+  /** Progress toward a target. `style`: bar (default), ring (beside the number) or segments. `target` draws a marker. */
+  progress?: { value: number; max?: number; label?: ReactNode; tone?: ProgressTone; style?: "bar" | "ring" | "segments"; target?: number };
+  /** Built-in trend under the number. */
+  trend?: number[];
+  /** line (default) · area (dotted fill) · bars (last bar blue). */
+  trendType?: "line" | "area" | "bars";
+  /** Put the trend to the right of the number instead of under it. */
+  trendPosition?: "below" | "side";
   /** Any small visual under the number: Sparkline, SegmentBar, BarChart. */
   chart?: ReactNode;
+  /** The previous period, under a dashed line: { label: "Last month", value: "$79,410" }. */
+  compare?: { label: ReactNode; value: ReactNode };
+  /** What the number is made of — a 100% bar plus legend. */
+  breakdown?: { name: string; value: number }[];
   /** Bottom row under a hairline. */
   footer?: ReactNode;
   layout?: "stacked" | "inline";
   size?: "sm" | "md" | "lg";
-  /** plain (inside StatGroup) or card (standalone). */
-  variant?: "plain" | "card";
+  /** plain (in StatGroup) · card · outline · sunken · bezel (sunken shell, footer on the shell) · ink (dark hero tile). */
+  variant?: "plain" | "card" | "outline" | "sunken" | "bezel" | "ink";
+  /** Make the whole stat a link or button (lifts on hover). */
+  href?: string;
+  onClick?: () => void;
   loading?: boolean;
 };
 
 /** A headline number and its comparison. Every part except label and value can be turned on or off. */
-export function Stat({ label, value, help, icon, action, delta, deltaUnit = "%", baseline, lowerIsBetter, neutral, meta, progress, chart, footer, layout = "stacked", size = "md", variant = "plain", loading, ...p }: StatProps) {
+export function Stat({
+  label, value, help, icon, iconTile, badge, action, delta, deltaUnit = "%", deltaStyle = "pill", baseline, lowerIsBetter, neutral, meta, progress, trend, trendType = "line",
+  trendPosition = "below", chart, compare, breakdown, footer, layout = "stacked", size = "md", variant = "plain", href, onClick, loading, ...p
+}: StatProps) {
+  const ink = variant === "ink";
   const good = delta === undefined ? undefined : lowerIsBetter ? delta < 0 : delta > 0;
-  const tone = neutral || !delta ? d.flat : good ? d.up : d.down;
+  const kind = neutral || !delta ? "flat" : good ? "up" : "down";
+  const pillTone = ink ? d.inkDelta : d[kind];
+  const textTone = ink ? d.inkText : d[`${kind}Text` as "upText"];
+  const quiet = ink ? d.inkQuiet : d.quiet;
   const labelEl = help
-    ? <Tooltip content={help}><span tabIndex={0} {...px(d.label, d.help)}>{label}</span></Tooltip>
-    : <span {...px(d.label)}>{label}</span>;
+    ? <Tooltip content={help}><span tabIndex={0} {...px(d.label, d.help, ink && d.inkQuiet)}>{label}</span></Tooltip>
+    : <span {...px(d.label, ink && d.inkQuiet)}>{label}</span>;
   const pct = progress ? Math.round((progress.value / (progress.max ?? 100)) * 100) : 0;
-  return (
-    <div aria-busy={loading || undefined} {...sx(p, d.stat, variant === "card" && d.statCard)}>
-      <div {...px(d.top)}>
-        <span {...px(d.labelRow)}><IconSizeContext.Provider value={14}>{icon}</IconSizeContext.Provider>{labelEl}</span>
-        {action && <span {...px(d.action)}>{action}</span>}
-      </div>
-      {loading ? (
-        <div aria-hidden style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span {...px(d.skel)} style={{ width: 96, height: size === "lg" ? 32 : size === "md" ? 26 : 20 }} />
-          <span {...px(d.skel)} style={{ width: 64, height: 12 }} />
-        </div>
-      ) : (
-        <div {...px(d.valueCol, layout === "inline" && d.valueInline)}>
-          <span {...px(d.value, size === "sm" ? d.vsm : size === "lg" ? d.vlg : d.vmd)}>{value ?? "—"}</span>
-          {(delta !== undefined || meta) && (
-            <span {...px(d.deltaRow)}>
-              {delta !== undefined && (
-                <span {...px(d.delta, tone)}>
-                  {delta > 0 ? <IconArrowUpRight size={12} /> : delta < 0 ? <IconArrowDownRight size={12} /> : null}
-                  {delta > 0 ? "+" : delta < 0 ? "−" : ""}{Math.abs(delta)}{deltaUnit}
-                </span>
-              )}
-              {delta !== undefined && baseline && <span {...px(d.quiet)}>{baseline}</span>}
-              {meta && <span {...px(d.quiet)}>{meta}</span>}
-            </span>
-          )}
-        </div>
+  const deltaEl = delta !== undefined && (
+    <span {...px(deltaStyle === "pill" ? d.delta : deltaStyle === "text" ? d.textDelta : d.arrowOnly, deltaStyle === "pill" ? pillTone : textTone)}>
+      {delta > 0 ? <IconArrowUpRight size={12} /> : delta < 0 ? <IconArrowDownRight size={12} /> : <IconArrowRight size={12} />}
+      {deltaStyle !== "arrow" && (delta > 0 ? "+" : delta < 0 ? "−" : "")}{Math.abs(delta)}{deltaUnit}
+    </span>
+  );
+  const trendEl = trend && trend.length > 1 && (
+    trendType === "bars"
+      ? <div {...px(d.miniBars)} style={trendPosition === "side" ? { width: 88 } : undefined} aria-hidden>{trend.map((v, i) => { const mx = Math.max(...trend) || 1; return <span key={i} {...px(d.miniBar, i === trend.length - 1 && d.miniBarLast)} style={{ height: `${Math.max(6, (v / mx) * 100)}%` }} />; })}</div>
+      : <Sparkline values={trend} area={trendType === "area"} tone={ink ? "inverse" : "accent"} width={trendPosition === "side" ? 88 : 160} height={trendPosition === "side" ? 32 : 36} />
+  );
+  const ring = progress?.style === "ring";
+  const valueBlock = loading ? (
+    <div aria-hidden style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <span {...px(d.skel)} style={{ width: 96, height: size === "lg" ? 32 : size === "md" ? 26 : 20 }} />
+      <span {...px(d.skel)} style={{ width: 64, height: 12 }} />
+    </div>
+  ) : (
+    <div {...px(d.valueCol, layout === "inline" && d.valueInline)}>
+      <span {...px(d.value, size === "sm" ? d.vsm : size === "lg" ? d.vlg : d.vmd, ink && d.inkText)}>{value ?? "—"}</span>
+      {(delta !== undefined || meta) && (
+        <span {...px(d.deltaRow)}>
+          {deltaEl}
+          {delta !== undefined && baseline && <span {...px(quiet)}>{baseline}</span>}
+          {meta && <span {...px(quiet)}>{meta}</span>}
+        </span>
       )}
-      {!loading && progress && (
-        <div {...px(d.prog)}>
-          <ProgressBar value={progress.value} max={progress.max} tone={progress.tone ?? "default"} />
-          {progress.label !== undefined ? progress.label && <span {...px(d.quiet)} style={{ fontSize: 12 }}>{progress.label}</span> : <span {...px(d.quiet)} style={{ fontSize: 12 }}>{pct}% of target</span>}
-        </div>
-      )}
-      {!loading && chart && <div {...px(d.chart)}>{chart}</div>}
-      {footer && <div {...px(d.foot)}>{footer}</div>}
     </div>
   );
+  const total = breakdown?.reduce((a, b) => a + b.value, 0) ?? 0;
+  const body = (
+    <>
+      <div {...px(d.top)}>
+        <span {...px(iconTile ? d.tileRow : d.labelRow)}>
+          {icon && (iconTile ? <span {...px(d.tile)}><IconSizeContext.Provider value={16}>{icon}</IconSizeContext.Provider></span> : <IconSizeContext.Provider value={14}>{icon}</IconSizeContext.Provider>)}
+          {labelEl}{badge && <span {...px(d.badgeSlot)}>{badge}</span>}
+        </span>
+        {action && <span {...px(d.action)}>{action}</span>}
+      </div>
+      {(ring || (trendEl && trendPosition === "side")) && !loading
+        ? <div {...px(d.side)}>{valueBlock}{ring ? <ProgressRing value={progress!.value} max={progress!.max} size={44} stroke={4} tone={progress!.tone} /> : trendEl}</div>
+        : valueBlock}
+      {!loading && progress && !ring && (
+        <div {...px(d.prog)}>
+          {progress.style === "segments"
+            ? <SegmentBar value={progress.value} max={progress.max} tone={progress.tone ?? "default"} />
+            : <div {...px(d.targetWrap)}>
+                <ProgressBar value={progress.value} max={progress.max} tone={progress.tone ?? (ink ? "ink" : "default")} />
+                {progress.target !== undefined && <span {...px(d.targetMark)} style={{ left: `${(progress.target / (progress.max ?? 100)) * 100}%` }} title="Target" />}
+              </div>}
+          {progress.label !== undefined ? progress.label && <span {...px(quiet)} style={{ fontSize: 12 }}>{progress.label}</span> : <span {...px(quiet)} style={{ fontSize: 12 }}>{pct}% of target</span>}
+        </div>
+      )}
+      {!loading && trendEl && trendPosition === "below" && <div {...px(d.chart)}>{trendEl}</div>}
+      {!loading && breakdown && <div {...px(d.chart)}><BreakdownBar items={breakdown} height={6} legend="compact" total={total} /></div>}
+      {!loading && chart && <div {...px(d.chart)}>{chart}</div>}
+      {!loading && compare && <div {...px(d.cmp)}><span>{compare.label}</span><span {...px(d.cmpVal)}>{compare.value}</span></div>}
+      {footer && variant !== "bezel" && <div {...px(d.foot)}>{footer}</div>}
+    </>
+  );
+  const surface = { plain: null, card: d.statCard, outline: d.statOutline, sunken: d.statSunken, bezel: d.statBezel, ink: d.statInk }[variant];
+  const interactive = href || onClick;
+  const inner = variant === "bezel"
+    ? <><div {...px(d.bezelInner)}>{body}</div>{footer && <div {...px(d.bezelFoot)}>{footer}</div>}</>
+    : body;
+  if (href) return <a href={href} aria-busy={loading || undefined} {...sx(p, d.stat, surface, d.clickable)} style={{ textDecoration: "none", color: "inherit", ...p.style }}>{inner}</a>;
+  if (onClick) return <button type="button" onClick={onClick} aria-busy={loading || undefined} {...sx(p, d.stat, surface, d.clickable)}>{inner}</button>;
+  void interactive;
+  return <div aria-busy={loading || undefined} {...sx(p, d.stat, surface)}>{inner}</div>;
 }
 
 /** Stats side by side, split by hairlines on one surface. Two-up on phones. */
@@ -203,7 +294,7 @@ export type LineChartProps = StyleProps & {
   format?: (n: number) => string;
   /** Accessible summary: "Revenue, last 12 weeks, up 8%". */
   label: string;
-  /** Soft gradient under the first series. */
+  /** Dot-textured fill under the first series. */
   area?: boolean;
   /** Start the y axis at 0. */
   zero?: boolean;
@@ -240,7 +331,7 @@ export function LineChart({ labels, series, height = 220, format = fmtCompact, l
         onPointerMove={(e) => { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); const i = Math.round(((e.clientX - r.left - pad.l) / iw) * (labels.length - 1)); setHover(Math.max(0, Math.min(labels.length - 1, i))); }}
         onPointerLeave={() => setHover(null)}>
         <svg role="img" aria-label={label} width={w} height={height} {...px(d.svg)}>
-          <defs>{series.map((s, si) => <linearGradient key={si} id={`${gid}${si}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={colorOf(s, si)} stopOpacity={stacked ? 0.35 : 0.22} /><stop offset="100%" stopColor={colorOf(s, si)} stopOpacity={stacked ? 0.08 : 0} /></linearGradient>)}</defs>
+          <defs>{series.map((s, si) => <DotPattern key={si} id={`${gid}${si}`} fill={colorOf(s, si)} dense={!!stacked} />)}</defs>
           {ticks.map((t) => <g key={t}><line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} {...px(d.grid)} strokeDasharray={t === lo ? undefined : "2 4"} /><text x={pad.l - 8} y={y(t)} dy="0.32em" textAnchor="end" {...px(d.axis)}>{format(t)}</text></g>)}
           {labels.map((l, i) => i % step === 0 && <text key={l + i} x={x(i)} y={height - 6} textAnchor="middle" {...px(d.axis)}>{l}</text>)}
           {[...series].map((s, si) => {
@@ -383,24 +474,342 @@ export function DonutChart({ data, size = 160, thickness = 18, format = fmtCompa
 
 /* ============================================================== Sparkline */
 
-/** A tiny trend line for tables and stats. No axes. The last point is marked. */
-export function Sparkline({ values, width = 96, height = 28, tone = "accent", area = true, label, ...p }: StyleProps & {
-  values: number[]; width?: number; height?: number; tone?: "accent" | "success" | "danger" | "muted" | "auto"; area?: boolean; label?: string;
+/** The texture under lines and in "rest of" areas: fine dots, no gradient. */
+export function DotPattern({ id, fill, dense }: { id: string; fill: string; dense?: boolean }) {
+  const g = dense ? 3 : 4;
+  return (
+    <pattern id={id} width={g} height={g} patternUnits="userSpaceOnUse">
+      <circle cx={g / 2} cy={g / 2} r={dense ? 0.85 : 0.7} fill={fill} opacity={dense ? 0.7 : 0.55} />
+    </pattern>
+  );
+}
+
+export type SparkTone = "accent" | "ink" | "muted" | "auto" | "inverse" | "success" | "danger";
+const sparkColor = (t: SparkTone, up: boolean) =>
+  ({ accent: color.chart1, ink: color.fg, muted: color.fgFaint, inverse: color.onInk, success: color.fg, danger: color.danger, auto: up ? color.fg : color.danger })[t];
+
+/** A tiny trend for tables and stats. No axes. `type`: line (last point marked), area (dotted fill) or bars (last bar emphasized). */
+export function Sparkline({ values, width = 96, height = 28, tone = "accent", area = false, type, label, ...p }: StyleProps & {
+  values: number[]; width?: number; height?: number; tone?: SparkTone; /** Same as type="area". */ area?: boolean; type?: "line" | "area" | "bars"; label?: string;
 }) {
   const id = useMemo(() => `s${Math.random().toString(36).slice(2, 8)}`, []);
   if (values.length < 2) return null;
+  const kind = type ?? (area ? "area" : "line");
   const min = Math.min(...values), max = Math.max(...values);
+  const up = values[values.length - 1] >= values[0];
+  const stroke = sparkColor(tone, up);
+  const aria = label ?? `Trend from ${values[0]} to ${values[values.length - 1]}`;
+  if (kind === "bars") {
+    const gap = 2; const bw = Math.max(2, (width - gap * (values.length - 1)) / values.length);
+    return (
+      <svg role="img" aria-label={aria} width={width} height={height} {...sx(p, d.svg)}>
+        {values.map((v, i) => { const h = Math.max(2, ((v - Math.min(0, min)) / ((max - Math.min(0, min)) || 1)) * height); const last = i === values.length - 1;
+          return <rect key={i} x={i * (bw + gap)} y={height - h} width={bw} height={h} rx={1.5} fill={last ? stroke : color.chart3} />; })}
+      </svg>
+    );
+  }
   const x = (i: number) => 1 + (i / (values.length - 1)) * (width - 2);
-  const y = (v: number) => 2 + (height - 4) - ((v - min) / (max - min || 1)) * (height - 4);
-  const t = tone === "auto" ? (values[values.length - 1] >= values[0] ? "success" : "danger") : tone;
-  const stroke = { accent: color.accent, success: color.successSolid, danger: color.danger, muted: color.fgFaint }[t];
+  const y = (v: number) => 3 + (height - 6) - ((v - min) / (max - min || 1)) * (height - 6);
   const dd = values.map((v, i) => `${i ? "L" : "M"}${x(i)},${y(v)}`).join("");
   return (
-    <svg role="img" aria-label={label ?? `Trend from ${values[0]} to ${values[values.length - 1]}`} width={width} height={height} {...sx(p, d.svg)}>
-      <defs><linearGradient id={id} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={stroke} stopOpacity={0.25} /><stop offset="100%" stopColor={stroke} stopOpacity={0} /></linearGradient></defs>
-      {area && <path d={`${dd}L${x(values.length - 1)},${height}L${x(0)},${height}Z`} fill={`url(#${id})`} />}
+    <svg role="img" aria-label={aria} width={width} height={height} {...sx(p, d.svg)}>
+      {kind === "area" && <><defs><DotPattern id={id} fill={stroke} /></defs><path d={`${dd}L${x(values.length - 1)},${height}L${x(0)},${height}Z`} fill={`url(#${id})`} /></>}
       <path d={dd} fill="none" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={x(values.length - 1)} cy={y(values[values.length - 1])} r={2.5} fill={stroke} />
+      <circle cx={x(values.length - 1)} cy={y(values[values.length - 1])} r={2.75} fill={color.surface} stroke={stroke} strokeWidth={1.5} />
     </svg>
   );
 }
+
+/* ============================================================== BarList */
+
+/** A ranked list with a bar behind each row — top pages, sources, countries. The best tool for "which ones?". */
+export function BarList({ items, format = fmtCompact, highlight = 0, onSelect, ...p }: StyleProps & {
+  items: { name: ReactNode; value: number; icon?: ReactNode; href?: string }[]; format?: (n: number) => string; /** Index drawn in blue; -1 for none. */ highlight?: number; onSelect?: (i: number) => void;
+}) {
+  const max = Math.max(...items.map((i) => i.value), 1);
+  return (
+    <ul {...sx(p, c.barList)}>
+      {items.map((it, i) => (
+        <li key={i} {...px(c.blRow, onSelect && c.blClick)} onClick={onSelect ? () => onSelect(i) : undefined}>
+          <span {...px(c.blFill, i === highlight && c.blFillOn)} style={{ width: `${(it.value / max) * 100}%` }} />
+          <span {...px(c.blName)}><IconSizeContext.Provider value={14}>{it.icon}</IconSizeContext.Provider><span {...px(c.ellipsis)}>{it.name}</span></span>
+          <span {...px(c.blVal)}>{format(it.value)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* ============================================================== BreakdownBar */
+
+/** Parts of a whole as one segmented bar with a legend. Segments get the chart palette (first is blue). */
+export function BreakdownBar({ items, height = 10, legend = "full", total, format = fmtCompact, ...p }: StyleProps & {
+  items: { name: string; value: number; color?: number }[]; height?: number; legend?: "full" | "compact" | "none"; total?: number; format?: (n: number) => string;
+}) {
+  const sum = (total ?? items.reduce((a, b) => a + b.value, 0)) || 1;
+  const col = (x: { color?: number }, i: number) => CHART_COLORS[(x.color ?? i) % CHART_COLORS.length];
+  return (
+    <div {...sx(p, c.bdWrap)}>
+      <div role="img" aria-label={items.map((x) => `${x.name} ${Math.round((x.value / sum) * 100)}%`).join(", ")} {...px(c.bdBar)} style={{ height }}>
+        {items.map((x, i) => <span key={x.name} {...px(c.bdSeg)} style={{ flexGrow: x.value, backgroundColor: col(x, i) }} />)}
+      </div>
+      {legend !== "none" && (
+        <div {...px(legend === "full" ? c.bdLegend : c.bdLegendC)}>
+          {items.map((x, i) => (
+            <span key={x.name} {...px(c.bdItem)}>
+              <span {...px(d.sw)} style={{ backgroundColor: col(x, i) }} />
+              <span {...px(c.ellipsis)}>{x.name}</span>
+              <span {...px(c.bdPct)}>{Math.round((x.value / sum) * 100)}%</span>
+              {legend === "full" && <span {...px(c.bdVal)}>{format(x.value)}</span>}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================== GaugeChart */
+
+/** A half-dial for a score against a range: health, NPS, utilization. Optional threshold ticks. */
+export function GaugeChart({ value, min = 0, max = 100, size = 180, thickness = 14, label, valueLabel, caption, thresholds, tone = "accent", ...p }: StyleProps & {
+  value: number; min?: number; max?: number; size?: number; thickness?: number; label: string; valueLabel?: ReactNode; caption?: ReactNode; thresholds?: number[]; tone?: "accent" | "ink";
+}) {
+  const r = (size - thickness) / 2; const cx = size / 2; const cy = size / 2;
+  const t = Math.min(1, Math.max(0, (value - min) / (max - min || 1)));
+  const pt = (f: number, rr = r) => [cx - rr * Math.cos(Math.PI * f), cy - rr * Math.sin(Math.PI * f)];
+  const arc = (f0: number, f1: number) => { const [x0, y0] = pt(f0); const [x1, y1] = pt(f1); return `M${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1}`; }; // a half-dial never needs the large arc
+  const h = size / 2 + thickness / 2 + 2;
+  return (
+    <div {...sx(p, c.gauge)} style={{ width: size }}>
+      <svg role="img" aria-label={`${label}: ${value} of ${max}`} width={size} height={h} {...px(d.svg)}>
+        <path d={arc(0, 1)} fill="none" stroke={color.muted} strokeWidth={thickness} strokeLinecap="round" />
+        {t > 0 && <path d={arc(0, Math.max(0.001, t))} fill="none" stroke={tone === "ink" ? color.fg : color.chart1} strokeWidth={thickness} strokeLinecap="round" />}
+        {thresholds?.map((th) => { const f = (th - min) / (max - min || 1); const [x0, y0] = pt(f, r - thickness / 2 - 3); const [x1, y1] = pt(f, r + thickness / 2 + 3); return <line key={th} x1={x0} y1={y0} x2={x1} y2={y1} stroke={color.surface} strokeWidth={2} />; })}
+        {(() => { const [nx, ny] = pt(t); return <circle cx={nx} cy={ny} r={thickness / 2 - 3} fill={color.surface} />; })()}
+      </svg>
+      <div {...px(c.gaugeText)}>
+        <span {...px(d.donutVal)} style={{ fontSize: Math.max(18, size / 7) }}>{valueLabel ?? value}</span>
+        {caption && <span {...px(d.donutLab)}>{caption}</span>}
+      </div>
+      <div {...px(c.gaugeEnds)}><span>{min}</span><span>{max}</span></div>
+    </div>
+  );
+}
+
+/* ============================================================== Heatmap */
+
+/** Values on a grid — activity by day × hour, usage by week. Five steps from muted to blue; hover shows the value. */
+export function Heatmap({ rows, columns, values, format = (n: number) => String(n), label, cell = 14, gap = 3, ...p }: StyleProps & {
+  rows: string[]; columns: string[]; values: number[][]; format?: (n: number) => string; label: string; cell?: number; gap?: number;
+}) {
+  const [hover, setHover] = useState<{ r: number; c: number } | null>(null);
+  const flat = values.flat(); const max = Math.max(...flat, 1);
+  const step = (v: number) => (v <= 0 ? 0 : Math.min(4, Math.ceil((v / max) * 4)));
+  const fills = [color.muted, `color-mix(in srgb, ${color.chart1} 22%, ${color.surface})`, `color-mix(in srgb, ${color.chart1} 45%, ${color.surface})`, `color-mix(in srgb, ${color.chart1} 72%, ${color.surface})`, color.chart1];
+  const labW = 34; const showEvery = Math.max(1, Math.ceil(columns.length / 12));
+  return (
+    <div {...sx(p, c.heat)}>
+      <div style={{ overflowX: "auto" }}>
+        <svg role="img" aria-label={label} width={labW + columns.length * (cell + gap)} height={rows.length * (cell + gap) + 18} {...px(d.svg)}>
+          {rows.map((rname, r) => <text key={rname} x={0} y={r * (cell + gap) + cell - 3} {...px(d.axis)}>{rname}</text>)}
+          {values.map((row, r) => row.map((v, ci) => (
+            <rect key={`${r}-${ci}`} x={labW + ci * (cell + gap)} y={r * (cell + gap)} width={cell} height={cell} rx={3} fill={fills[step(v)]}
+              stroke={hover?.r === r && hover?.c === ci ? color.fg : "none"} strokeWidth={1.5}
+              onPointerEnter={() => setHover({ r, c: ci })} onPointerLeave={() => setHover(null)} />
+          )))}
+          {columns.map((cn, ci) => ci % showEvery === 0 && <text key={cn + ci} x={labW + ci * (cell + gap) + cell / 2} y={rows.length * (cell + gap) + 12} textAnchor="middle" {...px(d.axis)}>{cn}</text>)}
+        </svg>
+      </div>
+      <div {...px(c.heatFoot)}>
+        <span>{hover ? `${rows[hover.r]} · ${columns[hover.c]} — ${format(values[hover.r][hover.c])}` : "\u00a0"}</span>
+        <span {...px(c.heatScale)}>Less{fills.map((f, i) => <span key={i} {...px(c.heatSw)} style={{ backgroundColor: f }} />)}More</span>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================== FunnelChart */
+
+/** Steps that narrow — signup → activation → paid. Bars shrink to scale; conversion between steps on the right. */
+export function FunnelChart({ steps, format = fmtCompact, label, ...p }: StyleProps & { steps: { name: string; value: number }[]; format?: (n: number) => string; label: string }) {
+  const max = steps[0]?.value || 1;
+  return (
+    <ol role="img" aria-label={label} {...sx(p, c.funnel)}>
+      {steps.map((st, i) => {
+        const pct = (st.value / max) * 100; const conv = i > 0 && steps[i - 1].value ? Math.round((st.value / steps[i - 1].value) * 100) : null;
+        return (
+          <li key={st.name} {...px(c.fRow)}>
+            <span {...px(c.fName)}>{st.name}</span>
+            <span {...px(c.fTrack)}><span {...px(c.fBar, i === 0 && c.fBarFirst)} style={{ width: `${Math.max(2, pct)}%` }}><span {...px(c.fVal, pct < 18 && c.fValOut)}>{format(st.value)}</span></span></span>
+            <span {...px(c.fConv)}>{conv === null ? "100%" : `${conv}%`}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* ============================================================== ScatterChart */
+
+/** Two measures per item — size vs. growth, usage vs. revenue. Hover a dot for its name. Optional size channel. */
+export function ScatterChart({ points, height = 240, label, xLabel, yLabel, format = fmtCompact, highlight, ...p }: StyleProps & {
+  points: { name: string; x: number; y: number; size?: number }[]; height?: number; label: string; xLabel?: string; yLabel?: string; format?: (n: number) => string; highlight?: string[];
+}) {
+  const [ref, w] = useWidth<HTMLDivElement>();
+  const [hover, setHover] = useState<number | null>(null);
+  const pad = { l: 44, r: 12, t: 10, b: 30 };
+  const xt = niceTicks(Math.min(...points.map((q) => q.x)), Math.max(...points.map((q) => q.x)));
+  const yt = niceTicks(Math.min(...points.map((q) => q.y)), Math.max(...points.map((q) => q.y)));
+  const iw = w - pad.l - pad.r, ih = height - pad.t - pad.b;
+  const X = (v: number) => pad.l + ((v - xt[0]) / (xt[xt.length - 1] - xt[0] || 1)) * iw;
+  const Y = (v: number) => pad.t + ih - ((v - yt[0]) / (yt[yt.length - 1] - yt[0] || 1)) * ih;
+  const smax = Math.max(...points.map((q) => q.size ?? 1));
+  return (
+    <div {...sx(p, d.wrap)}>
+      <div ref={ref} style={{ position: "relative" }}>
+        <svg role="img" aria-label={label} width={w} height={height} {...px(d.svg)}>
+          {yt.map((t) => <g key={`y${t}`}><line x1={pad.l} x2={w - pad.r} y1={Y(t)} y2={Y(t)} {...px(d.grid)} strokeDasharray="2 4" /><text x={pad.l - 8} y={Y(t)} dy="0.32em" textAnchor="end" {...px(d.axis)}>{format(t)}</text></g>)}
+          {xt.map((t) => <text key={`x${t}`} x={X(t)} y={height - 14} textAnchor="middle" {...px(d.axis)}>{format(t)}</text>)}
+          {xLabel && <text x={w - pad.r} y={height - 1} textAnchor="end" {...px(d.axis)}>{xLabel} →</text>}
+          {yLabel && <text x={pad.l} y={8} {...px(d.axis)}>↑ {yLabel}</text>}
+          {points.map((q, i) => {
+            const on = highlight ? highlight.includes(q.name) : true; const r = q.size ? 4 + (q.size / smax) * 10 : 5;
+            return <circle key={q.name + i} cx={X(q.x)} cy={Y(q.y)} r={hover === i ? r + 2 : r} fill={on ? color.chart1 : color.chart3} fillOpacity={q.size ? 0.55 : 0.9}
+              stroke={on ? color.chart1 : color.chart3} strokeWidth={1.5} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)} style={{ transition: "r 120ms" }} />;
+          })}
+        </svg>
+        {hover !== null && <Tip x={Math.min(w - 70, Math.max(70, X(points[hover].x)))} label={points[hover].name} format={format}
+          rows={[{ name: xLabel ?? "x", color: color.chart3, value: points[hover].x }, { name: yLabel ?? "y", color: color.chart1, value: points[hover].y }]} />}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================== BulletChart */
+
+/** One measure against a target and qualitative ranges — the compact replacement for a gauge in tables and stats. */
+export function BulletChart({ value, target, ranges = [], max, label, format = fmtCompact, height = 14, showValues = true, ...p }: StyleProps & {
+  value: number; target?: number; /** Upper bounds of poor/ok bands, e.g. [40, 75]. */ ranges?: number[]; max?: number; label: string; format?: (n: number) => string; height?: number; showValues?: boolean;
+}) {
+  const top = max ?? Math.max(value, target ?? 0, ...ranges) * 1.1;
+  const pct = (v: number) => `${Math.min(100, (v / (top || 1)) * 100)}%`;
+  return (
+    <div {...sx(p, c.bullet)}>
+      <div role="meter" aria-label={label} aria-valuenow={value} aria-valuemax={top} {...px(c.bTrack)} style={{ height }}>
+        {[...ranges].reverse().map((r, i) => <span key={r} {...px(c.bRange)} style={{ width: pct(r), opacity: 0.5 + i * 0.25 }} />)}
+        <span {...px(c.bValue)} style={{ width: pct(value), top: height * 0.3, bottom: height * 0.3 }} />
+        {target !== undefined && <span {...px(c.bTarget)} style={{ left: pct(target) }} />}
+      </div>
+      {showValues && <div {...px(c.bLegend)}><span><b {...px(c.bStrong)}>{format(value)}</b> {label}</span>{target !== undefined && <span>Target {format(target)}</span>}</div>}
+    </div>
+  );
+}
+
+/* ============================================================== ComboChart */
+
+/** Bars for volume plus a line for a rate on a second axis — orders and conversion, tickets and CSAT. */
+export function ComboChart({ labels, bars, line, height = 240, label, format = fmtCompact, lineFormat = (n: number) => `${n}%`, ...p }: StyleProps & {
+  labels: string[]; bars: { name: string; values: number[] }; line: { name: string; values: number[] }; height?: number; label: string; format?: (n: number) => string; lineFormat?: (n: number) => string;
+}) {
+  const [ref, w] = useWidth<HTMLDivElement>();
+  const [hover, setHover] = useState<number | null>(null);
+  const pad = { l: 40, r: 40, t: 10, b: 24 };
+  const iw = w - pad.l - pad.r, ih = height - pad.t - pad.b;
+  const bt = niceTicks(0, Math.max(...bars.values)); const bh = bt[bt.length - 1];
+  const lt = niceTicks(Math.min(...line.values), Math.max(...line.values)); const llo = lt[0], lhi = lt[lt.length - 1];
+  const band = iw / labels.length; const bw = Math.min(28, band * 0.56);
+  const Yb = (v: number) => pad.t + ih - (v / (bh || 1)) * ih;
+  const Yl = (v: number) => pad.t + ih - ((v - llo) / (lhi - llo || 1)) * ih;
+  const cx = (i: number) => pad.l + band * i + band / 2;
+  const step = Math.max(1, Math.ceil(labels.length / Math.max(2, Math.floor(iw / 48))));
+  return (
+    <div {...sx(p, d.wrap)}>
+      <div ref={ref} style={{ position: "relative" }} onPointerLeave={() => setHover(null)}>
+        <svg role="img" aria-label={label} width={w} height={height} {...px(d.svg)}>
+          {bt.map((t) => <g key={t}><line x1={pad.l} x2={w - pad.r} y1={Yb(t)} y2={Yb(t)} {...px(d.grid)} strokeDasharray={t === 0 ? undefined : "2 4"} /><text x={pad.l - 8} y={Yb(t)} dy="0.32em" textAnchor="end" {...px(d.axis)}>{format(t)}</text></g>)}
+          {lt.map((t) => <text key={`l${t}`} x={w - pad.r + 8} y={Yl(t)} dy="0.32em" {...px(d.axis)}>{lineFormat(t)}</text>)}
+          {labels.map((l, i) => (
+            <g key={l + i} onPointerEnter={() => setHover(i)}>
+              <rect x={pad.l + band * i} y={pad.t} width={band} height={ih} fill="transparent" />
+              <rect x={cx(i) - bw / 2} y={Yb(bars.values[i])} width={bw} height={Math.max(0, ih + pad.t - Yb(bars.values[i]))} rx={3} fill={hover === i ? color.chart2 : color.chart3} />
+              {i % step === 0 && <text x={cx(i)} y={height - 6} textAnchor="middle" {...px(d.axis)}>{l}</text>}
+            </g>
+          ))}
+          <path d={line.values.map((v, i) => `${i ? "L" : "M"}${cx(i)},${Yl(v)}`).join("")} fill="none" stroke={color.chart1} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+          {line.values.map((v, i) => <circle key={i} cx={cx(i)} cy={Yl(v)} r={hover === i ? 4 : 2.5} fill={color.surface} stroke={color.chart1} strokeWidth={1.5} />)}
+        </svg>
+        {hover !== null && <Tip x={Math.min(w - 70, Math.max(70, cx(hover)))} label={labels[hover]} format={(n) => n.toLocaleString()}
+          rows={[{ name: bars.name, color: color.chart3, value: bars.values[hover] }, { name: line.name, color: color.chart1, value: line.values[hover] }]} />}
+      </div>
+      <ChartLegend items={[{ name: bars.name, color: color.chart3 }, { name: line.name, color: color.chart1 }]} style={{ marginTop: 8 }} />
+      <SrTable labels={labels} series={[bars, line]} />
+    </div>
+  );
+}
+
+/* ============================================================== RadarChart */
+
+/** Several scores on shared axes — plan comparison, skills, health dimensions. Up to three series. */
+export function RadarChart({ axes, series, size = 240, max, label, ...p }: StyleProps & {
+  axes: string[]; series: ChartSeries[]; size?: number; max?: number; label: string;
+}) {
+  const top = max ?? Math.max(...series.flatMap((s) => s.values), 1);
+  const cx = size / 2, cy = size / 2, R = size / 2 - 34;
+  const pt = (i: number, v: number) => { const a = -Math.PI / 2 + (i / axes.length) * Math.PI * 2; const r = (v / top) * R; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+  const gid = useMemo(() => `r${Math.random().toString(36).slice(2, 8)}`, []);
+  return (
+    <div {...sx(p, c.radar)}>
+      <svg role="img" aria-label={label} width={size} height={size} {...px(d.svg)}>
+        <defs>{series.map((s, si) => <DotPattern key={si} id={`${gid}${si}`} fill={colorOf(s, si)} dense />)}</defs>
+        {[0.25, 0.5, 0.75, 1].map((f) => <polygon key={f} points={axes.map((_, i) => pt(i, top * f).join(",")).join(" ")} fill="none" {...px(d.grid)} strokeDasharray={f === 1 ? undefined : "2 4"} />)}
+        {axes.map((ax, i) => { const [x, y] = pt(i, top); const [lx, ly] = pt(i, top * 1.18); return <g key={ax}><line x1={cx} y1={cy} x2={x} y2={y} {...px(d.grid)} /><text x={lx} y={ly} dy="0.32em" textAnchor={Math.abs(lx - cx) < 4 ? "middle" : lx > cx ? "start" : "end"} {...px(d.axis)} style={{ fontSize: 11 }}>{ax}</text></g>; })}
+        {series.map((s, si) => <polygon key={s.name} points={s.values.map((v, i) => pt(i, v).join(",")).join(" ")} fill={`url(#${gid}${si})`} stroke={colorOf(s, si)} strokeWidth={1.75} strokeLinejoin="round" />)}
+      </svg>
+      {series.length > 1 && <ChartLegend items={series.map((s, si) => ({ name: s.name, color: colorOf(s, si) }))} />}
+    </div>
+  );
+}
+
+const c = stylex.create({
+  ellipsis: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 },
+  barList: { display: "flex", flexDirection: "column", gap: 4, margin: 0, padding: 0, listStyle: "none" },
+  blRow: { position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, height: 30, paddingInline: 8, borderRadius: radius.sm, fontSize: font.md, isolation: "isolate" },
+  blClick: { cursor: "pointer", ":hover": { backgroundColor: color.hover } },
+  blFill: { position: "absolute", insetBlock: 0, left: 0, zIndex: -1, borderRadius: radius.sm, backgroundColor: color.muted },
+  blFillOn: { backgroundColor: color.accentSoft, boxShadow: `inset 2px 0 0 ${color.chart1}` },
+  blName: { display: "flex", alignItems: "center", gap: 8, minWidth: 0, color: color.fg },
+  blVal: { fontVariantNumeric: "tabular-nums", color: color.fgSoft, fontWeight: font.medium, flexShrink: 0 },
+  bdWrap: { display: "flex", flexDirection: "column", gap: 10, minWidth: 0 },
+  bdBar: { display: "flex", gap: 2, width: "100%", borderRadius: radius.full, overflow: "hidden" },
+  bdSeg: { flexBasis: 0, minWidth: 3 },
+  bdLegend: { display: "flex", flexDirection: "column", gap: 6, fontSize: font.sm },
+  bdLegendC: { display: "flex", flexWrap: "wrap", columnGap: 12, rowGap: 4, fontSize: font.sm },
+  bdItem: { display: "flex", alignItems: "center", gap: 6, minWidth: 0, color: color.fgSoft },
+  bdPct: { color: color.fg, fontWeight: font.medium, fontVariantNumeric: "tabular-nums" },
+  bdVal: { marginInlineStart: "auto", color: color.fgMuted, fontVariantNumeric: "tabular-nums" },
+  gauge: { position: "relative", display: "flex", flexDirection: "column", alignItems: "center", maxWidth: "100%" },
+  gaugeText: { position: "absolute", left: 0, right: 0, bottom: 16, display: "flex", flexDirection: "column", alignItems: "center" },
+  gaugeEnds: { display: "flex", justifyContent: "space-between", width: "100%", paddingInline: 4, fontSize: "10.5px", color: color.fgFaint, fontVariantNumeric: "tabular-nums" },
+  heat: { display: "flex", flexDirection: "column", gap: 8, minWidth: 0 },
+  heatFoot: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", fontSize: font.sm, color: color.fgMuted, fontVariantNumeric: "tabular-nums" },
+  heatScale: { display: "inline-flex", alignItems: "center", gap: 3, fontSize: font.xs, color: color.fgFaint },
+  heatSw: { width: 10, height: 10, borderRadius: 2 },
+  funnel: { display: "flex", flexDirection: "column", gap: 8, margin: 0, padding: 0, listStyle: "none" },
+  fRow: { display: "grid", gridTemplateColumns: { default: "84px 1fr 40px", "@media (min-width: 640px)": "120px 1fr 48px" }, alignItems: "center", gap: 10, fontSize: font.md },
+  fName: { color: color.fgSoft, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  fTrack: { height: 26, borderRadius: radius.sm, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}`, overflow: "hidden" },
+  fBar: { position: "relative", display: "flex", alignItems: "center", height: "100%", borderRadius: radius.sm, backgroundColor: color.chart3 },
+  fBarFirst: { backgroundColor: color.chart1 },
+  fVal: { paddingInline: 8, fontSize: font.sm, fontWeight: font.semibold, color: color.onAccent, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" },
+  fValOut: { position: "absolute", left: "100%", color: color.fg },
+  fConv: { textAlign: "end", fontSize: font.sm, color: color.fgMuted, fontVariantNumeric: "tabular-nums" },
+  bullet: { display: "flex", flexDirection: "column", gap: 6, minWidth: 0 },
+  bTrack: { position: "relative", width: "100%", borderRadius: 3, backgroundColor: color.muted, overflow: "visible" },
+  bRange: { position: "absolute", insetBlock: 0, left: 0, borderRadius: 3, backgroundColor: color.borderStrong },
+  bValue: { position: "absolute", left: 0, borderRadius: 2, backgroundColor: color.fg },
+  bTarget: { position: "absolute", top: -3, bottom: -3, width: 2.5, borderRadius: 1, backgroundColor: color.chart1, transform: "translateX(-1px)" },
+  bLegend: { display: "flex", justifyContent: "space-between", gap: 8, fontSize: font.sm, color: color.fgMuted, fontVariantNumeric: "tabular-nums" },
+  bStrong: { color: color.fg, fontWeight: font.semibold },
+  radar: { display: "flex", flexDirection: "column", alignItems: "center", gap: 8 },
+});

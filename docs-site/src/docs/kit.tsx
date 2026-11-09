@@ -1,6 +1,6 @@
 /* Docs building blocks: demo card with live code, API table, page layout. Built with Keel itself. */
 import * as stylex from "@stylexjs/stylex";
-import { useMemo, useState, type ReactNode } from "react";
+import { useContext, createContext, useMemo, useState, type ReactNode } from "react";
 import {
   Badge as _B, Button, CodeBlock, CopyButton, IconCheck, IconChevronDown, IconCode, IconExternal, IconX, Kbd, Outline, SegmentedControl, Tag, Text,
 } from "@keel/components";
@@ -192,6 +192,10 @@ export function DocPageView({ page }: { page: DocPage }) {
 }
 
 /** Wraps several examples in one demo. */
+/** True inside overview preview cards — demos use it to avoid opening portaled overlays there. */
+export const InPreview = createContext(false);
+export const useInPreview = () => useContext(InPreview);
+
 export function Row({ children, gap = 12, wrap = true, align = "center", col }: { children: ReactNode; gap?: number; wrap?: boolean; align?: string; col?: boolean }) {
   return <div style={{ display: "flex", flexDirection: col ? "column" : "row", flexWrap: wrap ? "wrap" : "nowrap", alignItems: col ? "stretch" : align, gap, width: col ? "100%" : undefined, maxWidth: "100%" }}>{children}</div>;
 }

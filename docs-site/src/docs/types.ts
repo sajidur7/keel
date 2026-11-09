@@ -27,6 +27,8 @@ export type DocPage = {
   donts?: string[];
   /** Badge in the nav ("New" for components added in v2). */
   badge?: string;
+  /** Which demo the overview card previews (default 0). */
+  previewDemo?: number;
   /** Guide pages render `render` instead of demos/API. */
   render?: ComponentType;
 };

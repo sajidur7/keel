@@ -4,7 +4,7 @@
  */
 import * as stylex from "@stylexjs/stylex";
 import { Popover as P, Select as S } from "radix-ui";
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { isValidElement, Children, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
 import { Avatar, Token } from "./content";
 import { field, useField } from "./inputs";
@@ -50,7 +50,7 @@ export const lb = stylex.create({
   empty: { paddingBlock: 24, paddingInline: 8, textAlign: "center", color: color.fgMuted },
   box: {
     display: "inline-flex", alignItems: "center", justifyContent: "center", width: 15, height: 15, flexShrink: 0, borderRadius: 4,
-    boxShadow: `inset 0 0 0 1px ${color.borderStrong}`, backgroundColor: color.surface, color: "#fff",
+    boxShadow: `inset 0 0 0 1px ${color.borderStrong}`, backgroundColor: color.surface, color: color.onAccent,
   },
   boxOn: { backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: `0 0 0 1px ${color.accentBottom}` },
   create: { color: color.fgSoft },
@@ -86,8 +86,13 @@ export type SelectOption = { value: string; label: string; description?: string;
 
 /* ============================================================== Select */
 
+/** Declarative option for <Select> (alternative to `options`). Renders nothing on its own. */
+export function SelectorOption(_props: SelectOption): null { return null; }
+
 export type SelectProps = StyleProps & {
   options?: SelectOption[];
+  /** <SelectorOption value label /> children instead of `options`. */
+  children?: ReactNode;
   groups?: { label: string; options: SelectOption[] }[];
   value?: string;
   defaultValue?: string;
@@ -104,8 +109,9 @@ export type SelectProps = StyleProps & {
 };
 
 /** Pick one from a short known list (≤ ~12). Longer or searchable lists → Combobox. */
-export function Select({ options = [], groups, value, defaultValue, onValueChange, placeholder = "Select", size = "md", invalid, disabled, readOnly, variant = "field", id, xstyle, className, style, ...rest }: SelectProps) {
+export function Select({ options: optionsProp, children, groups, value, defaultValue, onValueChange, placeholder = "Select", size = "md", invalid, disabled, readOnly, variant = "field", id, xstyle, className, style, ...rest }: SelectProps) {
   const f = useField({ id, invalid, disabled, readOnly });
+  const options = optionsProp ?? Children.toArray(children).flatMap((c) => (isValidElement(c) ? [c.props as SelectOption] : []));
   const item = (o: SelectOption) => (
     <S.Item key={o.value} value={o.value} disabled={o.disabled} {...px(lb.item)}>
       {o.icon && <span {...px(lb.icon)}>{o.icon}</span>}

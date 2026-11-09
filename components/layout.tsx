@@ -29,8 +29,9 @@ const L = stylex.create({
   page: { flex: 1, width: "100%", marginInline: "auto", paddingInline: { default: 16, "@media (min-width: 768px)": 24, "@media (min-width: 1200px)": 32 }, paddingBlock: 24, display: "flex", flexDirection: "column", gap: 20 },
   full: { maxWidth: "none" }, wide: { maxWidth: 1280 }, narrow: { maxWidth: 760 },
   header: {
-    position: "sticky", top: 0, zIndex: z.header, flexShrink: 0, backgroundColor: `color-mix(in srgb, ${color.surface} 86%, transparent)`,
-    backdropFilter: "saturate(1.4) blur(10px)",
+    position: "sticky", top: 0, zIndex: z.header, flexShrink: 0, backgroundColor: color.surface, // solid on purpose: backdrop-filter escapes rounded clipping in Chromium
+    // backdrop-filter escapes the parent's rounded clip in Chromium — take the panel's corners directly.
+    borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit",
   },
   headerLine: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
   headRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, height: sz.header, paddingInline: { default: 12, "@media (min-width: 768px)": 20 } },

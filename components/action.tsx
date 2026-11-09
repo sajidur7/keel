@@ -5,12 +5,10 @@
  */
 import * as stylex from "@stylexjs/stylex";
 import { ContextMenu as CM, DropdownMenu as DM, Slot, Toggle, ToggleGroup, Toolbar as TB } from "radix-ui";
-import {
-  createContext, forwardRef, useContext, useLayoutEffect, useRef, useState,
-  type ComponentProps, type ReactNode,
-} from "react";
+import { isValidElement, Children, createContext, forwardRef, useContext, useLayoutEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { color, depth, font, motion, radius, size as sz } from "../tokens/tokens.stylex";
 import { IconCheck, IconChevronRight, IconCopy, IconExternal, IconMoreHorizontal, IconSizeContext } from "./icons";
+import { KeyHint } from "./keys";
 import { sx, px, type StyleProps } from "./lib/sx";
 import { Spinner } from "./spinner";
 import { Tooltip } from "./overlay";
@@ -88,8 +86,8 @@ const b = stylex.create({
     boxShadow: { default: null, ":focus-visible": depth.focusDanger },
   },
   link: {
-    height: "auto", paddingInline: 0, borderRadius: radius.xs, color: color.accent,
-    textDecorationLine: "underline", textDecorationColor: color.accentBorder, textUnderlineOffset: "3px",
+    height: "auto", paddingInline: 0, borderRadius: radius.xs, color: color.blue,
+    textDecorationLine: "underline", textDecorationColor: color.blueBorder, textUnderlineOffset: "3px",
     ":hover": { textDecorationColor: "currentColor" },
     transform: "none",
     boxShadow: { default: null, ":focus-visible": depth.focus },
@@ -238,7 +236,7 @@ const lk = stylex.create({
     transitionProperty: "color, text-decoration-color", transitionDuration: motion.fast,
     ":focus-visible": { boxShadow: depth.focus },
   },
-  accent: { color: { default: color.accent, ":hover": color.accentStrong }, textDecorationColor: { default: color.accentBorder, ":hover": "currentColor" } },
+  accent: { color: { default: color.blue, ":hover": color.blueStrong }, textDecorationColor: { default: color.blueBorder, ":hover": "currentColor" } },
   neutral: { color: color.fg, textDecorationColor: { default: color.borderStrong, ":hover": "currentColor" } },
   quiet: { color: { default: color.fgSoft, ":hover": color.fg }, textDecorationLine: { default: "none", ":hover": "underline" } },
 });
@@ -344,8 +342,15 @@ const sg = stylex.create({
   lg: { height: 36, fontSize: font.lg },
 });
 
+export type SegmentedItem = { value: string; label?: ReactNode; icon?: ReactNode; disabled?: boolean; ariaLabel?: string };
+/** Declarative option for <SegmentedControl> (alternative to `items`). Renders nothing on its own. */
+export function SegmentedControlItem(_props: SegmentedItem): null { return null; }
+const itemsFromChildren = <T,>(children: ReactNode): T[] => Children.toArray(children).flatMap((c) => (isValidElement(c) ? [c.props as T] : []));
+
 export type SegmentedControlProps = StyleProps & {
-  items: { value: string; label?: ReactNode; icon?: ReactNode; disabled?: boolean; ariaLabel?: string }[];
+  items?: SegmentedItem[];
+  /** <SegmentedControlItem value label /> children instead of `items`. */
+  children?: ReactNode;
   value?: string;
   defaultValue?: string;
   onValueChange?: (v: string) => void;
@@ -356,7 +361,8 @@ export type SegmentedControlProps = StyleProps & {
 };
 
 /** Pick one of 2–5 views. The selection is a raised knob that slides between options. */
-export function SegmentedControl({ items, value, defaultValue, onValueChange, size = "md", fullWidth, label, ...p }: SegmentedControlProps) {
+export function SegmentedControl({ items: itemsProp, children, value, defaultValue, onValueChange, size = "md", fullWidth, label, ...p }: SegmentedControlProps) {
+  const items = itemsProp ?? itemsFromChildren<SegmentedItem>(children);
   const [inner, setInner] = useState(defaultValue ?? items[0]?.value);
   const v = value ?? inner;
   const root = useRef<HTMLDivElement>(null);
@@ -451,7 +457,7 @@ const itemBody = (icon: ReactNode, children: ReactNode, shortcut?: string, destr
   <IconSizeContext.Provider value={14}>
     <span {...px(menu.icon, destructive && menu.iconDanger)} aria-hidden>{icon}</span>
     <span {...px(menu.label)}>{children}</span>
-    {shortcut && <span {...px(menu.shortcut)}>{shortcut}</span>}
+    {shortcut && <span {...px(menu.shortcut)}><IconSizeContext.Provider value={12}><KeyHint keys={shortcut} /></IconSizeContext.Provider></span>}
     {trailing}
   </IconSizeContext.Provider>
 );

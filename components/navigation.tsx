@@ -5,10 +5,7 @@
  */
 import * as stylex from "@stylexjs/stylex";
 import { NavigationMenu as NM, Tabs as TP } from "radix-ui";
-import {
-  createContext, Fragment, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
-  type ComponentProps, type ReactNode,
-} from "react";
+import { isValidElement, Children, createContext, Fragment, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { color, depth, font, motion, radius, size as sz, z } from "../tokens/tokens.stylex";
 import {
   Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
@@ -89,7 +86,7 @@ const sb = stylex.create({
   },
   itemRail: { justifyContent: "center", paddingInline: 0, width: 40, marginInline: "auto" },
   itemIcon: { display: "inline-flex", color: color.icon, flexShrink: 0 },
-  itemIconOn: { color: color.fg },
+  itemIconOn: { color: color.accent },
   itemLabel: { flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   railBadge: { position: "absolute", top: 4, right: 6, width: 6, height: 6, borderRadius: "50%", backgroundColor: color.accent },
   sub: { display: "flex", flexDirection: "column", gap: 1, marginInlineStart: 19, paddingInlineStart: 10, borderInlineStartWidth: 1, borderInlineStartStyle: "solid", borderInlineStartColor: color.border },
@@ -186,7 +183,7 @@ export function SidebarTrigger() {
 const tn = stylex.create({
   bar: {
     position: "sticky", top: 0, zIndex: z.header, display: "flex", alignItems: "center", gap: 16, height: 56, paddingInline: { default: 12, "@media (min-width: 768px)": 20 },
-    backgroundColor: `color-mix(in srgb, ${color.surface} 88%, transparent)`, backdropFilter: "saturate(1.4) blur(10px)",
+    backgroundColor: color.surface, borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit",
     borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border,
   },
   heading: { display: "flex", alignItems: "center", gap: 10, fontWeight: font.semibold, flexShrink: 0 },
@@ -225,8 +222,8 @@ const tn = stylex.create({
   linkDesc: { fontSize: font.sm, color: color.fgMuted, lineHeight: 1.4 },
   featured: {
     display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 6, width: 240, minHeight: 200, padding: 16, borderRadius: radius.lg,
-    textDecoration: "none", color: "#fff", outline: "none", position: "relative", overflow: "hidden",
-    backgroundImage: `radial-gradient(120% 80% at 0% 0%, ${color.accentTop}, transparent 60%), linear-gradient(160deg, ${color.accentBottom}, #121433)`,
+    textDecoration: "none", color: color.onInk, outline: "none", position: "relative", overflow: "hidden",
+    backgroundImage: `radial-gradient(circle at 1px 1px, ${color.inkWash} 1px, transparent 0), linear-gradient(170deg, ${color.inkTop}, ${color.inkBottom})`, backgroundSize: "10px 10px, auto",
     boxShadow: { default: depth.solid, ":focus-visible": `${depth.solid}, ${depth.focus}` },
   },
   featTitle: { fontSize: font.xl, fontWeight: font.semibold, letterSpacing: "-0.01em" },
@@ -427,10 +424,14 @@ export function TabsTrigger({ count, icon, children, xstyle, className, style, .
 }
 
 /** Tabs from a list, with panels. The quick way: <TabList items={[{ value, label, content }]} />. */
-export function TabList({ items, value, defaultValue, onValueChange, variant = "underline", ...p }: StyleProps & {
-  items: { value: string; label: ReactNode; content?: ReactNode; count?: number; icon?: ReactNode; disabled?: boolean }[];
+export type TabItem = { value: string; label: ReactNode; content?: ReactNode; count?: number; icon?: ReactNode; disabled?: boolean };
+/** Declarative tab for <TabList> (children = the panel). Renders nothing on its own. */
+export function Tab(_props: Omit<TabItem, "content"> & { children?: ReactNode }): null { return null; }
+export function TabList({ items: itemsProp, children, value, defaultValue, onValueChange, variant = "underline", ...p }: StyleProps & {
+  items?: TabItem[]; /** <Tab value label>panel</Tab> children instead of `items`. */ children?: ReactNode;
   value?: string; defaultValue?: string; onValueChange?: (v: string) => void; variant?: "underline" | "pills";
 }) {
+  const items: TabItem[] = itemsProp ?? Children.toArray(children).flatMap((c) => (isValidElement(c) ? [{ ...(c.props as TabItem), content: (c.props as { children?: ReactNode }).children }] : []));
   return (
     <Tabs value={value} defaultValue={defaultValue ?? items[0]?.value} onValueChange={onValueChange} {...sx(p)}>
       <TabsList variant={variant}>{items.map((it) => <TabsTrigger key={it.value} value={it.value} count={it.count} icon={it.icon} disabled={it.disabled}>{it.label}</TabsTrigger>)}</TabsList>
@@ -518,7 +519,7 @@ const st = stylex.create({
     color: color.fgMuted, backgroundColor: color.surface, boxShadow: `inset 0 0 0 1.5px ${color.borderStrong}`, transitionProperty: "background-color, box-shadow, color", transitionDuration: motion.base,
   },
   dotCurrent: { color: color.accent, boxShadow: `inset 0 0 0 1.5px ${color.accent}, 0 0 0 4px ${color.focusRing}` },
-  dotDone: { color: "#fff", backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: depth.solid },
+  dotDone: { color: color.onAccent, backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: depth.solid },
   dotError: { color: "#fff", backgroundColor: color.danger, boxShadow: "none" },
   text: { display: "flex", flexDirection: "column", gap: 2, minWidth: 0, paddingTop: 2 },
   title: { fontSize: font.md, fontWeight: font.medium, color: color.fg, whiteSpace: "nowrap" },
@@ -528,6 +529,9 @@ const st = stylex.create({
   barV: { position: "absolute", left: 11, top: 28, bottom: 4, width: 2, borderRadius: 2, backgroundColor: color.border },
   barDone: { backgroundColor: color.accent },
   optional: { fontSize: font.xs, color: color.fgFaint },
+  // Horizontal steppers on phones: numbers only, plus the current step's label.
+  textHideMobile: { display: { default: "none", "@media (min-width: 720px)": "flex" } },
+  barMobile: { marginInline: { default: 6, "@media (min-width: 720px)": 10 } },
 });
 
 export type Step = { title: ReactNode; description?: ReactNode; optional?: boolean; error?: boolean };
@@ -539,13 +543,13 @@ export function Stepper({ steps, current, onStepClick, orientation = "horizontal
       {steps.map((s, i) => {
         const done = i < current; const cur = i === current;
         const dot = <span {...px(st.dot, cur && st.dotCurrent, done && st.dotDone, s.error && st.dotError)}>{done && !s.error ? <IconCheck size={12} /> : s.error ? <IconX size={12} /> : i + 1}</span>;
-        const text = <span {...px(st.text)}><span {...px(st.title, !done && !cur && st.titleMuted)}>{s.title}{s.optional && <span {...px(st.optional)}> · Optional</span>}</span>{s.description && <span {...px(st.desc)}>{s.description}</span>}</span>;
+        const text = <span {...px(st.text, !V && !cur && st.textHideMobile)}><span {...px(st.title, !done && !cur && st.titleMuted)}>{s.title}{s.optional && <span {...px(st.optional)}> · Optional</span>}</span>{s.description && <span {...px(st.desc)}>{s.description}</span>}</span>;
         return (
           <Fragment key={i}>
             <li aria-current={cur ? "step" : undefined} {...px(st.step, V && st.stepV)} style={!V ? { flex: i === steps.length - 1 ? "0 0 auto" : 1 } : undefined}>
               {onStepClick && done ? <button type="button" onClick={() => onStepClick(i)} {...px(st.btn)}>{dot}{text}</button> : <>{dot}{text}</>}
               {V && i < steps.length - 1 && <span aria-hidden {...px(st.barV, done && st.barDone)} />}
-              {!V && i < steps.length - 1 && <span aria-hidden {...px(st.barH, done && st.barDone)} />}
+              {!V && i < steps.length - 1 && <span aria-hidden {...px(st.barH, st.barMobile, done && st.barDone)} />}
             </li>
           </Fragment>
         );
@@ -604,7 +608,7 @@ export const Anchor = Outline;
 /* ============================================================== FilterMenu & FilterButton */
 
 const fm = stylex.create({
-  count: { minWidth: 16, height: 16, paddingInline: 4, borderRadius: radius.full, fontSize: "10px", fontWeight: font.semibold, color: "#fff", backgroundColor: color.accent, display: "inline-flex", alignItems: "center", justifyContent: "center" },
+  count: { minWidth: 16, height: 16, paddingInline: 4, borderRadius: radius.full, fontSize: "10px", fontWeight: font.semibold, color: color.onAccent, backgroundColor: color.accent, display: "inline-flex", alignItems: "center", justifyContent: "center" },
   search: { padding: 4, paddingBottom: 6 },
   foot: { display: "flex", justifyContent: "space-between", padding: 4, paddingTop: 6 },
   meta: { marginInlineStart: "auto", fontSize: font.sm, color: color.fgFaint, fontVariantNumeric: "tabular-nums" },

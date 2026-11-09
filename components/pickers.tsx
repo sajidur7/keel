@@ -57,7 +57,7 @@ const k = stylex.create({
   stars: { display: "inline-flex", gap: 2 },
   star: { display: "inline-flex", color: color.borderStrong, borderRadius: radius.xs, outline: "none", transitionProperty: "transform, color", transitionDuration: motion.fast, ":focus-visible": { boxShadow: depth.focus } },
   starBtn: { cursor: "pointer", transform: { default: null, ":hover": "scale(1.15)" } },
-  starOn: { color: "#f5a524" },
+  starOn: { color: color.fg },
   // color
   swatch: { width: 18, height: 18, borderRadius: radius.sm, flexShrink: 0, boxShadow: `inset 0 0 0 1px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)` },
   swatches: { display: "grid", gridTemplateColumns: "repeat(8, 24px)", gap: 6 },

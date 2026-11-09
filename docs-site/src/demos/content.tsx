@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Avatar, AvatarGroup, Blockquote, Citation, Code, CodeBlock, Heading, Icon, IconCalendar, IconCheckCircle, IconCloud, IconDatabase, IconRocket, IconSparkles, IconUser,
+  Avatar, AvatarGroup, Blockquote, Citation, Code, CodeBlock, Heading, Icon, IconCalendar, IconCheckCircle, IconCloud, IconDatabase, IconRocket, IconAgent, IconUser,
   IconUsers, IconZap, ImagePreview, Kbd, KbdGroup, Markdown, Tag, TAG_TONES, Text, Thumbnail, Timer, Timestamp, Token, Button,
 } from "@keel/components";
 import * as Icons from "@keel/components/icons";
@@ -141,7 +141,7 @@ export function MarkdownDemo() {
 export function IconDemo() {
   return (
     <Row gap={16}>
-      <Icon icon={IconUsers} /><Icon icon={IconUsers} tone="fg" /><Icon icon={IconCheckCircle} tone="success" /><Icon icon={IconZap} tone="warning" /><Icon icon={IconSparkles} tone="accent" />
+      <Icon icon={IconUsers} /><Icon icon={IconUsers} tone="fg" /><Icon icon={IconCheckCircle} tone="success" /><Icon icon={IconZap} tone="warning" /><Icon icon={IconAgent} tone="accent" />
       <Icon icon={IconRocket} tile /><Icon icon={IconDatabase} tile size={20} /><Icon icon={IconCloud} tile tone="accent" />
     </Row>
   );

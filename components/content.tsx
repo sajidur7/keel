@@ -12,6 +12,8 @@ import {
 import { color, depth, font, motion, radius, tone as tn } from "../tokens/tokens.stylex";
 import { IconButton, CopyButton } from "./action";
 import { IconSizeContext, IconX, type IconProps } from "./icons";
+import { keyParts } from "./keys";
+export { keyParts } from "./keys";
 import { px, sx, type StyleProps } from "./lib/sx";
 import { Spinner } from "./spinner";
 import { Lightbox, Tooltip } from "./overlay";
@@ -33,7 +35,7 @@ const t = stylex.create({
   stat: { fontSize: "26px", lineHeight: 1.1, fontWeight: font.semibold, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" },
   // tones
   default: { color: color.fg }, soft: { color: color.fgSoft }, muted: { color: color.fgMuted }, faint: { color: color.fgFaint },
-  accent: { color: color.accent }, success: { color: color.success }, warning: { color: color.warning }, danger: { color: color.danger },
+  accent: { color: color.blue }, success: { color: color.success }, warning: { color: color.warning }, danger: { color: color.danger },
   inherit: { color: "inherit" },
   // modifiers
   regular: { fontWeight: font.regular }, medium: { fontWeight: font.medium }, semibold: { fontWeight: font.semibold }, bold: { fontWeight: font.bold },
@@ -85,20 +87,22 @@ export function Heading({ level = 2, variant, ...rest }: Omit<TextProps, "as"> &
 const k = stylex.create({
   kbd: {
     display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 18, paddingInline: 5,
-    borderRadius: radius.xs, fontFamily: font.sans, fontSize: font.xs, fontWeight: font.medium, lineHeight: 1,
+    gap: 2, borderRadius: radius.xs, fontFamily: font.sans, fontSize: font.xs, fontWeight: font.medium, lineHeight: 1,
     color: color.fgSoft, backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`,
     boxShadow: `inset 0 -1px 0 ${color.borderStrong}, 0 0 0 1px ${color.border}`, whiteSpace: "nowrap",
   },
   group: { display: "inline-flex", alignItems: "center", gap: 3 },
 });
 
-/** A key, drawn like a key. */
-export function Kbd({ xstyle, className, style, ...rest }: ComponentProps<"kbd"> & StyleProps) {
-  return <kbd {...rest} {...sx({ xstyle, className, style }, k.kbd)} />;
+/** A key, drawn like a key. Symbols (⌘ ⇧ ⌥ ⌃ ↵ ↑ ↓ ← → ⌫ ⇥) and names ("shift", "enter", "mod") render as icons. */
+export function Kbd({ xstyle, className, style, children, ...rest }: ComponentProps<"kbd"> & StyleProps) {
+  const content = typeof children === "string" ? keyParts(children) : children;
+  return <kbd {...rest} {...sx({ xstyle, className, style }, k.kbd)}><IconSizeContext.Provider value={11}>{content}</IconSizeContext.Provider></kbd>;
 }
-/** Several keys: ["⌘", "K"]. */
-export function KbdGroup({ keys, xstyle }: { keys: string[] } & StyleProps) {
-  return <span {...sx({ xstyle }, k.group)}>{keys.map((key, i) => <Kbd key={i}>{key}</Kbd>)}</span>;
+/** Several keys, one cap each: ["mod", "K"] or "⌘K". */
+export function KbdGroup({ keys, xstyle }: { keys: string[] | string } & StyleProps) {
+  const list = typeof keys === "string" ? (keys.includes("+") && keys.length > 1 ? keys.split("+") : Array.from(keys.match(/[A-Za-z]{2,}|./gu) ?? [])) : keys;
+  return <span {...sx({ xstyle }, k.group)}>{list.map((key, i) => <Kbd key={i}>{key}</Kbd>)}</span>;
 }
 
 /* ============================================================== Code & CodeBlock */
@@ -232,9 +236,9 @@ const q = stylex.create({
   cit: {
     display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 16, height: 16, paddingInline: 4,
     marginInline: 2, verticalAlign: "0.15em", borderRadius: radius.xs, fontSize: "10px", fontWeight: font.semibold, lineHeight: 1,
-    color: color.accentStrong, backgroundColor: color.accentSoft, cursor: "pointer", textDecoration: "none",
+    color: color.blueStrong, backgroundColor: color.blueSoft, cursor: "pointer", textDecoration: "none",
     transitionProperty: "background-color", transitionDuration: motion.fast,
-    ":hover": { backgroundColor: color.accentBorder },
+    ":hover": { backgroundColor: color.blueBorder },
   },
   chip: {
     display: "inline-flex", alignItems: "center", gap: 6, height: 22, paddingInline: 8, borderRadius: radius.full, fontSize: font.sm,
@@ -250,10 +254,12 @@ export function Blockquote({ children, cite, xstyle }: { children: ReactNode; ci
 }
 
 export type CitationSource = { title: string; url?: string; domain?: string };
+/** Hostname of an absolute URL; undefined for relative or invalid ones. */
+const hostOf = (url?: string) => { if (!url) return undefined; try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return undefined; } };
 
 /** A source reference in generated text: a numbered marker or a source chip, with the source on hover. */
 export function Citation({ source, number, variant = "number" }: { source: CitationSource; number?: number; variant?: "number" | "chip" }) {
-  const domain = source.domain ?? (source.url ? new URL(source.url).hostname.replace(/^www\./, "") : undefined);
+  const domain = source.domain ?? hostOf(source.url);
   const el = variant === "chip"
     ? <a href={source.url} target="_blank" rel="noreferrer" {...px(q.chip)}><span {...px(q.fav)} /><span {...px(t.truncate)}>{domain ?? source.title}</span></a>
     : <a href={source.url} target="_blank" rel="noreferrer" aria-label={`Source ${number}: ${source.title}`} {...px(q.cit)}>{number}</a>;
@@ -364,7 +370,9 @@ const AV = { xs: 16, sm: 20, md: 24, lg: 32, xl: 40, "2xl": 56 } as const;
 type AvatarSize = keyof typeof AV;
 const TONES = ["blue", "teal", "green", "amber", "orange", "red", "pink", "violet", "lime", "gray"] as const;
 export type Tone = (typeof TONES)[number];
-function toneFor(name = ""): Tone { let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0; return TONES[h % TONES.length]; }
+/* Avatars only use the neutral weights (and one blue) — never red, which reads as an error. */
+const AVATAR_TONES: Tone[] = ["gray", "green", "violet", "amber", "pink", "blue", "gray", "teal"];
+function toneFor(name = ""): Tone { let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0; return AVATAR_TONES[h % AVATAR_TONES.length]; }
 export function initials(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return "?";
@@ -543,12 +551,13 @@ const tg = stylex.create({
   lg: { height: 26, paddingInline: 10, fontSize: font.md },
   pill: { borderRadius: radius.full },
   solid: { color: "#fff", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2), 0 0 0 1px rgba(0,0,0,0.12)" },
+  outline: { color: color.fg, backgroundColor: "transparent", boxShadow: `inset 0 0 0 1px ${color.borderStrong}` },
   dot: { width: 6, height: 6, borderRadius: "50%", backgroundColor: "currentColor", flexShrink: 0 },
   x: {
     display: "inline-flex", marginInlineEnd: -4, padding: 2, borderRadius: radius.xs, color: "inherit", opacity: { default: 0.6, ":hover": 1 },
     backgroundColor: { default: "transparent", ":hover": color.hover }, outline: "none", ":focus-visible": { boxShadow: depth.focus },
   },
-  label: { overflow: "hidden", textOverflow: "ellipsis" },
+  label: { display: "inline-flex", alignItems: "center", gap: 4, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" },
   // token
   token: {
     display: "inline-flex", alignItems: "center", gap: 6, height: 24, paddingInlineStart: 4, paddingInlineEnd: 8, borderRadius: radius.full,
@@ -566,7 +575,8 @@ const tg = stylex.create({
 export type TagProps = Omit<ComponentProps<"span">, "className" | "style"> & StyleProps & {
   tone?: Tone | "neutral" | "yellow" | "cyan" | "indigo" | "purple";
   size?: "sm" | "md" | "lg";
-  variant?: "soft" | "solid";
+  /** soft (tinted) · solid (filled) · outline (hairline, transparent). */
+  variant?: "soft" | "solid" | "outline";
   shape?: "rounded" | "pill";
   dot?: boolean;
   icon?: ReactNode;
@@ -575,9 +585,9 @@ export type TagProps = Omit<ComponentProps<"span">, "className" | "style"> & Sty
 };
 
 const SOLID = stylex.create({
-  gray: { backgroundColor: "#71717a" }, red: { backgroundColor: "#dc2626" }, orange: { backgroundColor: "#ea580c" }, amber: { backgroundColor: "#d97706" },
-  green: { backgroundColor: "#16a34a" }, teal: { backgroundColor: "#0d9488" }, blue: { backgroundColor: "#3a5cf0" }, violet: { backgroundColor: "#7c3aed" },
-  pink: { backgroundColor: "#db2777" }, lime: { backgroundColor: "#65a30d" },
+  gray: { backgroundColor: "#71717a" }, red: { backgroundColor: "#d42020" }, orange: { backgroundColor: "#8a8a94" }, amber: { backgroundColor: "#8a8a94" },
+  green: { backgroundColor: "#26262c" }, teal: { backgroundColor: "#3f3f46" }, blue: { backgroundColor: "#17171b" }, violet: { backgroundColor: "#52525b" },
+  pink: { backgroundColor: "#52525b" }, lime: { backgroundColor: "#3f3f46" },
 });
 
 /** A short label for a category or attribute. Ten tones; `dot` for status-like tags. */
@@ -585,7 +595,7 @@ export function Tag({ tone = "gray", size = "md", variant = "soft", shape = "rou
   const tt = resolveTone(tone);
   return (
     <IconSizeContext.Provider value={12}>
-      <span {...rest} {...sx({ xstyle, className, style }, tg.tag, size !== "md" && tg[size], shape === "pill" && tg.pill, variant === "solid" ? [SOLID[tt], tg.solid] : toneStyles[tt])}>
+      <span {...rest} {...sx({ xstyle, className, style }, tg.tag, size !== "md" && tg[size], shape === "pill" && tg.pill, variant === "solid" ? [SOLID[tt], tg.solid] : variant === "outline" ? tg.outline : toneStyles[tt])}>
         {dot && <span aria-hidden {...px(tg.dot)} />}
         {icon}
         <span {...px(tg.label)}>{children}</span>

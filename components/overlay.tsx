@@ -14,6 +14,7 @@ import { Button, IconButton } from "./action";
 import { Kbd } from "./content";
 import { ProgressDots } from "./feedback";
 import { IconAlertTriangle, IconChevronLeft, IconChevronRight, IconCorner, IconSearch, IconSizeContext, IconX, IconZoomIn } from "./icons";
+import { KeyHint } from "./keys";
 import { px, sx, type StyleProps } from "./lib/sx";
 
 const fadeIn = stylex.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
@@ -151,12 +152,12 @@ const o = stylex.create({
   actions: { display: "flex", justifyContent: "flex-end", gap: 8 },
   coach: {
     width: 300, display: "flex", flexDirection: "column", gap: 10, padding: 16, borderRadius: radius.xl,
-    backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, color: "#fff",
+    backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, color: color.onAccent,
     boxShadow: `${depth.solid}, 0 16px 32px -12px ${color.shadeLg}`,
   },
   coachArrow: { fill: color.accentBottom },
   coachRing: { position: "relative", display: "inline-flex", borderRadius: radius.md, zIndex: z.popover, boxShadow: `0 0 0 4px ${color.focusRing}` },
-  coachClose: { color: "#fff", opacity: 0.75 },
+  coachClose: { color: color.onAccent, opacity: 0.75 },
   between: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 },
 });
 
@@ -185,7 +186,7 @@ export function Tooltip({ content, shortcut, side = "top", align = "center", ope
       <T.Portal>
         <T.Content side={side} align={align} sideOffset={6} collisionPadding={8} {...px(o.tip)}>
           {content}
-          {shortcut && <span {...px(o.tipKey)}>{shortcut}</span>}
+          {shortcut && <span {...px(o.tipKey)}><IconSizeContext.Provider value={11}><KeyHint keys={shortcut} /></IconSizeContext.Provider></span>}
           <T.Arrow width={9} height={4} {...px(o.tipArrow)} />
         </T.Content>
       </T.Portal>

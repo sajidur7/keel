@@ -2,7 +2,7 @@ import * as stylex from "@stylexjs/stylex";
 import { useMemo, useState, type ReactNode } from "react";
 import {
   AppShell, Avatar, CommandPalette, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Header, IconBell,
-  IconButton, IconChartBar, IconChevronsUpDown, IconHistory, IconHome, IconLogOut, IconMoon, IconPlus, IconReceipt, IconSearch, IconSettings, IconSparkles, IconSun, IconUser,
+  IconAgent, IconButton, IconChartBar, IconChevronsUpDown, IconHistory, IconHome, IconLogOut, IconMoon, IconPlus, IconReceipt, IconSearch, IconSettings, IconSun, IconUser,
   IconUsers, Kbd, ProgressRing, Sidebar, SidebarBrand, SidebarContent, SidebarFooter, SidebarItem, SidebarSection, SidebarTrigger, Text, useCommandShortcut, type CommandItem,
   type HeaderProps,
 } from "@keel/components";
@@ -23,7 +23,7 @@ const NAV: { id: Nav; label: string; icon: ReactNode; count?: number }[] = [
   { id: "overview", label: "Overview", icon: <IconHome /> },
   { id: "customers", label: "Customers", icon: <IconUsers />, count: 12 },
   { id: "invoices", label: "Invoices", icon: <IconReceipt />, count: 3 },
-  { id: "assistant", label: "Assistant", icon: <IconSparkles /> },
+  { id: "assistant", label: "Assistant", icon: <IconAgent /> },
 ];
 
 export function AdminShell({ active, go = () => {}, header, children }: { active: Nav; go?: (to: Nav) => void; header: Omit<HeaderProps, "start" | "end">; children: ReactNode }) {

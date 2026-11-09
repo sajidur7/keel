@@ -48,33 +48,41 @@ export const color = stylex.defineVars({
   solidWash: ld("rgba(255,255,255,0.12)", "rgba(255,255,255,0.08)"), // hover layer over accent/danger
   buttonWash: ld("rgba(17,17,26,0.025)", "rgba(255,255,255,0.035)"), // hover layer over secondary
 
-  // Accent — selection, focus, links, progress. Used sparingly.
-  accent: ld("#3a5cf0", "#7b93ff"),
-  accentStrong: ld("#2b49d6", "#a3b4ff"),
-  accentTop: ld("#5675ff", "#5f7cff"),
-  accentBottom: ld("#3152e8", "#3d5ce8"),
-  accentSoft: ld("rgba(58,92,240,0.10)", "rgba(123,147,255,0.14)"),
-  accentBorder: ld("rgba(58,92,240,0.32)", "rgba(123,147,255,0.36)"),
-  onAccent: ld("#ffffff", "#ffffff"),
-  focusRing: ld("rgba(58,92,240,0.35)", "rgba(123,147,255,0.45)"),
+  // Accent — selection, focus, links, progress, the active nav item. Flat blue, never a gradient.
+  accent: ld("#2b5cff", "#7d9bff"),
+  accentStrong: ld("#1d47d8", "#a8bcff"),
+  accentTop: ld("#2b5cff", "#7d9bff"),
+  accentBottom: ld("#2b5cff", "#7d9bff"),
+  accentSoft: ld("rgba(43,92,255,0.07)", "rgba(125,155,255,0.12)"),
+  accentBorder: ld("rgba(43,92,255,0.30)", "rgba(125,155,255,0.34)"),
+  onAccent: ld("#ffffff", "#0b0f1f"),
+  focusRing: ld("rgba(43,92,255,0.14)", "rgba(125,155,255,0.20)"),
 
-  // Status (text, soft background, border, solid top/bottom for 3D fills)
-  success: ld("#15803d", "#4ade80"),
-  successSoft: ld("rgba(22,163,74,0.10)", "rgba(74,222,128,0.12)"),
-  successBorder: ld("rgba(22,163,74,0.28)", "rgba(74,222,128,0.28)"),
-  successSolid: ld("#16a34a", "#22c55e"),
-  warning: ld("#b45309", "#fbbf24"),
-  warningSoft: ld("rgba(217,119,6,0.11)", "rgba(251,191,36,0.12)"),
-  warningBorder: ld("rgba(217,119,6,0.30)", "rgba(251,191,36,0.28)"),
-  warningSolid: ld("#d97706", "#f59e0b"),
-  danger: ld("#dc2626", "#ff7b7b"),
-  dangerSoft: ld("rgba(220,38,38,0.09)", "rgba(255,107,107,0.13)"),
-  dangerBorder: ld("rgba(220,38,38,0.28)", "rgba(255,107,107,0.30)"),
-  dangerTop: ld("#ef4444", "#f05252"),
-  dangerBottom: ld("#d42020", "#c92a2a"),
-  info: ld("#2563eb", "#7cb0ff"),
-  infoSoft: ld("rgba(37,99,235,0.09)", "rgba(124,176,255,0.12)"),
-  infoBorder: ld("rgba(37,99,235,0.26)", "rgba(124,176,255,0.28)"),
+  // Blue — the one hue. Flat, never a gradient. Links, focus, the primary chart series, "now" markers.
+  blue: ld("#2b5cff", "#7d9bff"),
+  blueStrong: ld("#1d47d8", "#a8bcff"),
+  blueSoft: ld("rgba(43,92,255,0.08)", "rgba(125,155,255,0.13)"),
+  blueBorder: ld("rgba(43,92,255,0.28)", "rgba(125,155,255,0.32)"),
+  onBlue: ld("#ffffff", "#0b0f1f"),
+
+  // Status. Monochrome too — meaning comes from icon + word, not hue.
+  // Only `danger` keeps a color, and only for errors and destructive actions.
+  success: ld("#17171b", "#ededf0"),
+  successSoft: ld("rgba(17,17,26,0.05)", "rgba(255,255,255,0.07)"),
+  successBorder: ld("rgba(17,17,26,0.16)", "rgba(255,255,255,0.16)"),
+  successSolid: ld("#17171b", "#ededf0"),
+  warning: ld("#4b4b55", "#b4b4be"),
+  warningSoft: ld("rgba(17,17,26,0.04)", "rgba(255,255,255,0.05)"),
+  warningBorder: ld("rgba(17,17,26,0.22)", "rgba(255,255,255,0.22)"),
+  warningSolid: ld("#8a8a94", "#7a7a85"),
+  danger: ld("#d42020", "#ff6b6b"),
+  dangerSoft: ld("rgba(212,32,32,0.07)", "rgba(255,107,107,0.11)"),
+  dangerBorder: ld("rgba(212,32,32,0.24)", "rgba(255,107,107,0.28)"),
+  dangerTop: ld("#e53535", "#ef4b4b"),
+  dangerBottom: ld("#c81c1c", "#c92a2a"),
+  info: ld("#4b4b55", "#b4b4be"),
+  infoSoft: ld("rgba(17,17,26,0.04)", "rgba(255,255,255,0.05)"),
+  infoBorder: ld("rgba(17,17,26,0.14)", "rgba(255,255,255,0.14)"),
 
   // Depth ingredients (combined in `depth` below)
   highlight: ld("rgba(255,255,255,0.9)", "rgba(255,255,255,0.07)"),
@@ -86,27 +94,34 @@ export const color = stylex.defineVars({
   buttonBottom: ld("#f6f6f8", "#1e1e23"),
   knob: ld("#ffffff", "#f4f4f6"),
 
-  // Charts (categorical, colorblind-checked order)
-  chart1: ld("#3a5cf0", "#7b93ff"),
-  chart2: ld("#0ea5a4", "#2dd4bf"),
-  chart3: ld("#e0891b", "#fbbf24"),
-  chart4: ld("#d9467a", "#f472b6"),
-  chart5: ld("#7c5cd6", "#a78bfa"),
-  chart6: ld("#6b7280", "#9ca3af"),
+  // Charts — series 1 is blue (the one that matters), the rest a grey ramp.
+  chart1: ld("#2b5cff", "#7d9bff"),
+  chart2: ld("#17171b", "#ededf0"),
+  chart3: ld("#b4b4bc", "#5c5c66"),
+  chart4: ld("#45454d", "#cfcfd6"),
+  chart5: ld("#d6d6dc", "#3a3a42"),
+  chart6: ld("#93939c", "#77777f"),
 });
 
 /* Tag / token tones — fg, bg, border for each hue. */
+/* Tag / token tones. Monochrome plus one blue: hues collapse into weights of grey; blue stays blue, red stays red.
+   Names are kept so existing code keeps working. */
+const soft = { fg: ld("#52525b", "#c4c4cc"), bg: ld("#f1f1f4", "rgba(255,255,255,0.07)"), bd: ld("rgba(17,17,26,0.10)", "rgba(255,255,255,0.10)") };
+const line = { fg: ld("#17171b", "#ededf0"), bg: ld("#ffffff", "rgba(255,255,255,0.02)"), bd: ld("rgba(17,17,26,0.22)", "rgba(255,255,255,0.22)") };
+const solid = { fg: ld("#ffffff", "#111114"), bg: ld("#26262c", "#e4e4e9"), bd: ld("#17171b", "#ffffff") };
+const quiet = { fg: ld("#6e6e79", "#8d8d99"), bg: ld("transparent", "transparent"), bd: ld("rgba(17,17,26,0.14)", "rgba(255,255,255,0.14)") };
+const strong = { fg: ld("#17171b", "#ededf0"), bg: ld("#e4e4e9", "rgba(255,255,255,0.14)"), bd: ld("rgba(17,17,26,0.16)", "rgba(255,255,255,0.16)") };
 export const tone = stylex.defineVars({
-  grayFg: ld("#52525b", "#c4c4cc"), grayBg: ld("#f1f1f4", "rgba(255,255,255,0.07)"), grayBd: ld("rgba(17,17,26,0.10)", "rgba(255,255,255,0.10)"),
+  grayFg: soft.fg, grayBg: soft.bg, grayBd: soft.bd,
   redFg: ld("#c42121", "#ff8a8a"), redBg: ld("#fdeeee", "rgba(255,107,107,0.12)"), redBd: ld("#f8cfcf", "rgba(255,107,107,0.24)"),
-  orangeFg: ld("#c2410c", "#fdba74"), orangeBg: ld("#fff1e8", "rgba(251,146,60,0.12)"), orangeBd: ld("#fbd5bd", "rgba(251,146,60,0.24)"),
-  amberFg: ld("#a16207", "#fcd34d"), amberBg: ld("#fdf6e3", "rgba(251,191,36,0.11)"), amberBd: ld("#f4e1a8", "rgba(251,191,36,0.24)"),
-  greenFg: ld("#15803d", "#86efac"), greenBg: ld("#ebf8f0", "rgba(74,222,128,0.11)"), greenBd: ld("#c4ead2", "rgba(74,222,128,0.22)"),
-  tealFg: ld("#0f766e", "#5eead4"), tealBg: ld("#e7f7f5", "rgba(45,212,191,0.11)"), tealBd: ld("#bce6e0", "rgba(45,212,191,0.22)"),
-  blueFg: ld("#2b49d6", "#a3b4ff"), blueBg: ld("#edf1fe", "rgba(123,147,255,0.13)"), blueBd: ld("#cdd7fb", "rgba(123,147,255,0.26)"),
-  violetFg: ld("#6d28d9", "#c4b5fd"), violetBg: ld("#f3effe", "rgba(167,139,250,0.13)"), violetBd: ld("#dcd1fb", "rgba(167,139,250,0.26)"),
-  pinkFg: ld("#be185d", "#f9a8d4"), pinkBg: ld("#fdeef5", "rgba(244,114,182,0.12)"), pinkBd: ld("#f7cfe1", "rgba(244,114,182,0.24)"),
-  limeFg: ld("#4d7c0f", "#bef264"), limeBg: ld("#f2f9e6", "rgba(190,242,100,0.10)"), limeBd: ld("#dbedbb", "rgba(190,242,100,0.22)"),
+  orangeFg: quiet.fg, orangeBg: quiet.bg, orangeBd: quiet.bd,
+  amberFg: quiet.fg, amberBg: quiet.bg, amberBd: quiet.bd,
+  greenFg: line.fg, greenBg: line.bg, greenBd: line.bd,
+  tealFg: line.fg, tealBg: line.bg, tealBd: line.bd,
+  blueFg: ld("#1d47d8", "#a8bcff"), blueBg: ld("rgba(43,92,255,0.07)", "rgba(125,155,255,0.12)"), blueBd: ld("rgba(43,92,255,0.22)", "rgba(125,155,255,0.26)"),
+  violetFg: strong.fg, violetBg: strong.bg, violetBd: strong.bd,
+  pinkFg: solid.fg, pinkBg: solid.bg, pinkBd: solid.bd,
+  limeFg: line.fg, limeBg: line.bg, limeBd: line.bd,
 });
 
 /* ------------------------------------------------------------------ depth
@@ -129,7 +144,7 @@ export const depth = stylex.defineVars({
   popover: `inset 0 1px 0 ${color.highlight}, 0 0 0 1px ${color.borderStrong}, 0 4px 10px -2px ${color.shadeMd}, 0 16px 32px -12px ${color.shadeLg}`,
   dialog: `inset 0 1px 0 ${color.highlight}, 0 0 0 1px ${color.borderStrong}, 0 12px 28px -6px ${color.shadeLg}, 0 32px 64px -24px ${color.shadeLg}`,
   knob: `0 0 0 0.5px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.10), 0 2px 4px -1px rgba(0,0,0,0.22)`,
-  focus: `0 0 0 1px ${color.accent}, 0 0 0 4px ${color.focusRing}`,
+  focus: `0 0 0 2px ${color.surface}, 0 0 0 3.5px ${color.blue}`,
   focusDanger: `0 0 0 1px ${color.danger}, 0 0 0 4px ${color.dangerBorder}`,
 });
 

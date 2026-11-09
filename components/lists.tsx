@@ -37,7 +37,7 @@ const l = stylex.create({
   dd: { fontSize: font.md, color: color.fg, minWidth: 0, overflowWrap: "anywhere" },
   dlTitle: { fontSize: font.xs, fontWeight: font.medium, letterSpacing: "0.05em", textTransform: "uppercase", color: color.fgMuted, marginBottom: 8 },
   // overflow
-  of: { display: "flex", alignItems: "center", gap: 6, minWidth: 0, overflow: "hidden", whiteSpace: "nowrap" },
+  of: { display: "flex", alignItems: "center", gap: 6, minWidth: 0, overflow: "hidden", whiteSpace: "nowrap", padding: 3, margin: -3 },
   ofItem: { flexShrink: 0 },
   ofHidden: { visibility: "hidden", position: "absolute", pointerEvents: "none" },
   more: {

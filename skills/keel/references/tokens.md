@@ -18,13 +18,13 @@ Colors are `light-dark(light, dark)`; the theme is `color-scheme` on `<html data
 | `fg` `fgSoft` `fgMuted` `fgFaint` | text, from primary to placeholder |
 | `icon` | default icon color |
 | `inkTop` `inkBottom` `onInk` | primary button gradient and its text |
-| `accent` `accentStrong` `accentSoft` `accentBorder` `focusRing` | selection, links, focus, progress |
+| `accent` `accentStrong` `accentSoft` `accentBorder` `focusRing` | the one hue: flat blue for selection, links, focus, progress, chart series 1 |
 | `success*` `warning*` `danger*` `info*` | status text, Soft bg, Border ring, Solid fill |
 | `chart1`…`chart6` | categorical chart colors in order |
 | `highlight` `shadeXs`…`shadeLg` | depth ingredients (prefer `depth.*`) |
 
 ## tone (tags, avatars, tinted chips)
-`gray red orange amber green teal blue violet pink lime` × `Fg` / `Bg` / `Bd`. Use `toneStyle[tone]` from content.tsx for a ready style.
+`gray red orange amber green teal blue violet pink lime` × `Fg` / `Bg` / `Bd` — monochrome weights (blue stays blue, red stays red). Use `toneStyle[tone]` from content.tsx for a ready style.
 
 ## depth
 `raised` (secondary buttons, tiles) · `raisedHover` · `pressed` · `ink` / `inkPressed` (primary) · `solid` / `solidPressed` (accent, danger) ·

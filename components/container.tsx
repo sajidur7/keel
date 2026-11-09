@@ -1,6 +1,6 @@
 /**
  * Container — surfaces that hold content.
- * Card (+ CardHeader, CardBody, CardFooter) · ClickableCard · SelectableCard · Collapsible · Accordion · AccordionItem · Carousel
+ * Card (+ CardHeader, CardBody, CardFooter) · Bezel · ClickableCard · SelectableCard · Collapsible · Accordion · AccordionItem · Carousel
  */
 import * as stylex from "@stylexjs/stylex";
 import { Accordion as A, Collapsible as C } from "radix-ui";
@@ -13,13 +13,43 @@ import { px, sx, type StyleProps } from "./lib/sx";
 const expand = stylex.keyframes({ from: { height: 0, opacity: 0 }, to: { height: "var(--radix-accordion-content-height, var(--radix-collapsible-content-height))", opacity: 1 } });
 const collapse = stylex.keyframes({ from: { height: "var(--radix-accordion-content-height, var(--radix-collapsible-content-height))", opacity: 1 }, to: { height: 0, opacity: 0 } });
 
+const bz = stylex.create({
+  shell: {
+    display: "flex", flexDirection: "column", minWidth: 0, padding: 4, borderRadius: radius.xxl, color: color.fg,
+    backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}, inset 0 1px 2px ${color.shadeXs}`,
+  },
+  head: { display: "flex", alignItems: "center", gap: 8, minHeight: 30, paddingInline: 10, paddingBottom: 2, minWidth: 0 },
+  label: {
+    display: "inline-flex", alignItems: "center", gap: 6, minWidth: 0, fontFamily: font.mono, fontSize: "10.5px", fontWeight: font.medium,
+    letterSpacing: "0.06em", textTransform: "uppercase", color: color.fgMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+  },
+  meta: { marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontSize: font.sm, color: color.fgMuted },
+  inner: { display: "flex", flexDirection: "column", gap: 12, minWidth: 0, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, overflow: "clip" },
+  pad: { padding: 14 },
+  foot: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, minHeight: 40, paddingInline: 10, paddingTop: 6, paddingBottom: 2, fontSize: font.sm, color: color.fgMuted },
+});
+
+/** A sunken shell with a mono label strip, holding a raised inner surface — Keel's signature container for
+ *  proposals, insights, approvals and other "look at this" moments. `footer` sits on the shell, under the surface. */
+export function Bezel({ label, icon, meta, footer, padded = true, children, xstyle, className, style }: StyleProps & {
+  label?: ReactNode; icon?: ReactNode; meta?: ReactNode; footer?: ReactNode; padded?: boolean; children: ReactNode;
+}) {
+  return (
+    <section {...sx({ xstyle, className, style }, bz.shell)}>
+      {(label || meta) && <div {...px(bz.head)}><span {...px(bz.label)}>{icon}{label}</span>{meta && <span {...px(bz.meta)}>{meta}</span>}</div>}
+      <div {...px(bz.inner, padded && bz.pad)}>{children}</div>
+      {footer && <div {...px(bz.foot)}>{footer}</div>}
+    </section>
+  );
+}
+
 const k = stylex.create({
   card: { position: "relative", display: "flex", flexDirection: "column", minWidth: 0, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, color: color.fg },
   outline: { boxShadow: `inset 0 0 0 1px ${color.border}`, backgroundColor: "transparent" },
   sunken: { boxShadow: `inset 0 1px 2px ${color.shadeXs}, inset 0 0 0 1px ${color.border}`, backgroundColor: color.surfaceSunken },
   raised: { boxShadow: depth.raised, backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})` },
   plain: { boxShadow: "none", backgroundColor: "transparent", borderRadius: 0 },
-  pNone: { padding: 0 }, pSm: { padding: 12 }, pMd: { padding: 16 }, pLg: { padding: 24 },
+  pNone: { padding: 0, overflow: "clip" }, pSm: { padding: 12 }, pMd: { padding: 16 }, pLg: { padding: 24 },
   head: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, paddingInline: 16, paddingTop: 14, paddingBottom: 10 },
   headText: { display: "flex", flexDirection: "column", gap: 2, minWidth: 0 },
   title: { fontSize: font.lg, fontWeight: font.semibold, letterSpacing: "-0.005em" },
@@ -43,7 +73,7 @@ const k = stylex.create({
   },
   tick: {
     position: "absolute", top: 10, right: 10, display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%",
-    color: "#fff", backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: depth.solid,
+    color: color.onAccent, backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: depth.solid,
     transform: "scale(0.6)", opacity: 0, transitionProperty: "transform, opacity", transitionDuration: motion.base, transitionTimingFunction: motion.spring,
   },
   tickOn: { transform: "scale(1)", opacity: 1 },
@@ -73,8 +103,10 @@ const k = stylex.create({
   accMeta: { fontSize: font.sm, color: color.fgMuted, fontWeight: font.regular },
   // carousel
   car: { position: "relative", minWidth: 0 },
+  // The track bleeds 8px past its box so slide rings and shadows are never clipped by the scroller.
   track: {
     display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", scrollBehavior: "smooth", scrollbarWidth: "none",
+    padding: 8, margin: -8, scrollPaddingInline: 8,
     "::-webkit-scrollbar": { display: "none" },
   },
   slide: { flexShrink: 0, scrollSnapAlign: "start" },
@@ -202,6 +234,13 @@ export type CarouselProps = StyleProps & {
   title?: ReactNode;
 };
 
+/* Edge fades are a mask on the track, so they work over any background (dots, cards, images). */
+function fadeMask(start: boolean, end: boolean) {
+  if (!start && !end) return { maskImage: "none" };
+  const g = `linear-gradient(90deg, ${start ? "transparent 0, #000 40px" : "#000 0"}, ${end ? "#000 calc(100% - 40px), transparent 100%" : "#000 100%"})`;
+  return { maskImage: g, WebkitMaskImage: g };
+}
+
 /** A row of cards that scrolls sideways with snap. Swipe, shift+wheel, or the buttons. */
 export function Carousel({ children, slideWidth = 280, gap = 12, buttons = true, edgeFade = true, label = "Carousel", title, ...p }: CarouselProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -214,11 +253,9 @@ export function Carousel({ children, slideWidth = 280, gap = 12, buttons = true,
   return (
     <section aria-roledescription="carousel" aria-label={label} {...sx(p, k.car)}>
       {title && <div {...px(k.head2)}><div>{title}</div>{buttons && <div style={{ display: "flex", gap: 6 }}>{prev}{next}</div>}</div>}
-      <div ref={ref} onScroll={update} {...px(k.track)} style={{ gap }}>
+      <div ref={ref} onScroll={update} {...px(k.track)} style={{ gap, ...(edgeFade ? fadeMask(!edges.start, !edges.end) : null) }}>
         {Children.map(children, (ch, i) => <div role="group" aria-roledescription="slide" aria-label={`${i + 1}`} {...px(k.slide)} style={{ width: slideWidth }}>{ch}</div>)}
       </div>
-      {edgeFade && !edges.start && <span aria-hidden {...px(k.fadeL)} />}
-      {edgeFade && !edges.end && <span aria-hidden {...px(k.fadeR)} />}
       {buttons && !title && <>
         {!edges.start && <span {...px(k.nav, k.navL)}>{prev}</span>}
         {!edges.end && <span {...px(k.nav, k.navR)}>{next}</span>}

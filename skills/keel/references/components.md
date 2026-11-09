@@ -57,7 +57,9 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **MoreMenu** — "…" button with a menu, from a list. The quickest way to add row or card actions.
   `items*`: MenuItemSpec[] · `label`: string = "More actions" · `size`: "xs" | "sm" | "md" | "lg" = "sm" · `align`: "end" | "start" = "end" · `variant`: "outline" | "link" | "soft" | "accent" | "danger" | "primary" | "secondary" | "ghost" | "danger-ghost" = "ghost"
 - **SegmentedControl** — Pick one of 2–5 views. The selection is a raised knob that slides between options.
-  `items*`: { value: string; label?: ReactNode; icon?: ReactNode; disabled?: boolean; ariaLabel?: string }[] · `size`: "sm" | "md" | "lg" = "md" · `fullWidth`: boolean · `label`: string · `onValueChange`: (v: string) => void
+  `items`: SegmentedItem[] · `size`: "sm" | "md" | "lg" = "md" · `fullWidth`: boolean · `label`: string · `onValueChange`: (v: string) => void
+- **SegmentedControlItem** — Declarative option for <SegmentedControl> (alternative to `items`). Renders nothing on its own.
+  `value*`: string · `label`: ReactNode · `icon`: ReactNode · `ariaLabel`: string · `disabled`: boolean
 - **ToggleButton** — A button that stays pressed (Bold, Pin, Follow). Sinks in when on.
   `size`: "xs" | "sm" | "md" | "lg" = "md" · `label`: string · `leading`: ReactNode · `disabled`: boolean
 - **ToggleButtonGroup** — A set of toggles in a sunken tray — formatting (B I U), view options. Single or multiple.
@@ -90,21 +92,21 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 ## ai.tsx
 
 - **AiBadge** — "AI" label for generated content.
-  `label`: string = "AI"
+  `label`: string = "AI" · `icon`: boolean = true
 - **ApprovalCard** — The agent wants to do something consequential — show exactly what, and let a person approve or reject.
-  `title*`: ReactNode · `onApprove*`: () => void · `onReject*`: () => void · `description`: ReactNode · `details`: ReactNode · `state`: "pending" | "approved" | "rejected" = "pending" · `onAlwaysAllow`: () => void · `approveLabel`: string = "Approve" · `tone`: "default" | "warning" = "default"
+  `title*`: ReactNode · `onApprove*`: () => void · `onReject*`: () => void · `description`: ReactNode · `details`: ReactNode · `state`: "pending" | "approved" | "rejected" = "pending" · `onAlwaysAllow`: () => void · `approveLabel`: string = "Approve" · `tone`: "default" | "warning" = "default" · `label`: ReactNode
 - **ConfidenceMeter** — How sure the model is, as five bars plus a word.
   `value*`: number
 - **ContextCard** — A piece of context attached to a prompt: a file, a page, a record.
   `item*`: ContextItem · `onRemove`: () => void
 - **ContextChips** — A scrollable row of ContextCards.
   `items*`: ContextItem[] · `onRemove`: (id: string) => void
-- **DiffTable** — AI-proposed edits to records — old value struck, new value highlighted; accept or reject each, or all.
-  `rows*`: DiffRow[] · `onAccept*`: (id: string) => void · `onReject*`: (id: string) => void · `onAcceptAll`: () => void
+- **DiffTable** — AI-proposed edits to records — old value struck → new value; accept or reject each, or all.
+  `rows*`: DiffRow[] · `onAccept*`: (id: string) => void · `onReject*`: (id: string) => void · `onAcceptAll`: () => void · `label`: ReactNode = "Proposed changes"
 - **FineTuneCard** — Alias.
   `params*`: Parameter[] · `onChange*`: (id: string, v: number) => void · `title`: ReactNode · `footer`: ReactNode
 - **InsightCard** — A generated finding about a metric: the number, a trend, a one-line why, and a follow-up.
-  `title*`: ReactNode · `explanation*`: ReactNode · `trend`: number[] · `onAsk`: () => void
+  `title*`: ReactNode · `explanation*`: ReactNode · `trend`: number[] · `onAsk`: () => void · `label`: ReactNode = "Insight" · `askLabel`: ReactNode = "Ask a follow-up"
 - **LoadingState** — A longer wait with what's happening now: pixel loader, the current step, elapsed time.
   `title`: ReactNode = "Working on it" · `steps`: string[] = [] · `current`: number = 0 · `startTime`: number
 - **ParameterCard** — Tunable model or job settings with live values — temperature, top-p, batch size.
@@ -112,11 +114,11 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **PixelLoader** — A grid of pixels that ripple — for "working on it" moments longer than a spinner.
   `size`: number = 4 · `label`: string = "Working"
 - **PromptBar** — A one-line "ask AI" pill — for search pages, empty states and table headers.
-  `onSubmit*`: (v: string) => void · `value*`: string · `onValueChange*`: (v: string) => void · `busy`: boolean · `leading`: ReactNode = <IconSparkles size={16} /> · `placeholder`: string = "Ask about your data…"
+  `onSubmit*`: (v: string) => void · `value*`: string · `onValueChange*`: (v: string) => void · `busy`: boolean · `leading`: ReactNode = <IconAgent size={16} /> · `placeholder`: string = "Ask about your data…"
 - **PromptSuggestions** — Starter prompts as raised pills.
   `items*`: { label: string; icon?: ReactNode }[] · `onPick*`: (label: string) => void
 - **RecommendationCard** — A suggestion with its reasoning, confidence and one-click actions.
-  `title*`: ReactNode · `rationale`: ReactNode · `confidence`: number · `actions`: ReactNode · `meta`: ReactNode
+  `title*`: ReactNode · `rationale`: ReactNode · `confidence`: number · `actions`: ReactNode · `meta`: ReactNode · `label`: ReactNode = "Suggestion"
 - **StreamingText** — Reveals text at a reading pace with a caret — for demos and for smoothing bursty streams.
   `text*`: string · `speed`: number = 40 · `onDone`: () => void
 - **TaskList** — An agent's plan and progress, one row per task.
@@ -134,8 +136,10 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
   `children*`: ReactNode · `variant`: "divided" | "separated" = "divided" · `onValueChange`: (v: string) => void
 - **AccordionItem** — One section. `meta` shows at the right of the trigger (a count, a status).
   `title*`: ReactNode · `value*`: string · `meta`: ReactNode · `children*`: ReactNode · `disabled`: boolean
+- **Bezel** — A sunken shell with a mono label strip, holding a raised inner surface — Keel's signature container for
+  `label`: ReactNode · `icon`: ReactNode · `meta`: ReactNode · `footer`: ReactNode · `padded`: boolean = true · `children*`: ReactNode
 - **Card** — A surface that groups related content. Use only when grouping needs a boundary — most layouts don't.
-  `variant`: "outline" | "card" | "plain" | "sunken" | "raised" = "card" · `padding`: "none" | "sm" | "md" | "lg" = "md"
+  `variant`: "outline" | "card" | "sunken" | "raised" | "plain" = "card" · `padding`: "none" | "sm" | "md" | "lg" = "md"
 - **CardBody** — —
   `children*`: ReactNode
 - **CardFooter** — —
@@ -171,13 +175,13 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
   `icon*`: ComponentType<IconProps> · `size`: IconProps["size"] = 16 · `tone`: "inherit" | "default" | "muted" | "accent" | "success" | "warning" | "danger" | "fg" = "default" · `label`: string · `tile`: boolean
 - **ImagePreview** — A thumbnail that opens full size in a Lightbox.
   `src*`: string · `alt*`: string · `width`: number = 96 · `height`: number = 72
-- **Kbd** — A key, drawn like a key.
-- **KbdGroup** — Several keys: ["⌘", "K"].
-  `keys*`: string[]
+- **Kbd** — A key, drawn like a key. Symbols (⌘ ⇧ ⌥ ⌃ ↵ ↑ ↓ ← → ⌫ ⇥) and names ("shift", "enter", "mod") render as icons.
+- **KbdGroup** — Several keys, one cap each: ["mod", "K"] or "⌘K".
+  `keys*`: string[] | string
 - **Markdown** — Renders a safe subset of Markdown: headings, lists, code fences, quotes, rules, bold/italic/code/links, [^n] citations.
   `children*`: string · `streaming`: boolean · `sources`: CitationSource[] · `density`: "default" | "compact" = "default"
 - **Tag** — A short label for a category or attribute. Ten tones; `dot` for status-like tags.
-  `tone`: "blue" | "teal" | "green" | "amber" | "orange" | "red" | "pink" | "violet" | "lime" | "gray" | "neutral" | "yellow" | "cyan" | "indigo" | "purple" = "gray" · `size`: "sm" | "md" | "lg" = "md" · `variant`: "solid" | "soft" = "soft" · `shape`: "rounded" | "pill" = "rounded" · `dot`: boolean · `icon`: ReactNode · `onRemove`: () => void · `removeLabel`: string
+  `tone`: "blue" | "teal" | "green" | "amber" | "orange" | "red" | "pink" | "violet" | "lime" | "gray" | "neutral" | "yellow" | "cyan" | "indigo" | "purple" = "gray" · `size`: "sm" | "md" | "lg" = "md" · `variant`: "outline" | "solid" | "soft" = "soft" · `shape`: "rounded" | "pill" = "rounded" · `dot`: boolean · `icon`: ReactNode · `onRemove`: () => void · `removeLabel`: string
 - **Text** — Every piece of text. Pick a variant for size, a tone for emphasis — never raw font sizes.
   `as`: ElementType = "p" · `variant`: "display" | "small" | "body" | "caption" | "h1" | "h2" | "h3" | "title" | "eyebrow" | "mono" | "stat" = "small" · `tone`: "inherit" | "default" | "muted" | "soft" | "faint" | "accent" | "success" | "warning" | "danger" · `weight`: "medium" | "bold" | "regular" | "semibold" · `truncate`: boolean · `maxLines`: number · `tabular`: boolean · `strike`: boolean · `wrap`: "balance" | "pretty" · `dateTime`: string · `htmlFor`: string
 - **Thumbnail** — A small image tile — attachments, uploads, galleries. Optional remove button, loading veil and caption.
@@ -302,9 +306,11 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **PowerSearch** — Structured search: pick a field → an operator → a value, as chips. Free text becomes a "contains" filter.
   `fields*`: PowerField[] · `filters*`: PowerFilter[] · `onFiltersChange*`: (f: PowerFilter[]) => void · `placeholder`: string = "Filter or search…"
 - **Select** — Pick one from a short known list (≤ ~12). Longer or searchable lists → Combobox.
-  `options`: SelectOption[] = [] · `groups`: { label: string; options: SelectOption[] }[] · `size`: "sm" | "md" | "lg" = "md" · `invalid`: boolean · `readOnly`: boolean · `variant`: "button" | "field" = "field" · `id`: string · `aria-label`: string · `onValueChange`: (v: string) => void · `placeholder`: string = "Select" · `disabled`: boolean
+  `options`: SelectOption[] · `groups`: { label: string; options: SelectOption[] }[] · `size`: "sm" | "md" | "lg" = "md" · `invalid`: boolean · `readOnly`: boolean · `variant`: "button" | "field" = "field" · `id`: string · `aria-label`: string · `onValueChange`: (v: string) => void · `placeholder`: string = "Select" · `disabled`: boolean
 - **Selector** — Astryx-style name.
   `options`: SelectOption[] · `groups`: { label: string; options: SelectOption[] }[] · `size`: "sm" | "md" | "lg" · `invalid`: boolean · `readOnly`: boolean · `variant`: "button" | "field" · `id`: string · `aria-label`: string · `onValueChange`: (v: string) => void · `placeholder`: string · `disabled`: boolean
+- **SelectorOption** — Declarative option for <Select> (alternative to `options`). Renders nothing on its own.
+  `label*`: string · `value*`: string · `description`: string · `icon`: ReactNode · `disabled`: boolean
 - **Tokenizer** — Several entities as tokens in one field — recipients, assignees, tags. Backspace removes the last.
   `source*`: Source · `value*`: TypeaheadOption[] · `onValueChange*`: (v: TypeaheadOption[]) => void · `allowCreate`: boolean · `max`: number · `debounceMs`: number = 150 · `id`: string · `placeholder`: string = "Add…"
 - **Typeahead** — Type to search, pick one suggestion. The field shows the chosen label.
@@ -436,8 +442,10 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
   `steps*`: Step[] · `current*`: number · `onStepClick`: (i: number) => void · `orientation`: "vertical" | "horizontal" = "horizontal"
 - **Steps** — v1 name.
   `steps*`: Step[] · `current*`: number · `onStepClick`: (i: number) => void · `orientation`: "vertical" | "horizontal"
-- **TabList** — Tabs from a list, with panels. The quick way: <TabList items={[{ value, label, content }]} />.
-  `items*`: { value: string; label: ReactNode; content?: ReactNode; count?: number; icon?: ReactNode; disabled?: boolean }[] · `variant`: "underline" | "pills" = "underline" · `onValueChange`: (v: string) => void
+- **Tab** — Declarative tab for <TabList> (children = the panel). Renders nothing on its own.
+  `label*`: ReactNode · `icon`: ReactNode · `value*`: string · `count`: number · `disabled`: boolean
+- **TabList** — —
+  `items`: TabItem[] · `variant`: "underline" | "pills" = "underline" · `onValueChange`: (v: string) => void
 - **Tabs** — —
   `onValueChange`: { bivarianceHack(value: string): void; }['bivarianceHack'] | undefined
 - **TabsContent** — —
@@ -566,16 +574,36 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
   `label*`: string · `labels*`: string[] · `series*`: ChartSeries[] · `height`: number · `legend`: boolean · `format`: (n: number) => string · `zero`: boolean · `curve`: boolean
 - **BarChart** — Compare categories. Grouped or stacked; horizontal for long labels.
   `labels*`: string[] · `series*`: ChartSeries[] · `label*`: string · `height`: number = 220 · `format`: (n: number) => string = fmtCompact · `stacked`: boolean · `horizontal`: boolean · `highlight`: number · `legend`: boolean
+- **BarList** — A ranked list with a bar behind each row — top pages, sources, countries. The best tool for "which ones?".
+  `items*`: { name: ReactNode; value: number; icon?: ReactNode; href?: string }[] · `format`: (n: number) => string = fmtCompact · `highlight`: number = 0 · `onSelect`: (i: number) => void
+- **BreakdownBar** — Parts of a whole as one segmented bar with a legend. Segments get the chart palette (first is blue).
+  `items*`: { name: string; value: number; color?: number }[] · `height`: number = 10 · `legend`: "none" | "compact" | "full" = "full" · `total`: number · `format`: (n: number) => string = fmtCompact
+- **BulletChart** — One measure against a target and qualitative ranges — the compact replacement for a gauge in tables and stats.
+  `label*`: string · `value*`: number · `target`: number · `ranges`: number[] = [] · `max`: number · `format`: (n: number) => string = fmtCompact · `height`: number = 14 · `showValues`: boolean = true
 - **ChartLegend** — A legend row. Optional values per item.
   `items*`: { name: string; color: string; value?: ReactNode }[]
+- **ComboChart** — Bars for volume plus a line for a rate on a second axis — orders and conversion, tickets and CSAT.
+  `labels*`: string[] · `bars*`: { name: string; values: number[] } · `line*`: { name: string; values: number[] } · `label*`: string · `height`: number = 240 · `format`: (n: number) => string = fmtCompact · `lineFormat`: (n: number) => string = (n: number) => `${n}%`
 - **DonutChart** — Share of a whole (≤ 6 parts). The center shows the total, or the hovered part.
   `data*`: { name: string; value: number; color?: number }[] · `label*`: string · `size`: number = 160 · `thickness`: number = 18 · `format`: (n: number) => string = fmtCompact · `centerLabel`: string = "Total" · `legend`: boolean = true
+- **DotPattern** — The texture under lines and in "rest of" areas: fine dots, no gradient.
+  `id*`: string · `fill*`: string · `dense`: boolean
+- **FunnelChart** — Steps that narrow — signup → activation → paid. Bars shrink to scale; conversion between steps on the right.
+  `steps*`: { name: string; value: number }[] · `label*`: string · `format`: (n: number) => string = fmtCompact
+- **GaugeChart** — A half-dial for a score against a range: health, NPS, utilization. Optional threshold ticks.
+  `label*`: string · `value*`: number · `min`: number = 0 · `max`: number = 100 · `size`: number = 180 · `thickness`: number = 14 · `valueLabel`: ReactNode · `caption`: ReactNode · `thresholds`: number[] · `tone`: "accent" | "ink" = "accent"
+- **Heatmap** — Values on a grid — activity by day × hour, usage by week. Five steps from muted to blue; hover shows the value.
+  `rows*`: string[] · `columns*`: string[] · `values*`: number[][] · `label*`: string · `format`: (n: number) => string = (n: number) => String(n) · `cell`: number = 14 · `gap`: number = 3
 - **LineChart** — Trend over time. Hover (or touch) scrubs a crosshair with every series' value.
   `labels*`: string[] · `series*`: ChartSeries[] · `label*`: string · `height`: number = 220 · `format`: (n: number) => string = fmtCompact · `area`: boolean = true · `zero`: boolean = false · `stacked`: boolean · `legend`: boolean · `curve`: boolean = true
-- **Sparkline** — A tiny trend line for tables and stats. No axes. The last point is marked.
-  `values*`: number[] · `width`: number = 96 · `height`: number = 28 · `tone`: "auto" | "muted" | "accent" | "success" | "danger" = "accent" · `area`: boolean = true · `label`: string
+- **RadarChart** — Several scores on shared axes — plan comparison, skills, health dimensions. Up to three series.
+  `axes*`: string[] · `series*`: ChartSeries[] · `label*`: string · `size`: number = 240 · `max`: number
+- **ScatterChart** — Two measures per item — size vs. growth, usage vs. revenue. Hover a dot for its name. Optional size channel.
+  `points*`: { name: string; x: number; y: number; size?: number }[] · `label*`: string · `height`: number = 240 · `xLabel`: string · `yLabel`: string · `format`: (n: number) => string = fmtCompact · `highlight`: string[]
+- **Sparkline** — A tiny trend for tables and stats. No axes. `type`: line (last point marked), area (dotted fill) or bars (last bar emphasized).
+  `values*`: number[] · `width`: number = 96 · `height`: number = 28 · `tone`: "auto" | "muted" | "accent" | "success" | "danger" | "ink" | "inverse" = "accent" · `area`: boolean = false · `label`: string
 - **Stat** — A headline number and its comparison. Every part except label and value can be turned on or off.
-  `label*`: ReactNode · `value*`: ReactNode · `help`: ReactNode · `icon`: ReactNode · `action`: ReactNode · `delta`: number · `deltaUnit`: string = "%" · `baseline`: ReactNode · `lowerIsBetter`: boolean · `neutral`: boolean · `meta`: ReactNode · `progress`: { value: number; max?: number; label?: ReactNode; tone?: ProgressTone } · `chart`: ReactNode · `footer`: ReactNode
+  `label*`: ReactNode · `value*`: ReactNode · `help`: ReactNode · `icon`: ReactNode · `iconTile`: boolean · `badge`: ReactNode · `action`: ReactNode · `delta`: number · `deltaUnit`: string = "%" · `deltaStyle`: "text" | "pill" | "arrow" = "pill" · `baseline`: ReactNode · `lowerIsBetter`: boolean · `neutral`: boolean · `meta`: ReactNode
 - **StatGroup** — Stats side by side, split by hairlines on one surface. Two-up on phones.
   `children*`: ReactNode
 

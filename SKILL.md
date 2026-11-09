@@ -19,9 +19,15 @@ reserved for meaning.
    catalog with props is in `skills/keel/references/components.md` — check it before inventing anything.
 3. **Never hard-code colors or shadows.** Every color is a token written as `light-dark()`, so both themes work by
    default. Depth comes from `depth.*` tokens (raised, pressed, ink, recessed, card, popover, dialog, focus).
-4. **One primary action per view.** Primary is *ink* (black in light, white in dark), not brand blue. Accent blue is for
-   selection, focus, links and progress.
-5. **Every interactive thing has all its states**: hover, focus-visible (accent ring), pressed (sinks 1px), disabled,
+4. **Black, white and one flat blue.** Primary is *ink* (black in light, white in dark). The only hue is a flat blue
+   (`color.accent`) for selection, focus, links, progress, the active nav icon and chart series 1 — used here and there,
+   never as a gradient. Status is shown by icon + word, not color; red (`danger`) only for errors and destructive actions.
+   No gradient text, no glows, no sparkle icons (use `IconAgent` for AI). Chart areas use the dot texture, not gradients.
+5. **Keys are icons.** Write `<Kbd>⌘K</Kbd>` / `shortcut="⇧↵"` — Keel draws modifiers and arrows as icons. Never put
+   raw ⌘ ⇧ ↵ glyphs in text.
+6. **No clipping.** Anything with a ring or shadow inside a scroller needs room (Carousel and Bezel handle it); sticky
+   headers inside rounded panels inherit the panel's corner radius.
+7. **Every interactive thing has all its states**: hover, focus-visible (accent ring), pressed (sinks 1px), disabled,
    loading, error, empty. Keel components already do; your own pieces must too.
 
 ## Setup (if the project doesn't have Keel yet)

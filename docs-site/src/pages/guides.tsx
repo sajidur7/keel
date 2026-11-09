@@ -63,13 +63,13 @@ function Colors() {
   const groups: [string, string[]][] = [
     ["Surfaces", ["canvas", "surface", "surfaceRaised", "surfaceSunken", "muted", "hover", "selected", "surfaceInverse"]],
     ["Text & lines", ["fg", "fgSoft", "fgMuted", "fgFaint", "icon", "border", "borderStrong", "borderInput"]],
-    ["Ink & accent", ["inkTop", "inkBottom", "accent", "accentStrong", "accentSoft", "accentBorder", "focusRing", "onAccent"]],
+    ["Ink & blue", ["inkTop", "inkBottom", "accent", "accentStrong", "accentSoft", "accentBorder", "focusRing", "onAccent"]],
     ["Status", ["success", "successSoft", "warning", "warningSoft", "danger", "dangerSoft", "info", "infoSoft"]],
     ["Charts", ["chart1", "chart2", "chart3", "chart4", "chart5", "chart6"]],
   ];
   const t = tone as unknown as Record<string, string>;
   return (
-    <Guide eyebrow="Foundations" title="Color" lede="Every color is written once as light-dark(light, dark). Switch theme with color-scheme on <html> — no classes, no re-render. Ink (black on light, white on dark) is the primary action; accent is for selection, focus and links only.">
+    <Guide eyebrow="Foundations" title="Color" lede="Every color is written once as light-dark(light, dark). Switch theme with color-scheme on <html> — no classes, no re-render. Keel is black and white with one flat blue. Ink (black on light, white on dark) is the primary action; blue marks selection, focus, links, progress and chart series 1. Status reads by icon and word; red is only for errors. No gradients.">
       {groups.map(([gname, keys]) => <section key={gname}><H2>{gname}</H2><div {...stylex.props(g.grid)}>{keys.map((k) => <Swatch key={k} name={`color.${k}`} value={c[k]} />)}</div></section>)}
       <section><H2>Tag tones</H2><div {...stylex.props(g.grid)}>{["gray", "red", "orange", "amber", "green", "teal", "blue", "violet", "pink", "lime"].map((k) => <Swatch key={k} name={`tone.${k}Bg / Fg`} value={`linear-gradient(90deg, ${t[k + "Bg"]} 60%, ${t[k + "Fg"]} 60%)`} />)}</div></section>
     </Guide>

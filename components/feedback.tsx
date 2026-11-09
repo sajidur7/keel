@@ -53,7 +53,7 @@ const f = stylex.create({
   badge: {
     position: "absolute", top: -5, right: -6, zIndex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center",
     minWidth: 16, height: 16, paddingInline: 4, borderRadius: radius.full, fontSize: "10px", fontWeight: font.semibold, lineHeight: 1,
-    color: "#fff", boxShadow: `0 0 0 2px ${color.surface}, inset 0 1px 0 rgba(255,255,255,0.25)`, fontVariantNumeric: "tabular-nums",
+    color: color.onAccent, boxShadow: `0 0 0 2px ${color.surface}, inset 0 1px 0 rgba(255,255,255,0.25)`, fontVariantNumeric: "tabular-nums",
   },
   badgeDot: { minWidth: 8, width: 8, height: 8, padding: 0, top: -1, right: -1 },
   badgeInline: { position: "static", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)" },
@@ -193,7 +193,7 @@ export function StatusDot({ tone = "success", pulse, label, xstyle }: { tone?: S
 }
 
 export type Status = "active" | "success" | "warning" | "danger" | "info" | "neutral" | "pending";
-const STATUS_TONE: Record<Status, StatusTone> = { active: "success", success: "success", warning: "warning", danger: "danger", info: "info", neutral: "neutral", pending: "warning" };
+const STATUS_TONE: Record<Status, StatusTone> = { active: "info", success: "success", warning: "warning", danger: "danger", info: "neutral", neutral: "neutral", pending: "warning" };
 
 /** A record's state — a dot and a word on a white pill. Words should be the status name ("Paid", "Overdue"). */
 export function StatusPill({ status = "neutral", children, pulse, xstyle }: { status?: Status; children: ReactNode; pulse?: boolean } & StyleProps) {

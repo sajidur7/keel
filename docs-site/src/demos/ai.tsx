@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   AiBadge, ApprovalCard, Button, ConfidenceMeter, ContextCard, ContextChips, DiffTable, IconBook, IconChartBar, IconDatabase, IconGlobe, IconMail, IconSearch,
-  IconSparkles, InsightCard, LoadingState, ParameterCard, PixelLoader, PromptBar, PromptSuggestions, RecommendationCard, StreamingText, TaskList, Thinking, ToolChips,
+  IconAgent, InsightCard, LoadingState, ParameterCard, PixelLoader, PromptBar, PromptSuggestions, RecommendationCard, StreamingText, TaskList, Thinking, ToolChips,
   type ApprovalState, type DiffRow, type ToolChip,
 } from "@keel/components";
 import { Row, State, StateGrid } from "../docs/kit";
@@ -83,7 +83,7 @@ export function ContextCardsDemo() {
   const [items, setItems] = useState([
     { id: "1", title: "Q3 board deck.pdf", meta: "PDF · 24 pages", kind: "file" as const },
     { id: "2", title: "Pricing page", meta: "acme.com/pricing", kind: "link" as const },
-    { id: "3", title: "Acme Inc.", meta: "Customer · Enterprise", kind: "record" as const, icon: <IconSparkles /> },
+    { id: "3", title: "Acme Inc.", meta: "Customer · Enterprise", kind: "record" as const, icon: <IconAgent /> },
   ]);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 760 }}>

@@ -22,7 +22,7 @@ const ch = stylex.create({
   // checkbox
   box: {
     position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, flexShrink: 0,
-    borderRadius: 4, color: "#fff", cursor: "pointer", outline: "none",
+    borderRadius: 4, color: color.onAccent, cursor: "pointer", outline: "none",
     backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`,
     boxShadow: {
       default: `inset 0 1px 0 ${color.highlight}, 0 0 0 1px ${color.borderStrong}, 0 1px 2px ${color.shadeXs}`,
@@ -36,8 +36,8 @@ const ch = stylex.create({
   boxOn: {
     backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`,
     boxShadow: {
-      default: `inset 0 1px 0 rgba(255,255,255,0.25), 0 0 0 1px ${color.accentBottom}, 0 1px 2px ${color.shadeSm}`,
-      ":hover": `inset 0 1px 0 rgba(255,255,255,0.25), 0 0 0 1px ${color.accentBottom}, 0 1px 3px ${color.shadeMd}`,
+      default: `inset 0 1px 0 ${color.inkHighlight}, 0 0 0 1px ${color.inkRing}, 0 1px 2px ${color.shadeSm}`,
+      ":hover": `inset 0 1px 0 ${color.inkHighlight}, 0 0 0 1px ${color.inkRing}, 0 1px 3px ${color.shadeMd}`,
       ":focus-visible": `0 0 0 1px ${color.accent}, 0 0 0 4px ${color.focusRing}`,
     },
   },
@@ -46,7 +46,7 @@ const ch = stylex.create({
   check: { display: "flex" },
   // radio
   radio: { borderRadius: "50%" },
-  dot: { width: 6, height: 6, borderRadius: "50%", backgroundColor: "#fff", boxShadow: "0 1px 1px rgba(0,0,0,0.2)" },
+  dot: { width: 6, height: 6, borderRadius: "50%", backgroundColor: color.onAccent, boxShadow: "0 1px 1px rgba(0,0,0,0.2)" },
   list: { display: "flex", flexDirection: "column", gap: 10 },
   listH: { flexDirection: "row", flexWrap: "wrap", gap: 18 },
   listDivided: { gap: 0 },

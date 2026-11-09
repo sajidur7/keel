@@ -6,7 +6,7 @@ import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
 import { Button, CopyButton, IconButton } from "./action";
-import { Avatar, Markdown, Thumbnail, Token, type CitationSource } from "./content";
+import { Avatar, KbdGroup, Markdown, Thumbnail, Token, type CitationSource } from "./content";
 import {
   IconAlertCircle, IconArrowDown, IconArrowUp, IconCheck, IconChevronDown, IconMic, IconPaperclip, IconRefresh, IconSizeContext, IconStop,
   IconThumbsDown, IconThumbsUp, IconWrench, IconX,
@@ -70,7 +70,7 @@ const c = stylex.create({
   input: { width: "100%", minHeight: 24, maxHeight: 220, resize: "none", outline: "none", fontSize: font.lg, lineHeight: 1.55, color: color.fg, paddingInline: 4, "::placeholder": { color: color.fgFaint } },
   cbar: { display: "flex", alignItems: "center", gap: 4 },
   cend: { display: "flex", alignItems: "center", gap: 6, marginInlineStart: "auto" },
-  hint: { fontSize: font.xs, color: color.fgFaint, display: { default: "none", "@media (min-width: 640px)": "inline" } },
+  hint: { alignItems: "center", gap: 6, fontSize: font.xs, color: color.fgFaint, display: { default: "none", "@media (min-width: 640px)": "inline-flex" } },
   send: { width: 32, height: 32, paddingInline: 0, borderRadius: radius.full },
   mic: { borderRadius: radius.full },
   micOn: { color: "#fff", backgroundColor: { default: color.danger, ":hover": color.danger }, animationName: pulse, animationDuration: "1.2s", animationIterationCount: "infinite" },
@@ -270,7 +270,7 @@ export function ChatComposer({ value, onValueChange, onSubmit, placeholder = "As
         </>}
         {tools}
         <div {...px(c.cend)}>
-          <span {...px(c.hint)}>⇧↵ new line</span>
+          <span {...px(c.hint)}><KbdGroup keys={["⇧", "↵"]} /> new line</span>
           {dictation && <ChatDictationButton onTranscript={(t, fin) => { if (!base.current) base.current = value ? `${value} ` : ""; onValueChange(base.current + t); if (fin) base.current = ""; }} />}
           {streaming
             ? <IconButton label="Stop" variant="secondary" onClick={onStop} xstyle={c.send}><IconStop size={12} fill="currentColor" /></IconButton>

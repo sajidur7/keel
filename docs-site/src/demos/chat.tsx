@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import {
-  Button, ChatComposer, ChatLayout, ChatMessage, ChatMessageMetadata, ChatSystemMessage, ChatToolCalls, IconSparkles, Select, Text, Thinking,
+  Button, ChatComposer, ChatLayout, ChatMessage, ChatMessageMetadata, ChatSystemMessage, ChatToolCalls, IconAgent, Select, Text, Thinking,
   type ChatAttachment, type ToolCall,
 } from "@keel/components";
 import { Row } from "../docs/kit";
@@ -31,7 +31,7 @@ export function ChatLayoutDemo() {
   };
   return (
     <ChatLayout
-      header={<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px" }}><IconSparkles size={16} /><Text weight="semibold">Assistant</Text></div>}
+      header={<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px" }}><IconAgent size={16} /><Text weight="semibold">Assistant</Text></div>}
       composer={<ChatComposer value={draft} onValueChange={setDraft} onSubmit={send} streaming={streaming} onStop={() => { clearInterval(timer.current); setStreaming(false); }} />}
       footer="Answers can be wrong. Check important numbers."
     >
@@ -77,7 +77,7 @@ export function ChatSystemMessageDemo() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 560 }}>
       <ChatSystemMessage>Yesterday</ChatSystemMessage>
-      <ChatSystemMessage icon={<IconSparkles />}>Ana added the assistant to this thread</ChatSystemMessage>
+      <ChatSystemMessage icon={<IconAgent />}>Ana added the assistant to this thread</ChatSystemMessage>
       <ChatSystemMessage>Context was reset — earlier messages aren't used</ChatSystemMessage>
     </div>
   );

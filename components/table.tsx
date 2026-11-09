@@ -83,7 +83,7 @@ const t = stylex.create({
   },
   fCount: { fontSize: font.md, fontWeight: font.medium, whiteSpace: "nowrap", paddingInlineEnd: 6, fontVariantNumeric: "tabular-nums" },
   fSep: { width: 1, alignSelf: "stretch", marginBlock: 4, backgroundColor: "currentColor", opacity: 0.18 },
-  fActions: { display: "flex", alignItems: "center", gap: 4, overflowX: "auto" },
+  fActions: { display: "flex", alignItems: "center", gap: 4, overflowX: "auto", padding: 3, margin: -3, scrollbarWidth: "none" },
   onInverse: { color: color.fgInverse, backgroundColor: { default: "transparent", ":hover": "rgba(127,127,127,0.18)" } },
 });
 
