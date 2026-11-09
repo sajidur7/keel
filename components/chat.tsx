@@ -70,7 +70,7 @@ const c = stylex.create({
   input: { width: "100%", minHeight: 24, maxHeight: 220, resize: "none", outline: "none", fontSize: font.lg, lineHeight: 1.55, color: color.fg, paddingInline: 4, "::placeholder": { color: color.fgFaint } },
   cbar: { display: "flex", alignItems: "center", gap: 4 },
   cend: { display: "flex", alignItems: "center", gap: 6, marginInlineStart: "auto" },
-  hint: { alignItems: "center", gap: 6, fontSize: font.xs, color: color.fgFaint, display: { default: "none", "@media (min-width: 640px)": "inline-flex" } },
+  hint: { alignItems: "center", gap: 6, whiteSpace: "nowrap", flexShrink: 0, fontSize: font.xs, color: color.fgFaint, display: { default: "none", "@media (min-width: 640px)": "inline-flex" } },
   send: { width: 32, height: 32, paddingInline: 0, borderRadius: radius.full },
   mic: { borderRadius: radius.full },
   micOn: { color: "#fff", backgroundColor: { default: color.danger, ":hover": color.danger }, animationName: pulse, animationDuration: "1.2s", animationIterationCount: "infinite" },
