@@ -3,3 +3,6 @@ docs-site/dist/
 .DS_Store
 *.log
 .vercel
+keel-skill.zip
+dist-skill/
+.scratch/

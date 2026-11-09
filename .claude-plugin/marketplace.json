@@ -1,13 +1,17 @@
 {
   "name": "keel",
-  "owner": { "name": "Sajidur Rahman (Shimul)" },
-  "metadata": { "description": "Keel admin design system as a Claude Code skill." },
+  "owner": {
+    "name": "Sajidur Rahman (Shimul)"
+  },
+  "metadata": {
+    "description": "Keel admin design system as a Claude Code skill."
+  },
   "plugins": [
     {
       "name": "keel",
       "source": "./",
-      "description": "Build calm, dense admin UIs with Keel: tokens, components, states, layouts, templates and a screenshot QA pass.",
-      "version": "0.1.0"
+      "description": "Build tactile admin and AI-assistant UIs with Keel v2: StyleX tokens, 140+ components, templates and QA.",
+      "version": "2.0.0-preview"
     }
   ]
 }

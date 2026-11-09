@@ -1,0 +1,15 @@
+---
+description: Keel v2 design system — StyleX + Radix admin UI. Applies to every React file.
+globs: ["**/*.tsx", "**/*.ts"]
+alwaysApply: true
+---
+
+# Keel v2 rules
+
+- UI is built from Keel components imported from `@keel/components`. The full catalog with props: `skills/keel/references/components.md`.
+- Styling is **StyleX only** (`stylex.create`, `stylex.props`). **No Tailwind**, no CSS modules, no hex colors or raw shadows.
+- Tokens: `import { color, depth, radius, font, motion, size, tone } from "@keel/tokens/tokens.stylex"`. Reference: `skills/keel/references/tokens.md`.
+- Override a Keel component's look with `xstyle={s.something}` (a compiled StyleX style), never by wrapping it in styled divs.
+- Patterns (list, detail drawer, form, settings, dashboard, AI assistant, auth) are in `skills/keel/references/patterns.md`; copy from `templates/`.
+- One primary button per view (ink). Every IconButton has `label`. Every control sits in a `Field`.
+- Before finishing, follow `skills/keel/references/qa.md` (both themes, 390/768/1440, keyboard).

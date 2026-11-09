@@ -1,206 +1,157 @@
 import { useState } from "react";
 import {
-  AppShell, Avatar, Button, Card, DescriptionList, FilterMenu, Grid, Header, IconBell, IconBuilding, IconChartBar,
-  IconChevronsUpDown, IconDownload, IconHome, IconInbox, IconPlus, IconReceipt, IconSettings, IconShield, IconUsers,
-  Page, PageHeading, PageToolbar, ProgressRing, SearchInput, Sheet, SheetContent, SheetSection, Sidebar, SidebarBrand,
-  SidebarContent, SidebarFooter, SidebarItem, SidebarSection, SidebarTrigger, SplitPane, StatusPill, Tabs, TabsList,
-  TabsTrigger, Tag, Timeline, Button as B, IconButton, IconMoreHorizontal, List, ListItem,
+  AppShell, AspectRatio, Avatar, Breadcrumbs, Button, Card, Center, Divider, Grid, Header, HStack, IconBell, IconChartBar, IconHome, IconInbox, IconPlus, IconSettings,
+  IconUsers, Inline, Layout, List, ListItem, Page, PageHeading, PageToolbar, ResizeHandle, ScrollableArea, SearchInput, Section, Sidebar, SidebarBrand, SidebarContent,
+  SidebarFooter, SidebarItem, SidebarSection, SidebarTrigger, SplitPane, Stack, Stat, StatGroup, StatusPill, Tag, Text, VStack, IconButton, Sticky,
 } from "@keel/components";
-import { customers } from "@keel/templates/data";
-import type { DocPage } from "../docs/types";
 
-/* ===== App shell ===== */
+const box = (label: string) => <div style={{ padding: "10px 14px", borderRadius: 10, background: "color-mix(in srgb, currentColor 8%, transparent)", fontSize: 12 }}>{label}</div>;
 
-export function ShellDemo() {
-  const [active, setActive] = useState("customers");
-  const nav = (id: string, label: string, icon: React.ReactNode, count?: number) => (
-    <SidebarItem icon={icon} label={label} count={count} active={active === id} onClick={() => setActive(id)} />
-  );
+/* ---------------- AppShell ---------------- */
+export function AppShellDemo() {
+  const [active, setActive] = useState("overview");
+  const nav = [{ id: "overview", label: "Overview", icon: <IconHome /> }, { id: "customers", label: "Customers", icon: <IconUsers />, count: 128 }, { id: "inbox", label: "Inbox", icon: <IconInbox />, count: 3 }, { id: "reports", label: "Reports", icon: <IconChartBar /> }];
   return (
-    <div className="h-[460px] w-full overflow-hidden rounded-lg shadow-card">
-      <AppShell
-        className="h-full min-h-0"
-        sidebar={
-          <Sidebar className="h-full">
-            <SidebarBrand logo={<span className="text-caption font-semibold">F</span>} name="Fernhill" meta="Operations" action={<IconChevronsUpDown size={14} className="text-icon" />} />
-            <SidebarContent>
-              <SidebarSection title="Workspace">
-                {nav("overview", "Overview", <IconHome />)}
-                {nav("inbox", "Inbox", <IconInbox />, 4)}
-                {nav("customers", "Customers", <IconBuilding />, 12)}
-                {nav("invoices", "Invoices", <IconReceipt />, 128)}
-                {nav("reports", "Reports", <IconChartBar />)}
-              </SidebarSection>
-              <SidebarSection title="Admin">
-                {nav("members", "Members", <IconUsers />, 8)}
-                {nav("security", "Security", <IconShield />)}
-                {nav("settings", "Settings", <IconSettings />)}
-              </SidebarSection>
-            </SidebarContent>
-            <SidebarFooter>
-              <div className="flex items-center gap-2.5 px-2 py-1.5 group-data-[collapsed]/sidebar:justify-center group-data-[collapsed]/sidebar:px-0">
-                <ProgressRing value={70} size={22} stroke={2.5} showValue={false} label="Seats used" />
-                <div className="flex min-w-0 flex-col group-data-[collapsed]/sidebar:hidden">
-                  <span className="text-caption">140 of 200 seats</span>
-                  <span className="text-[11px] text-subtle">Scale plan</span>
-                </div>
-              </div>
-            </SidebarFooter>
-          </Sidebar>
-        }
-      >
-        <Header
-          start={<SidebarTrigger />}
-          title="Customers"
-          status={<StatusPill status="active" pulse size="sm">Synced</StatusPill>}
-          actions={<><Button size="sm" leading={<IconDownload />} className="hidden sm:inline-flex">Export</Button><Button size="sm" variant="primary" leading={<IconPlus />}>New</Button></>}
-          end={<><IconButton label="Notifications" size="sm"><IconBell /></IconButton><Avatar name="Nadia Karim" size="md" /></>}
-        />
-        <Page className="overflow-auto">
-          <p className="text-small text-subtle">Collapse the sidebar with the button or ⌘B, and drag its edge to resize. Below 1024px it becomes a drawer.</p>
-        </Page>
+    <div style={{ height: 560, width: "100%", overflow: "hidden", isolation: "isolate", transform: "translateZ(0)" }}>
+      <AppShell sideNav={
+        <Sidebar style={{ height: 544, top: 8 }}>
+          <SidebarBrand logo="K" name="Keel" meta="Acme workspace" />
+          <SidebarContent>
+            <SidebarSection>{nav.map((n) => <SidebarItem key={n.id} icon={n.icon} label={n.label} count={n.count} active={active === n.id} onClick={() => setActive(n.id)} />)}</SidebarSection>
+            <SidebarSection title="Workspace"><SidebarItem icon={<IconSettings />} label="Settings" active={active === "settings"} onClick={() => setActive("settings")} /></SidebarSection>
+          </SidebarContent>
+          <SidebarFooter><div style={{ display: "flex", alignItems: "center", gap: 8 }}><Avatar name="Ana Lima" size="md" /><Text truncate weight="medium">Ana Lima</Text></div></SidebarFooter>
+        </Sidebar>
+      }>
+        <Header title={nav.find((n) => n.id === active)?.label ?? "Settings"} start={<SidebarTrigger />} status={<StatusPill status="active">Live</StatusPill>} actions={<Button size="sm" variant="primary" leading={<IconPlus />}>New</Button>} end={<IconButton label="Notifications" size="sm"><IconBell /></IconButton>} />
+        <Page><StatGroup><Stat label="MRR" value="$84.3k" delta={6.2} baseline="vs Oct" /><Stat label="Customers" value="1,284" delta={2.1} /><Stat label="Churn" value="1.8%" delta={-0.4} deltaUnit="pt" lowerIsBetter /></StatGroup></Page>
       </AppShell>
     </div>
   );
 }
 
-export function HeaderDemo() {
+/* ---------------- Layout ---------------- */
+export function LayoutDemo() {
   return (
-    <div className="w-full overflow-hidden rounded-lg shadow-card">
-      <Header
-        title="Northwind Logistics"
-        breadcrumb={<span className="text-caption text-subtle">Customers</span>}
-        status={<StatusPill status="active" size="sm">Active</StatusPill>}
-        actions={<><Button size="sm">Edit</Button><IconButton label="More" size="sm"><IconMoreHorizontal /></IconButton></>}
-        tabs={
-          <Tabs defaultValue="overview">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="invoices" count={12}>Invoices</TabsTrigger>
-              <TabsTrigger value="activity">Activity</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        }
-      />
+    <div style={{ height: 360, width: "100%", borderRadius: 16, overflow: "hidden", boxShadow: "0 0 0 1px rgba(127,127,127,.2)" }}>
+      <Layout
+        header={<div style={{ padding: "10px 16px" }}><Text weight="semibold">Inbox</Text></div>}
+        start={<List>{["Ana Lima", "Bo Chen", "Cy Diaz", "Dee Eko"].map((n) => <ListItem key={n} leading={<Avatar name={n} size="md" />} title={n} description="Re: invoice INV-1042" onClick={() => {}} compact />)}</List>}
+        end={<div style={{ padding: 16 }}><Text variant="eyebrow">Details</Text><Text tone="muted">Inspector pane</Text></div>}
+        footer={<div style={{ padding: "8px 16px" }}><Text variant="caption">4 conversations</Text></div>}
+      >
+        <div style={{ padding: 20 }}><Text variant="title">Re: invoice INV-1042</Text><Text tone="muted">Content pane scrolls on its own.</Text></div>
+      </Layout>
     </div>
   );
 }
 
-export function ToolbarDemo() {
-  const [status, setStatus] = useState("all");
+/* ---------------- Header & page ---------------- */
+export function PageHeaderDemo() {
   return (
-    <div className="flex w-full flex-col">
-      <PageHeading title="Invoices" description="128 invoices · $214,600 outstanding" actions={<><Button leading={<IconDownload />}>Export</Button><Button variant="primary" leading={<IconPlus />}>New invoice</Button></>} />
-      <PageToolbar end={<FilterMenu label="Sort" value="due" onChange={() => {}} align="end" options={[{ value: "due", label: "Due date" }, { value: "amount", label: "Amount" }]} />}>
-        <SearchInput size="sm" shellClassName="w-full sm:w-64" placeholder="Search invoices" />
-        <FilterMenu label="Status" value={status} onChange={setStatus} options={[{ value: "all", label: "All" }, { value: "due", label: "Due" }, { value: "overdue", label: "Overdue" }]} />
-      </PageToolbar>
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 0 0 1px rgba(127,127,127,.2)" }}>
+        <Header title="Acme Inc." breadcrumb={<Breadcrumbs items={[{ label: "Customers", href: "#" }, { label: "Acme Inc." }]} />} status={<Tag tone="blue">Enterprise</Tag>} actions={<><Button size="sm">Export</Button><Button size="sm" variant="primary">Edit</Button></>} />
+      </div>
+      <PageHeading eyebrow="Billing" title="Invoices" description="Every invoice you've sent, with payment status." actions={<Button variant="primary" leading={<IconPlus />}>New invoice</Button>} />
+      <PageToolbar end={<Button size="sm">Export</Button>}><SearchInput size="sm" placeholder="Search invoices" style={{ width: 240 }} /><Button size="sm" variant="ghost">Status</Button></PageToolbar>
     </div>
   );
 }
 
+/* ---------------- Stack ---------------- */
+export function StackDemo() {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 24, width: "100%" }}>
+      <VStack gap={8}>{box("VStack gap 8")}{box("Item")}{box("Item")}</VStack>
+      <HStack gap={8}>{box("HStack")}{box("gap 8")}{box("center")}</HStack>
+      <Stack direction="row" justify="between" align="center">{box("justify")}{box("between")}</Stack>
+      <Inline gap={6}>{["Billing", "EU", "Enterprise", "VIP", "Annual", "SSO"].map((t) => <Tag key={t}>{t}</Tag>)}</Inline>
+      <Center minHeight={100}><Text tone="muted">Centered</Text></Center>
+    </div>
+  );
+}
+
+/* ---------------- Grid ---------------- */
 export function GridDemo() {
   return (
-    <Grid cols={3} className="w-full">
-      {customers.slice(0, 3).map((c) => (
-        <Card key={c.id} className="flex flex-col gap-3">
-          <div className="flex items-center gap-2.5"><Avatar name={c.name} shape="square" /><span className="truncate text-small font-medium">{c.name}</span></div>
-          <DescriptionList items={[{ label: "Plan", value: <Tag>{c.plan}</Tag> }, { label: "Seats", value: c.seats }]} />
-        </Card>
-      ))}
-    </Grid>
-  );
-}
-
-export function SplitDemo() {
-  const [sel, setSel] = useState(customers[0].id);
-  const c = customers.find((x) => x.id === sel)!;
-  return (
-    <div className="h-80 w-full overflow-hidden rounded-lg shadow-card">
-      <SplitPane
-        defaultSize={38}
-        start={<List className="px-3">{customers.slice(0, 7).map((x) => <ListItem key={x.id} title={x.name} description={x.domain} selected={x.id === sel} onClick={() => setSel(x.id)} />)}</List>}
-        end={<div className="flex flex-col gap-3 p-4"><span className="text-title font-medium">{c.name}</span><DescriptionList items={[{ label: "Owner", value: c.owner }, { label: "Region", value: c.region }, { label: "Plan", value: c.plan }]} /></div>}
-      />
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 20 }}>
+      <Grid columns={3} gap={12}>{["One", "Two", "Three"].map((t) => <Card key={t}>{t} — 3 equal columns, stack on phones</Card>)}</Grid>
+      <Grid minItemWidth={160} gap={12}>{Array.from({ length: 7 }, (_, i) => <Card key={i} variant="sunken">Auto-fill {i + 1}</Card>)}</Grid>
     </div>
   );
 }
 
-/* ===== Sheet ===== */
-
-export function SheetDemo() {
-  const [open, setOpen] = useState(false);
-  const c = customers[1];
+/* ---------------- Section ---------------- */
+export function SectionDemo() {
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <B variant="primary" onClick={() => setOpen(true)}>Open detail sheet</B>
-      <SheetContent
-        title={c.name}
-        description={c.domain}
-        eyebrow={<span className="flex items-center gap-2"><StatusPill status="active" size="sm">Active</StatusPill><Tag size="sm" tone="violet">{c.plan}</Tag></span>}
-        footer={<><B variant="ghost" onClick={() => setOpen(false)}>Close</B><B variant="primary">Save changes</B></>}
-      >
-        <SheetSection title="Details">
-          <DescriptionList items={[{ label: "Owner", value: c.owner }, { label: "Region", value: c.region }, { label: "Seats", value: c.seats }, { label: "Since", value: "Sep 3, 2022" }]} />
-        </SheetSection>
-        <SheetSection title="Activity">
-          <Timeline events={[{ id: "1", title: <><b>Tanvir</b> updated seats to 420</>, time: "Yesterday" }, { id: "2", title: <><b>Invoice</b> INV-2062 paid</>, time: "Oct 31", tone: "success" }]} />
-        </SheetSection>
-      </SheetContent>
-    </Sheet>
+    <div style={{ width: "100%", maxWidth: 640, display: "flex", flexDirection: "column", gap: 24 }}>
+      <Section title="Payment methods" description="Cards used for your subscription." action={<Button size="sm">Add card</Button>}><Text tone="muted">Visa ••4242 · expires 08/28</Text></Section>
+      <Section variant="card" title="On a surface"><Text tone="muted">Use the card variant when the section sits among other content.</Text></Section>
+      <Section variant="divided" title="Divided"><Text tone="muted">A hairline separates it from what's above.</Text></Section>
+    </div>
   );
 }
 
-export const docs: DocPage[] = [
-  {
-    slug: "app-shell", title: "App shell & sidebar", group: "Layout", section: "Components", source: "layout", keywords: ["sidebar", "navigation", "drawer", "layout"],
-    summary: "The frame of every Keel admin: a 248px sidebar with eyebrow sections and count badges, a 52px header, and a scrolling page. The sidebar collapses to a 56px rail (⌘B), resizes by dragging (200–360px, double-click resets), and becomes a left drawer below 1024px.",
-    demos: [{ id: "ShellDemo", title: "App shell", description: "Shown at desktop width. Resize the window below 1024px to see the drawer.", render: ShellDemo, full: true }],
-    api: [
-      { title: "AppShell", props: [{ name: "sidebar", type: "ReactNode", description: "A <Sidebar>." }, { name: "children", type: "ReactNode", description: "Header + Page." }] },
-      { title: "SidebarItem", props: [{ name: "icon / label", type: "ReactNode / string", description: "" }, { name: "count", type: "number", description: "Count badge." }, { name: "active", type: "boolean", description: "Sets aria-current=page." }, { name: "href / onClick", type: "string / () => void", description: "Link or button." }, { name: "trailing", type: "ReactNode", description: "Instead of a count." }] },
-      { title: "SidebarSection", props: [{ name: "title", type: "string", description: "Eyebrow label; becomes a short rule when collapsed." }, { name: "action", type: "ReactNode", description: "e.g. a + button." }] },
-      { title: "useSidebar()", props: [{ name: "collapsed / setCollapsed", type: "boolean", description: "" }, { name: "width / setWidth", type: "number", description: "Persisted to localStorage." }, { name: "mobileOpen / setMobileOpen", type: "boolean", description: "" }] },
-    ],
-    a11y: ["The sidebar is a labelled <aside>; the resize handle is a focusable separator (←/→).", "Collapsed items show their label in a tooltip.", "On mobile, the drawer traps focus and closes on Esc or after choosing an item."],
-  },
-  {
-    slug: "header", title: "Header", group: "Layout", section: "Components", source: "layout",
-    summary: "Page title with a status pill, actions and profile. Tabs attach to its bottom edge so the header and the page's main switch read as one unit.",
-    demos: [
-      { id: "HeaderDemo", title: "Header with breadcrumb and tabs", render: HeaderDemo, full: true },
-      { id: "ToolbarDemo", title: "Page heading and toolbar", render: ToolbarDemo, full: true },
-    ],
-    api: [{ title: "Header", props: [
-      { name: "title / status / breadcrumb", type: "ReactNode", description: "" }, { name: "start", type: "ReactNode", description: "Usually <SidebarTrigger/>." },
-      { name: "actions / end", type: "ReactNode", description: "Actions, then profile/notifications." }, { name: "tabs", type: "ReactNode", description: "Underline tabs below the bar." },
-    ] }, { title: "PageToolbar", props: [{ name: "children / end", type: "ReactNode", description: "Filters left (wrap on mobile), sort/view right." }] }],
-  },
-  {
-    slug: "grid", title: "Grid & card", group: "Layout", section: "Components", source: "layout",
-    summary: "Grid steps its column count down by breakpoint. Card is a hairline container — reach for it only when grouping truly needs a boundary.",
-    demos: [{ id: "GridDemo", title: "Three-column grid of cards", render: GridDemo, full: true }],
-    api: [{ title: "Grid", props: [{ name: "cols", type: "1 | 2 | 3 | 4 | 6", default: "3", description: "Count at the widest breakpoint." }, { name: "gap", type: '"sm" | "md" | "lg"', default: '"md"', description: "8 / 16 / 24px." }] }],
-    dos: [{ do: "Separate sections with whitespace and a hairline.", dont: "Wrap every section of a page in its own card." }],
-  },
-  {
-    slug: "split-pane", title: "Split pane", group: "Layout", section: "Components", source: "layout",
-    summary: "List and detail side by side with a draggable divider. Stacks below 768px.",
-    demos: [{ id: "SplitDemo", title: "List | detail", render: SplitDemo, full: true }],
-    api: [{ props: [{ name: "start / end", type: "ReactNode", description: "" }, { name: "defaultSize / min / max", type: "number (%)", default: "40 / 25 / 75", description: "" }] }],
-  },
-  {
-    slug: "sheet", title: "Sheet", group: "Layout", section: "Components", source: "layout", keywords: ["drawer", "side panel", "detail"],
-    summary: "A panel that slides from the right to show or edit one record without leaving the list. Esc closes it and the list keeps its scroll position. Full-width on phones.",
-    whenToUse: ["Viewing or editing a record from a table.", "Filters with many fields (side=\"right\", size sm)."],
-    whenNot: ["A two-field task — use a Dialog.", "A long, multi-section form — give it a page."],
-    demos: [{ id: "SheetDemo", title: "Detail sheet", render: SheetDemo }],
-    api: [{ title: "SheetContent", props: [
-      { name: "title", type: "ReactNode", description: "Required (use hideTitle to make it screen-reader only)." },
-      { name: "description / eyebrow / headerActions / footer", type: "ReactNode", description: "" },
-      { name: "side", type: '"right" | "left" | "bottom"', default: '"right"', description: "" },
-      { name: "size", type: '"sm" | "md" | "lg" | "xl"', default: '"md"', description: "360 / 440 / 560 / 720px." },
-    ] }, { title: "SheetSection", props: [{ name: "title / action", type: "ReactNode", description: "Eyebrow title, hairline between sections." }] }],
-    a11y: ["Radix Dialog: focus trap, Esc to close, focus returns to the row or button that opened it."],
-  },
-];
+/* ---------------- Divider ---------------- */
+export function DividerDemo() {
+  return (
+    <div style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", gap: 20 }}>
+      <Divider />
+      <Divider variant="strong" />
+      <Divider variant="dashed" />
+      <Divider label="or continue with" />
+      <div style={{ display: "flex", alignItems: "center", gap: 12, height: 24 }}><Text>Left</Text><Divider orientation="vertical" /><Text>Right</Text></div>
+    </div>
+  );
+}
+
+/* ---------------- AspectRatio ---------------- */
+export function AspectRatioDemo() {
+  const fill = { width: "100%", height: "100%", background: "linear-gradient(135deg,#5675ff,#0ea5a4)" };
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))", gap: 16, width: "100%" }}>
+      <AspectRatio ratio={16 / 9}><div style={fill} /></AspectRatio>
+      <AspectRatio ratio={4 / 3}><div style={fill} /></AspectRatio>
+      <AspectRatio ratio={1}><div style={fill} /></AspectRatio>
+    </div>
+  );
+}
+
+/* ---------------- ScrollableArea ---------------- */
+export function ScrollableAreaDemo() {
+  return (
+    <div style={{ width: "100%", maxWidth: 360 }}>
+      <Card padding="none"><ScrollableArea height={220} label="Activity">
+        <List>{Array.from({ length: 20 }, (_, i) => <ListItem key={i} title={`Invoice INV-${1040 + i} paid`} meta={`${i + 1}m`} />)}</List>
+      </ScrollableArea></Card>
+    </div>
+  );
+}
+
+/* ---------------- ResizeHandle & SplitPane ---------------- */
+export function SplitPaneDemo() {
+  const [w, setW] = useState(220);
+  return (
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ height: 220, borderRadius: 14, overflow: "hidden", boxShadow: "0 0 0 1px rgba(127,127,127,.2)" }}>
+        <SplitPane start={<div style={{ padding: 16 }}><Text weight="semibold">List</Text><Text tone="muted">Drag the divider · double-click resets</Text></div>} end={<div style={{ padding: 16 }}><Text weight="semibold">Detail</Text></div>} />
+      </div>
+      <div style={{ display: "flex", height: 120, borderRadius: 14, overflow: "hidden", boxShadow: "0 0 0 1px rgba(127,127,127,.2)" }}>
+        <div style={{ width: w, padding: 12 }}><Text variant="caption">{w}px — arrow keys work too</Text></div>
+        <ResizeHandle value={w} min={120} max={420} onReset={() => setW(220)} onResize={(next, e) => setW(e && "clientX" in e ? Math.min(420, Math.max(120, Math.round(e.clientX - (e.currentTarget as HTMLElement).parentElement!.getBoundingClientRect().left))) : next)} />
+        <div style={{ flex: 1, padding: 12 }}><Text variant="caption">Content</Text></div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Sticky ---------------- */
+export function StickyDemo() {
+  return (
+    <div style={{ width: "100%", maxWidth: 420, height: 220, overflowY: "auto", borderRadius: 14, boxShadow: "0 0 0 1px rgba(127,127,127,.2)" }}>
+      <Sticky><div style={{ padding: "8px 12px", backdropFilter: "blur(8px)", background: "color-mix(in srgb, Canvas 80%, transparent)" }}><Text weight="semibold">Sticky toolbar</Text></div></Sticky>
+      {Array.from({ length: 14 }, (_, i) => <div key={i} style={{ padding: "8px 12px" }}><Text tone="muted">Row {i + 1}</Text></div>)}
+    </div>
+  );
+}

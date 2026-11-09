@@ -1,10 +1,27 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "keel",
-  "version": "0.1.0",
-  "description": "Keel — a calm, dense design system for admin interfaces. Teaches Claude Code and Claude Design to build admin screens (lists, filters, data tables, detail sheets, forms, settings, roles, audit logs, dashboards) with Keel's tokens, React + Tailwind v4 + Radix components, Lucide icons, every interaction state, and a screenshot QA pass at 320/768/1024/1440 in dark and light.",
-  "author": { "name": "Sajidur Rahman (Shimul)" },
+  "version": "2.0.0-preview",
+  "description": "Keel v2 \u2014 a tactile, dense design system for admin and AI-assistant interfaces. Teaches Claude to build with React 19 + Radix + StyleX (never Tailwind): tokens with light/dark, 140+ components (data tables, forms, pickers, overlays, navigation, charts, chat, agent approvals and diffs), page templates and a QA checklist.",
+  "author": {
+    "name": "Sajidur Rahman (Shimul)"
+  },
   "license": "MIT",
-  "keywords": ["design-system", "admin", "dashboard", "data-table", "react", "tailwind", "radix", "lucide", "dark-mode", "figma", "skill"],
-  "skills": ["./skills/keel"]
+  "keywords": [
+    "design-system",
+    "admin",
+    "dashboard",
+    "data-table",
+    "react",
+    "stylex",
+    "radix",
+    "lucide",
+    "dark-mode",
+    "ai",
+    "chat",
+    "skill"
+  ],
+  "skills": [
+    "./skills/keel"
+  ]
 }

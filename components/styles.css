@@ -1,40 +1,43 @@
 /*
-  Keel stylesheet entry. In your app's CSS:
-
-    @import "tailwindcss";
-    @import "<path-to-keel>/components/styles.css";
-
-  It loads the tokens, the Tailwind theme mapping, Keel's keyframes, and tells Tailwind
-  to scan the component files for class names.
+Keel base stylesheet — import once at your app root, before anything else:
+  import "@keel/components/styles.css";
+StyleX appends every component's CSS to this file at build time.
+Plain CSS only: a small reset, fonts, theme switching. No utility classes.
 */
-@import "../tokens/tokens.css";
-@import "../tokens/theme.css";
-@source "./";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
-@keyframes keel-fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes keel-fade-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes keel-pop-in { from { opacity: 0; transform: scale(0.97) translateY(-2px); } to { opacity: 1; transform: none; } }
-@keyframes keel-pop-out { from { opacity: 1; } to { opacity: 0; transform: scale(0.98); } }
-@keyframes keel-dialog-in { from { opacity: 0; transform: translate(-50%, -48%) scale(0.98); } to { opacity: 1; transform: translate(-50%, -50%); } }
-@keyframes keel-dialog-out { from { opacity: 1; transform: translate(-50%, -50%); } to { opacity: 0; transform: translate(-50%, -49%) scale(0.99); } }
-@keyframes keel-sheet-in-right { from { transform: translateX(calc(100% + 16px)); } to { transform: none; } }
-@keyframes keel-sheet-out-right { from { transform: none; } to { transform: translateX(calc(100% + 16px)); } }
-@keyframes keel-sheet-in-left { from { transform: translateX(-100%); } to { transform: none; } }
-@keyframes keel-sheet-out-left { from { transform: none; } to { transform: translateX(-100%); } }
-@keyframes keel-sheet-in-bottom { from { transform: translateY(100%); } to { transform: none; } }
-@keyframes keel-sheet-out-bottom { from { transform: none; } to { transform: translateY(100%); } }
-@keyframes keel-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
-@keyframes keel-toast-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
-@keyframes keel-toast-out { from { opacity: 1; } to { opacity: 0; transform: translateX(16px); } }
-@keyframes keel-expand { from { height: 0; opacity: 0; } to { height: var(--radix-accordion-content-height, var(--radix-collapsible-content-height)); opacity: 1; } }
-@keyframes keel-collapse { from { height: var(--radix-accordion-content-height, var(--radix-collapsible-content-height)); opacity: 1; } to { height: 0; opacity: 0; } }
-@keyframes keel-indeterminate { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+/* Only element and :root selectors here (specificity ≤ 0,1,1), so any StyleX class wins. */
+:root { color-scheme: light dark; }
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+*, ::before, ::after { box-sizing: border-box; border: 0 solid; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; tab-size: 4; }
+body {
+  font-family: "Geist Variable", "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px; line-height: 1.5; font-weight: 420;
+  font-feature-settings: "ss01", "cv11";
+  background: light-dark(#f4f4f6, #09090b); color: light-dark(#17171b, #ededf0);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+}
+img, svg, video, canvas { display: block; max-width: 100%; }
+svg { flex-shrink: 0; }
+button, input, select, textarea { font: inherit; color: inherit; background: none; letter-spacing: inherit; }
+button { cursor: pointer; }
+:disabled { cursor: not-allowed; }
+a { color: inherit; text-decoration: inherit; }
+table { border-collapse: collapse; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+ol, ul { list-style: none; }
+::selection { background: light-dark(rgba(58,92,240,0.18), rgba(123,147,255,0.32)); }
+:focus { outline: none; }
+::placeholder { color: light-dark(#a0a0aa, #5a5a65); opacity: 1; }
+* { scrollbar-width: thin; scrollbar-color: light-dark(rgba(17,17,26,0.18), rgba(255,255,255,0.14)) transparent; }
 
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
-    scroll-behavior: auto !important;
+    animation-duration: 1ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important; scroll-behavior: auto !important;
   }
 }

@@ -1,58 +1,47 @@
 # Page patterns
 
-Each has a working template in `templates/` built only from Keel components with realistic data
-(`templates/data.ts`).
+Each pattern has a working template in `templates/`. Copy it, then change the data.
 
-## List page — `templates/customers.tsx`
+## App frame
+`AppShell` (inset content panel) + `Sidebar` (`SidebarBrand`, `SidebarSection`, `SidebarItem` with `count`, `SidebarFooter`) +
+per-screen `Header` (`start={<SidebarTrigger/>}`, title, `status`, `actions`, `end`= theme/notifications/avatar menu) + `Page`.
+Add `CommandPalette` with `useCommandShortcut` (⌘K). `templates/shell.tsx`.
 
-Header (title + count, Export, primary New) → saved-view tabs with counts → DataTable with `toolbar` (search
-`/`, Label | Value filters with counts) → selection swaps toolbar for bulk actions → `…` row menu (Open, Copy ID,
-separator, Delete) → footer totals → pagination. Row click opens the detail sheet; the row stays highlighted
-(`activeRowId`).
+## List of records — `templates/customers.tsx`
+`PageHeading` → `DataTable` with `toolbar` (`SearchInput shortcut="/"`, `FilterMenu`), columns with `sortable`, `filterOptions`,
+`showFrom` for secondary columns, `footer` totals, `rowActions` (Open ↵ / Copy ID / separator / Delete), `bulkActions`
+(floating `TableSelectionToolbar`), `onRowClick` → detail `Drawer`. Deleting → `AlertDialog`. After actions → `useToast` with Undo.
+Empty → `EmptyState` with the next action. Loading → `loading` prop (skeleton rows).
 
-## Detail sheet — `templates/customers.tsx` (`initialOpenId`)
+## Detail — drawer
+`DrawerContent size="lg"` with `eyebrow` (status pill), `headerActions` (prev/next `IconButton`s with J/K, `MoreMenu`),
+`DrawerSection`s of `MetadataList`, `InlineEdit` for quick fixes, `Timeline` for activity, footer actions.
 
-Sheet `size="lg"`: eyebrow (status + plan tag) · title · description · header actions (prev/next with K/J,
-`…` menu) · sections: Details (DescriptionList + InlineEdit), Health (number + SegmentBar + Sparkline), related
-records, Activity (Timeline). Footer only when there are unsaved edits.
-
-## Create / edit form — `templates/invoice-form.tsx`
-
-Narrow page, single column, two related fields may pair from 768px. Validate on blur and submit. Failed submit →
-Alert at top with the count, inline errors, focus the first invalid field. Primary button bottom-left
-(`loading` while saving), "Save as draft" secondary, Cancel ghost right.
+## Form — `templates/invoices.tsx`
+`Page width="wide"`, `Stepper` for multi-step, `Card` with `FormLayout`; every control inside `Field` (label, required, description,
+error). Group with `FormSection`. Pickers: `Combobox`, `DateInput`, `Select`, `NumberInput`, `SegmentedControl`. Live preview on a
+`Card variant="raised"`, sticky. Submit = one primary `Button loading`.
 
 ## Settings — `templates/settings.tsx`
+`TabList` of `FormSection`s. Instant toggles → `Switch labelPosition="left"`; batched edits → unsaved `Banner` with Save/Discard.
+Secrets → `Code` + `CopyButton`. Danger zone → `Alert tone="danger"` + `AlertDialog` that asks to type the name.
 
-Header tabs (General, Billing, Security, API). FormSections with title column. Switches apply instantly with a
-toast; text fields mark the page dirty → sticky save bar (Discard, Save changes). Danger zone: bordered in
-`danger-border`, ConfirmDialog with `confirmText`.
-
-## Users and roles — `templates/members.tsx`
-
-Members DataTable: avatar + email, inline role `Select size="sm"` (owner fixed as a tag), last active, 2FA.
-Invite dialog: multi Combobox for emails (`onCreate`), role Select with descriptions. Roles tab: permission
-matrix (Check / Minus icons, grouped rows with eyebrow headers). For editing a role's permissions use `Transfer`
-or a checkable `Tree`.
+## Members & roles — `templates/members.tsx`
+`DataTable` with `Avatar status`, role `Tag`s; invite `Dialog` with `Tokenizer allowCreate`; permissions `TreeList checkable`.
 
 ## Audit log — `templates/audit-log.tsx`
+`PowerSearch` (field → operator → value) + `DateRangeInput`; `DataTable density="compact"` with `renderExpanded` showing JSON in `CodeBlock`.
 
-Read-only, `density="compact"`, monospace times/IPs/event names, `DateRangePicker` with presets, actor and
-level filters, expandable rows with the raw event in a CodeBlock. Export CSV in the header.
+## Dashboard — `templates/overview.tsx`
+`PageHeading` + period `SegmentedControl`; `StatGroup` of `Stat` (help, delta, baseline, sparkline, progress); `LineChart` with a muted
+dashed comparison; `InsightCard`; recent `List`; `DonutChart`; `Timeline`. Charts only for real questions.
 
-## Overview dashboard — `templates/overview.tsx`
-
-Answer one question ("is the business healthy and what needs attention?"): Alert for problems with its action →
-StatGroup (4 stats with baselines) → one trend (LineChart, last year dashed grey) → problems with actions
-(churn-risk list with SegmentBars) → recent records → activity. No chart without a question.
+## AI assistant — `templates/assistant.tsx`
+`ChatLayout` (thread + composer + footer note). Assistant turns: `Thinking` (done, with reasoning), `ChatToolCalls`, Markdown content
+with `[^n]` citations, `ContextChips`, `TaskList`, `DiffTable` for proposed record edits, `ApprovalCard` before any side effect,
+`RecommendationCard` with `ConfidenceMeter`. Composer: `ChatComposer` with `ToolChips` in `tools`, `PromptSuggestions` above.
+Rule: **the agent proposes, a person approves.**
 
 ## Auth — `templates/auth.tsx`
-
-360px centered column, workspace mark only. SSO buttons first, divider, email + password (lg inputs), "Forgot
-password?" as `labelAside`, credential errors as an Alert above the fields. Reset: confirmation that doesn't
-reveal whether the account exists.
-
-## Destructive actions
-
-Reversible → do it + toast Undo. Irreversible routine → ConfirmDialog naming object and count. Irreversible
-large → `confirmText`. Low-risk single object → Popconfirm. Destructive menu items last, red text.
+Centered `surfaceRaised` card, `Field`s, `PasswordInput`, `Checkbox`, primary `Button fullWidth`, `Divider label="or"`, SSO buttons,
+`OtpInput` for codes, `Alert` for errors.

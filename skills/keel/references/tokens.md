@@ -1,79 +1,48 @@
-# Tokens
+# Keel tokens
 
-Source of truth: `tokens/tokens.json`. `npm run tokens` writes `tokens/tokens.css` (CSS variables, dark default
-+ `[data-theme="light"]`), `tokens/theme.css` (Tailwind v4 `@theme`), `tokens/figma-variables.json` and
-`tokens/tokens.studio.json`. Never edit the generated files.
+Source of truth: `tokens/tokens.stylex.ts`. Import in any StyleX file:
+`import { color, depth, radius, font, motion, size, tone, z } from "@keel/tokens/tokens.stylex";`
+Colors are `light-dark(light, dark)`; the theme is `color-scheme` on `<html data-theme="light|dark">` (or the OS).
 
-Setup in an app's CSS:
+## color
+| Token | Use |
+|---|---|
+| `canvas` | page background behind everything |
+| `surface` | panels, cards, tables |
+| `surfaceRaised` | menus, popovers, dialogs, composer |
+| `surfaceSunken` | wells, code, table headers, dialog footers |
+| `surfaceInverse` / `fgInverse` | tooltips, floating selection bar |
+| `muted` | quiet fills: tracks, soft buttons, chips |
+| `hover` / `selected` | row and item hover / selected fills |
+| `border` / `borderStrong` / `borderInput` | hairlines; stronger rings; input rings |
+| `fg` `fgSoft` `fgMuted` `fgFaint` | text, from primary to placeholder |
+| `icon` | default icon color |
+| `inkTop` `inkBottom` `onInk` | primary button gradient and its text |
+| `accent` `accentStrong` `accentSoft` `accentBorder` `focusRing` | selection, links, focus, progress |
+| `success*` `warning*` `danger*` `info*` | status text, Soft bg, Border ring, Solid fill |
+| `chart1`…`chart6` | categorical chart colors in order |
+| `highlight` `shadeXs`…`shadeLg` | depth ingredients (prefer `depth.*`) |
 
-```css
-@import "tailwindcss";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
-@import "<keel>/components/styles.css";
-```
+## tone (tags, avatars, tinted chips)
+`gray red orange amber green teal blue violet pink lime` × `Fg` / `Bg` / `Bd`. Use `toneStyle[tone]` from content.tsx for a ready style.
 
-Theme: dark by default. Set `data-theme="light"` on `<html>` for light. Components never use `dark:` variants;
-the same utility resolves per theme.
+## depth
+`raised` (secondary buttons, tiles) · `raisedHover` · `pressed` · `ink` / `inkPressed` (primary) · `solid` / `solidPressed` (accent, danger) ·
+`recessed` (inputs) · `card` / `cardHover` · `popover` · `dialog` · `knob` · `focus` / `focusDanger`.
+Combine with a focus ring: ``boxShadow: { default: depth.raised, ":focus-visible": `${depth.raised}, ${depth.focus}` }``.
 
-## Color (utility name → role)
+## radius
+`xs 4 · sm 6 · md 8 (controls) · lg 10 · xl 14 (cards) · xxl 18 (dialogs, composer) · full`.
 
-| Token | Dark | Light | Use |
-|---|---|---|---|
-| `background` | #111214 | #fafaf9 | Page canvas |
-| `surface` | #18191c | #f3f3f1 | Sidebar, table footer, read-only fields, quiet zones |
-| `card` | #1e2023 | #ffffff | Controls, cards, sheets, dialogs |
-| `popover` | #1b1c1f | #ffffff | Menus, popovers, tooltips |
-| `muted` | #27292d | #ececea | Segmented track, count badges, muted button |
-| `hover` / `selected` | white 4.5% / 7.5% | black 4% / 6.5% | Row & item hover, selected rows |
-| `border` | #24262a | #e7e7e4 | Hairlines between rows and sections |
-| `input` | #2f3237 | #dcdcd8 | Field ring at rest |
-| `line-strong` | #373a40 | #d3d3cf | Hovered field ring, checkbox ring, dropzone |
-| `foreground` | #ededee | #17181a | Primary text |
-| `soft` | #a6a9b1 | #53534d | Secondary text, values in lists |
-| `subtle` | #6f727b | #7d7d77 | Labels, metadata, table headers |
-| `faint` | #4b4e55 | #a7a7a1 | Placeholders, eyebrows, disabled |
-| `icon` | #8b8e97 | #6c6c66 | Icons at rest |
-| `primary` / `primary-foreground` | #f2f2f3 / #111214 | #17181a / #fafaf9 | The primary button, checked controls |
-| `ring` | 55% foreground | 50% foreground | Focus ring |
-| `data` / `data-muted` / `track` | #3ec8b4 / #24524b / #2e3135 | #14998a / #b8e3dc / #e2e2de | Live dots, chart series, progress |
-| `success` `warning` `danger` `info` | | | Status text/dots; each has `-bg` and `-border` |
-| `danger-solid` | #d9443c | #c8382f | Danger button fill |
+## font
+Families `sans` (Geist), `mono` (Geist Mono). Sizes `xs 11 · sm 12 · md 13 (UI default) · lg 14 (body) · xl 16 · h3 18 · h2 22 · h1 28 · display 36`.
+Weights `regular 420 · medium 520 · semibold 600 · bold 680`. Prefer `<Text variant>` over raw sizes.
 
-Tag tones (`tag-{tone}-bg|border|text`): neutral, blue, cyan, teal, green, yellow, orange, red, pink, violet.
+## size
+Control heights `xs 24 · sm 28 · md 32 · lg 40`; `sidebar 240`, `sidebarRail 56`, `header 52`.
 
-Rules: text uses only `foreground/soft/subtle/faint` (+ status colors for status words). Never lower text
-contrast with opacity — pick the next grey. Selection is a tint (`bg-selected`), not a colored border.
+## motion
+`fast 120ms` (hover, press) · `base 180ms` (open/close) · `slow 280ms` (sheets) · `ease` · `spring` (knobs, indicators) · `inOut`.
 
-## Type
-
-Geist (sans) and Geist Mono. Utilities: `text-stat` 28 · `text-display` 22 · `text-page` 18 · `text-title` 16 ·
-`text-body` 14 · `text-small` 13 · `text-caption` 12 · `text-eyebrow` 11. Weights 400 / 500 / 600 only.
-`eyebrow` utility = 11px, 500, uppercase, 0.08em, `faint` — section labels and KPI labels. `tabular` utility for
-numbers. Sentence case everywhere.
-
-## Space, size, radius
-
-- Spacing: Tailwind's 4px scale (`p-3` = 12px). Rhythm: 8 inside controls, 12 between related items, 16–24
-  between groups, 32–48 between page sections.
-- Controls: 22 / 26 / 30 / 36px (`xs/sm/md/lg`). Table header 36, rows 32 / 40 / 48. Sidebar 248 (rail 56).
-  Header 52. Sheet 440 (360–720).
-- Radius: `rounded-xs` 3 (kbd) · `sm` 5 (menu items) · `md` 8 (buttons, inputs) · `lg` 10 (cards, menus,
-  tables) · `xl` 12 (dialogs, sheets) · `full` (tags, pills, avatars). Controls are rectangles; labels are pills.
-
-## Elevation
-
-`shadow-raised` (1px top highlight + ring; secondary buttons, active nav), `shadow-raised-primary`,
-`shadow-field` (input ring), `shadow-card` (ring, no drop), `shadow-overlay` (menus, dialogs, sheets),
-`shadow-focus` (focus-visible ring). In-flow elements never get drop shadows. Max two floating layers.
-
-## Motion
-
-`duration-fast` 120ms (hover, press) · `duration-base` 180ms (popovers, switches) · `duration-slow` 260ms
-(sheets, progress). `ease-out` to enter, `ease-in` to exit, `ease-in-out` for movement. Under
-`prefers-reduced-motion` all durations are 0.
-
-## Z-index
-
-sticky 10 · sidebar 20 · header 30 · dropdown 40 · sheet 50 · modal 60 · popover 70 · toast 80 · tooltip 90.
-Use as `z-(--z-dropdown)`.
+## z (constants)
+`sticky 10 · header 20 · overlay 40 · modal 50 · popover 60 · toast 70 · tooltip 80`.

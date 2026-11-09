@@ -1,109 +1,66 @@
 ---
 name: keel
-description: Build admin screens with the Keel design system — calm, dense, dark-first UIs for back-office tools. Covers tokens (dark + light), React + Tailwind v4 + Radix components with every interaction state, Lucide icons, the app shell (248px sidebar, 52px header), list pages with filters and data tables, detail sheets, forms with validation, settings, users and roles, audit logs, overview dashboards, and a screenshot QA pass at 320/768/1024/1440 in both themes. Use whenever building, redesigning or reviewing an admin panel, back office, internal tool, CMS or SaaS settings area, in Claude Code or Claude Design.
+description: Build admin and back-office UIs with the Keel v2 design system — React 19 + Radix + StyleX (never Tailwind), tactile 3D buttons, recessed inputs, light/dark tokens, 140+ components (tables, forms, pickers, overlays, navigation, charts, chat and AI-agent primitives) and full page templates. Use whenever building, redesigning or reviewing an admin panel, dashboard, CRM, internal tool, settings area or AI assistant screen with Keel.
 ---
 
-# Keel — admin design system
+# Keel v2 — tactile admin design system
 
-Keel is for the admin side of products: screens people use all day to find, check and change records. It is
-**dense, calm and fast to scan**. User-facing apps get their own designs; Keel does not try to be a marketing or
-consumer style.
+Keel is for the screens people use all day to find, check and change records — and, increasingly, to work with an
+AI assistant. It is **dense, calm and tactile**: things you press look pressable, fields look like wells, color is
+reserved for meaning.
 
-The code lives in this repo: `tokens/` (source of truth), `components/` (`_ui` primitives, `_common` app-level
-pieces), `templates/` (real screens), `docs-site/` (documentation built with Keel). Import everything from
-`components/index.ts`.
+## Non-negotiables
 
-## Leading words
+1. **Styling is StyleX only.** Never write Tailwind classes, CSS modules or inline style objects for design values.
+   Use `stylex.create` with Keel tokens (`color`, `depth`, `radius`, `font`, `motion`, `size`, `tone`, `z` from
+   `tokens/tokens.stylex.ts`) and pass overrides to components through `xstyle`. Inline `style` only for truly
+   dynamic numbers (a measured width).
+2. **Use Keel components before writing markup.** Import from `@keel/components` (components/index.ts). The full
+   catalog with props is in `skills/keel/references/components.md` — check it before inventing anything.
+3. **Never hard-code colors or shadows.** Every color is a token written as `light-dark()`, so both themes work by
+   default. Depth comes from `depth.*` tokens (raised, pressed, ink, recessed, card, popover, dialog, focus).
+4. **One primary action per view.** Primary is *ink* (black in light, white in dark), not brand blue. Accent blue is for
+   selection, focus, links and progress.
+5. **Every interactive thing has all its states**: hover, focus-visible (accent ring), pressed (sinks 1px), disabled,
+   loading, error, empty. Keel components already do; your own pieces must too.
 
-- **Dense**: tables and lists are the work. 40px rows, 13px text, 12px cell padding. Nothing decorative between
-  the user and the data.
-- **Calm**: a graphite ladder of surfaces and four text greys carries the hierarchy. Color appears only for
-  status, category tags and one data hue — so when something is colored, it means something.
-- **One bright button**: the primary action is white in dark mode, near-black in light mode. One per view.
-  Never a blue or purple CTA.
-- **Every state**: hover, focus-visible, active, selected, disabled, loading, empty, error and read-only are
-  designed for every control and every panel — not added later.
-- **Keyboard**: ⌘K command palette, visible focus rings, shortcuts shown as `Kbd` where actions live.
+## Setup (if the project doesn't have Keel yet)
 
-## Build a screen
+Read `skills/keel/references/setup.md`. In short: `@stylexjs/stylex` + `@stylexjs/unplugin` (Vite plugin before React,
+`useCSSLayers: false`), a modern `browserslist`, import `components/styles.css` once, wrap the app in `<KeelProvider>`.
 
-1. **Name the job.** One sentence: what does the user come here to do, and what do they do next? List the
-   records, the 3–6 attributes that decide an action, the primary action, and the destructive actions. Done
-   when you can say which component answers each item ([components.md](skills/keel/references/components.md) → choice table).
-2. **Pick the page pattern** ([patterns.md](skills/keel/references/patterns.md)): list page, detail sheet vs detail page,
-   create/edit form, settings, users and roles, audit log, overview, auth. Start from the matching file in
-   `templates/` when one exists. Done when the page has one pattern and you know why.
-3. **Lay it out in the shell** ([layout.md](skills/keel/references/layout.md)): `AppShell` → `Sidebar` → `Header` (title,
-   status, actions, tabs) → `Page` → toolbar → content. Group with whitespace and hairlines; reach for `Card`
-   only when grouping truly needs a boundary. Done when nothing is boxed that didn't need to be.
-4. **Use tokens only** ([tokens.md](skills/keel/references/tokens.md)). Tailwind's default palette is switched off; write
-   `bg-card`, `text-subtle`, `border-line-strong`, `shadow-raised`, `rounded-md`. No hex, no `blue-500`, no
-   arbitrary colors. Done when a search for `#` and `rgb(` in your JSX finds nothing.
-5. **Design every state** ([states.md](skills/keel/references/states.md)): loading (skeleton shaped like the content),
-   empty (first use vs filtered), error (inline, with retry), no permission, offline, read-only, and each
-   control's hover/focus/disabled. Done when each panel has been seen in each state.
-6. **Write the words**: sentence case, verb + object buttons ("Send invoice", "Delete 3 customers"), errors
-   that say how to fix it. No "Submit", "OK", "Success!", "Please".
-7. **Run the QA pass** ([qa.md](skills/keel/references/qa.md)): screenshots at 320, 768, 1024 and 1440 in dark and light;
-   no page-level horizontal scroll, no clipped text, focus visible, numbers right-aligned and tabular. Done when
-   every check passes on screenshots you looked at.
+## How to build a screen
 
-## Rules that apply everywhere
+1. Pick the pattern in `skills/keel/references/patterns.md` (list, detail drawer, form, settings, dashboard, assistant, auth).
+2. Start from the matching template in `templates/` — they are complete, working screens.
+3. Compose with components from the catalog. Lay out with `Page`, `PageHeading`, `Section`, `Stack`, `Grid`.
+4. Style only the gaps with StyleX + tokens (`skills/keel/references/styling.md`).
+5. Run the checklist in `skills/keel/references/qa.md` — both themes, 390 / 768 / 1440, keyboard only.
 
-- **Primary vs the rest**: `variant="primary"` once per view. Secondary is the default. Ghost/subtle in dense
-  toolbars. `danger` only to confirm destruction; destructive menu items are red text, last, after a separator.
-- **Status ≠ category**: state that changes (paid, overdue, live) is a `StatusPill` (grey pill, colored dot,
-  the word carries meaning). Categories (plan, segment) are `Tag` tones, one meaning per tone per product.
-- **Numbers**: `align="right"` in tables (applies tabular figures), compact on axes, `—` for no data, never a
-  fake `$0`. Every headline number has a baseline ("+6.2% vs Oct"); lower-is-better metrics flip colors.
-- **Tables scroll inside themselves**, never the page. Hide secondary columns on small screens with
-  `showFrom`. Name column first with a muted second line; row actions last as a `…` menu.
-- **Sheets for triage, pages for destinations**: open a row in a right `Sheet` when the user will return to the
-  list; give it a page with a breadcrumb when it has its own tabs and history; use a `Dialog` only for a small
-  single task.
-- **Friction matches risk**: reversible → do it + toast with Undo; irreversible routine → `ConfirmDialog` naming
-  object and count; irreversible large → `ConfirmDialog` with `confirmText`; low-risk single object → `Popconfirm`.
-- **Icons are Lucide** through Keel wrappers (`IconSearch`, `IconTrash`…): 16px, 14px in small controls,
-  1.5px stroke. Another Lucide icon: `export const IconTruck = keelIcon(Truck)`. Icon-only buttons need a
-  `label`. No emoji as icons.
-- **Motion** is short and quiet: 120ms hover/press, 180ms popovers, 260ms sheets, ease-out in, ease-in out.
-  Reduced motion turns it all off.
-- **Responsive 320 → wide**: sidebar becomes a drawer below 1024px; toolbars wrap; forms go single column below
-  768px; dialogs and sheets go full width on phones.
+## Quick reference
 
-## Avoid
+```tsx
+import * as stylex from "@stylexjs/stylex";
+import { AppShell, Sidebar, SidebarItem, Header, Page, PageHeading, Button, DataTable, Drawer, DrawerContent, Field, Input, useToast } from "@keel/components";
+import { color, depth, radius } from "@keel/tokens/tokens.stylex";
 
-Excessive cards and boxes · gradients · glassmorphism or backdrop blur · decorative illustrations · emoji ·
-rainbow dashboards (one data hue, grey comparisons) · giant hero sections · charts to fill space · icon squares
-next to every KPI · sentences under numbers (explanations go in tooltips) · generic Tailwind-template look ·
-Inter or Space Grotesk · purple or blue as the brand color · hard-coded colors · disabled buttons with no
-explanation · zebra striping and vertical table lines · page-level horizontal scroll.
+const s = stylex.create({ panel: { backgroundColor: color.surface, boxShadow: depth.card, borderRadius: radius.xl, padding: 16 } });
+```
 
-## Critique an existing admin screen
+- Buttons: `variant` primary | secondary (default) | accent | danger | soft | outline | ghost | danger-ghost | link; `size` xs | sm | md | lg; `leading`, `trailing`, `loading`.
+- Icon-only: `<IconButton label="Edit"><IconEdit /></IconButton>` — label is required and becomes the tooltip.
+- Forms: wrap every control in `<Field label error description>`; controls pick up ids and invalid state.
+- Lists of records: `DataTable` (sort, filter, select + floating `TableSelectionToolbar`, expand, paginate, density, columns).
+- Details: `Drawer` + `DrawerContent` with `DrawerSection`s; confirmations: `AlertDialog`; quick confirm: `Popconfirm`.
+- Feedback: `useToast()` after actions (with Undo), `Banner` for persistent page state, `EmptyState` for nothing-yet.
+- AI: `ChatLayout` + `ChatMessage` + `ChatComposer`; `Thinking`, `ChatToolCalls`, `ApprovalCard`, `DiffTable`, `TaskList`, `InsightCard`.
+- Icons: Lucide via Keel names (`IconSearch`, `IconTrash`…). Inside controls they size themselves.
 
-1. One-line verdict. 2. What works (2–4 specifics). 3. Issues ranked by harm: **task** (can the user find,
-check and change the record fast?) → **honesty** (numbers that disagree, misleading deltas) → **salience** (does
-the eye land on what needs action?) → **hierarchy** (boxes doing the job type should do) → **states** (missing
-loading/empty/error/focus) → **words** → polish. Each issue: element, what the user sees, the Keel fix.
-4. Offer to fix in one pass with screenshots before and after.
+## References
 
-## Claude Design and Figma
-
-- In **Claude Design**, use the Keel Design System artifact (tokens, components, guidelines) and follow the
-  same rules. Dark theme first; check light.
-- The **Figma library** (“Keel — Admin Design System”) has the same tokens as Figma Variables — collection
-  *Keel / Color* with Dark and Light modes, *Keel / Dimension* — plus Keel text and effect styles, Lucide icon
-  components, and component sets with every state. Details: [figma.md](skills/keel/references/figma.md).
-
-## Reference files
-
-| File | Read when |
-|---|---|
-| [tokens.md](skills/keel/references/tokens.md) | Choosing any color, size, radius, shadow, motion value |
-| [components.md](skills/keel/references/components.md) | Picking a component; its key props and traps |
-| [layout.md](skills/keel/references/layout.md) | Shell, page widths, grids, breakpoints, spacing rhythm |
-| [states.md](skills/keel/references/states.md) | The state matrix and how each state looks |
-| [patterns.md](skills/keel/references/patterns.md) | List, detail, form, settings, roles, audit, overview, auth |
-| [snippets.md](skills/keel/references/snippets.md) | Copy-ready code for the common screens |
-| [qa.md](skills/keel/references/qa.md) | Before showing anyone: the screenshot pass |
-| [figma.md](skills/keel/references/figma.md) | Working in the Figma library or syncing tokens |
+- `skills/keel/references/components.md` — every export with its props (generated from source).
+- `skills/keel/references/tokens.md` — color, depth, radius, type, motion tokens and when to use each.
+- `skills/keel/references/styling.md` — StyleX rules, `xstyle`, pseudo-classes, media queries, dynamic styles.
+- `skills/keel/references/patterns.md` — page recipes with the components to use.
+- `skills/keel/references/setup.md` — install and configure in a new app.
+- `skills/keel/references/qa.md` — the review checklist.

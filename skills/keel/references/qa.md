@@ -1,49 +1,28 @@
-# QA pass
+# QA checklist
 
-Run before showing a screen to anyone. Look at the screenshots — reading code is not seeing the screen.
+Run before calling a screen done. Screenshot at 390, 768 and 1440 in **light and dark**.
 
-## 1. Screenshots
+## Visual
+- [ ] No Tailwind classes, no hex colors, no raw box-shadows — tokens only.
+- [ ] One primary (ink) button per view; accent only for selection/focus/links/progress.
+- [ ] Buttons look raised, inputs look recessed, cards have the card depth — nothing flat and borderless by accident.
+- [ ] Text uses `<Text variant>`/`Heading`, 13px for UI, 14px for reading. Numbers `tabular`.
+- [ ] No horizontal page scroll at 390px. Tables hide secondary columns with `showFrom`.
+- [ ] Both themes readable: check muted text on surfaces, status colors, charts.
 
-Capture every changed screen at **320, 768, 1024 and 1440px**, in **dark and light** (8 shots per screen). With
-Playwright: set `localStorage.keel-theme` (docs) or `document.documentElement.dataset.theme`, set the viewport,
-wait for network idle, full-page screenshot.
+## States
+- [ ] Hover, focus-visible ring, pressed, disabled for every control you built yourself.
+- [ ] Loading (skeleton or `loading` prop), empty (`EmptyState` with an action), error (`ErrorState`/`Alert`/field errors).
+- [ ] Long content: names truncate, descriptions clamp, tables scroll inside their container.
+- [ ] Destructive actions confirm (`AlertDialog`/`Popconfirm`) and toasts offer Undo where possible.
 
-Check on each shot:
+## Accessibility
+- [ ] Keyboard only: tab order, Esc closes overlays, Enter/Space activate, arrows in menus, tabs, trees, calendars.
+- [ ] Every `IconButton` has `label`; every control is inside a `Field` or has `aria-label`.
+- [ ] Charts have `label`; status isn't color-only (dot + word).
+- [ ] `prefers-reduced-motion` respected (styles.css handles it).
 
-- No page-level horizontal scroll (`document.documentElement.scrollWidth === clientWidth`). Tables scroll inside
-  their container.
-- No clipped or overlapping text; truncated values have a tooltip or are fully visible elsewhere.
-- The primary action and record name are visible at every width.
-- Sidebar is a drawer below 1024px and docked at 1024+.
-- Light theme has no dark-only artifacts (hard-coded colors, invisible borders).
-
-## 2. States
-
-Open each panel in loading, empty (first use and filtered), error, and no-permission states. Tab through the
-page: every focus is visible and in a sensible order. Hover rows and controls. Open each menu, sheet and dialog,
-then press Esc — focus returns to the trigger.
-
-## 3. Numbers and words
-
-- Numbers right-aligned, tabular, same value everywhere it appears; totals match their rows.
-- No sentences under numbers; explanations in tooltips.
-- Buttons are verb + object; errors say how to fix; sentence case; no "Submit", "OK", "Success!".
-
-## 4. Tokens
-
-Search JSX for `#`, `rgb(`, `bg-[`, `text-[#`, `blue-`, `gray-`. Every color is a Keel token. Only Lucide icons
-through Keel wrappers; no emoji.
-
-## Smells → fixes
-
-| Smell | Fix |
-|---|---|
-| Every section in a card | Remove cards; separate with hairlines and spacing |
-| Two primary buttons | Keep one; the other becomes secondary |
-| Colored CTA | `variant="primary"` |
-| Red/green tags for categories | Tag tones for categories, StatusPill for state |
-| Icon square beside each KPI | Remove; eyebrow label + number + baseline |
-| Spinner over a whole page | Skeletons shaped like the content |
-| Disabled save with no reason | Enable; show inline errors on submit |
-| Page scrolls sideways on phone | `showFrom` on secondary columns; content in `TableContainer` |
-| Toast for a persistent problem | Alert in the section |
+## AI screens
+- [ ] Streaming shows a caret; Stop works; errors offer Retry.
+- [ ] Any side effect goes through `ApprovalCard`; proposed record changes through `DiffTable`.
+- [ ] Sources cited with `[^n]` / `Citation`.

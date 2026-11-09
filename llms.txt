@@ -1,22 +1,18 @@
-# Keel
+# Keel v2
 
-> Keel is a calm, dense, dark-first design system for admin interfaces: tokens, React + TypeScript + Tailwind v4 + Radix components, Lucide icons, admin templates, a docs site, a Figma library and a Claude skill.
+> Tactile, dense admin design system for React 19 — StyleX styling (no Tailwind), Radix behavior, Lucide icons, light/dark tokens via light-dark(), 140+ documented components including chat and AI-agent primitives, and complete page templates.
 
 ## Start here
-- [SKILL.md](SKILL.md): how to build admin screens with Keel (rules, procedure, what to avoid)
-- [README.md](README.md): install, structure, commands
-
-## Reference
-- [Tokens](skills/keel/references/tokens.md): colors (dark + light), type, spacing, radius, elevation, motion, z-index
-- [Components](skills/keel/references/components.md): which component for which need, key props, traps
-- [States](skills/keel/references/states.md): state matrix for every component and panel
-- [Layout](skills/keel/references/layout.md): app shell, widths, grids, breakpoints
-- [Patterns](skills/keel/references/patterns.md): list, detail sheet, form, settings, roles, audit log, overview, auth
-- [Snippets](skills/keel/references/snippets.md): copy-ready code
-- [QA](skills/keel/references/qa.md): screenshot pass at 320/768/1024/1440 in both themes
-- [Figma](skills/keel/references/figma.md): the Figma library, variables and modes
+- [Agent skill](skills/keel/SKILL.md): rules and how to build a screen
+- [Component catalog](skills/keel/references/components.md): every export with props, generated from source
+- [Tokens](skills/keel/references/tokens.md): color, depth, radius, type, motion
+- [Styling with StyleX](skills/keel/references/styling.md)
+- [Page patterns](skills/keel/references/patterns.md)
+- [Setup](skills/keel/references/setup.md)
+- [QA checklist](skills/keel/references/qa.md)
+- [AGENTS.md](AGENTS.md): repo layout and commands
 
 ## Source
-- tokens/tokens.json: the single source of truth for tokens
-- components/index.ts: every export; components/_ui (primitives), components/_common (app-level)
-- templates/: real admin screens built only from Keel components
+- [components/](components/): one file per category (action, chat, ai, container, content, feedback, inputs, choice, select, dates, pickers, layout, navigation, overlay, table, lists, data, utility)
+- [tokens/tokens.stylex.ts](tokens/tokens.stylex.ts)
+- [templates/](templates/): overview, customers, invoices, settings, members, audit-log, assistant, auth

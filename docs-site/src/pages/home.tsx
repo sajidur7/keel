@@ -1,92 +1,101 @@
-import {
-  Avatar, Button, IconArrowRight, Kbd, SegmentBar, Sparkline, StatusPill, Tag, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableHeader, TableRow, FilterMenu, SearchInput,
-} from "@keel/components";
-import { customerLabel, customerTone, customers, fmtMoney, planTone } from "@keel/templates/data";
+import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
-import { SectionTitle } from "../docs/doc-ui";
-import { pages, templates } from "../registry";
+import {
+  Avatar, AvatarGroup, Button, Card, ChatComposer, ClickableCard, IconArrowRight, IconSparkles, InsightCard, Kbd, ProgressBar, SegmentedControl, Sparkline, Stat,
+  StatusPill, Switch, Tag, Text, Thinking, Token, ToggleButtonGroup, IconBold, IconItalic, IconUnderline, ApprovalCard,
+} from "@keel/components";
+import { color, depth, font, radius } from "@keel/tokens/tokens.stylex";
+import { componentGroups, componentPages } from "../registry";
 
-const principles = [
-  ["Density over decoration", "Tables and lists are the work. 40px rows, 13px text, nothing between the user and the data."],
-  ["Hierarchy without boxes", "Size, weight and four text greys do the grouping. Hairlines and whitespace replace most cards."],
-  ["One bright button", "Primary actions are white in dark mode, near-black in light. Color is kept for status and categories."],
-  ["Every state designed", "Hover, focus-visible, active, disabled, loading, empty, error and read-only — on every control."],
-  ["Keyboard first", "⌘K everywhere, visible focus rings, shortcuts shown where actions live."],
-  ["320px to wide", "The sidebar becomes a drawer, secondary columns step away, tables scroll inside themselves."],
-];
+const h = stylex.create({
+  page: { display: "flex", flexDirection: "column", gap: 56, maxWidth: 1180, marginInline: "auto", width: "100%", paddingBottom: 96 },
+  hero: { display: "grid", gridTemplateColumns: { default: "1fr", "@media (min-width: 1100px)": "minmax(0, 1fr) minmax(0, 1.1fr)" }, gap: 40, alignItems: "center", paddingTop: 24 },
+  copy: { display: "flex", flexDirection: "column", gap: 18 },
+  title: { fontSize: { default: "40px", "@media (min-width: 768px)": "54px" }, lineHeight: 1.02, fontWeight: font.semibold, letterSpacing: "-0.045em", textWrap: "balance" },
+  grad: { backgroundImage: `linear-gradient(120deg, ${color.fg} 30%, ${color.accent} 70%, ${color.chart5})`, backgroundClip: "text", color: "transparent" },
+  lede: { fontSize: font.xl, color: color.fgMuted, lineHeight: 1.55, maxWidth: "52ch" },
+  ctas: { display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" },
+  mosaic: {
+    display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14, padding: 18, borderRadius: 28, position: "relative",
+    backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}`,
+    backgroundImage: `radial-gradient(${color.border} 1px, transparent 1px)`, backgroundSize: "16px 16px",
+  },
+  tile: { display: "flex", flexDirection: "column", gap: 12, padding: 16, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, minWidth: 0 },
+  span2: { gridColumn: "1 / -1" },
+  row: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" },
+  stats: { display: "grid", gridTemplateColumns: { default: "repeat(2, 1fr)", "@media (min-width: 768px)": "repeat(4, 1fr)" }, gap: 12 },
+  big: { fontSize: "32px", fontWeight: font.semibold, letterSpacing: "-0.03em" },
+  cats: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(250px, 100%), 1fr))", gap: 12 },
+  catHead: { display: "flex", alignItems: "center", justifyContent: "space-between" },
+  h2: { fontSize: font.h2, fontWeight: font.semibold, letterSpacing: "-0.02em", marginBottom: 14 },
+});
 
-export function Home() {
-  const [plan, setPlan] = useState<string[]>([]);
-  const rows = customers.filter((c) => !plan.length || plan.includes(c.plan)).slice(0, 5);
-  const comps = pages.filter((p) => p.section === "Components").length;
+export function Home({ go }: { go: (to: string) => void }) {
+  const [plan, setPlan] = useState("yearly");
+  const total = componentPages.length;
+  const fresh = componentPages.filter((p) => p.badge === "New").length;
   return (
-    <div className="flex flex-col gap-14 pb-24">
-      <section className="flex flex-col gap-5 pt-4">
-        <span className="eyebrow">Keel · v0.1</span>
-        <h1 className="max-w-[18ch] text-[30px] leading-[1.1] font-semibold tracking-[-0.02em] sm:text-[36px]">A calm, dense design system for admin interfaces.</h1>
-        <p className="max-w-[62ch] text-body text-soft">Tokens, {comps} documented components and {templates.length} real admin templates — React, TypeScript, Tailwind v4 and Radix. Dark first, with a complete light theme from the same tokens, and a Figma library on the same variables.</p>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="primary" trailing={<IconArrowRight />} asChild><a href="#/docs/getting-started">Get started</a></Button>
-          <Button asChild><a href="#/templates/customers">See a template</a></Button>
-          <span className="flex items-center gap-1.5 pl-1 text-small text-subtle">or press <Kbd>⌘K</Kbd></span>
+    <div {...stylex.props(h.page)}>
+      <section {...stylex.props(h.hero)}>
+        <div {...stylex.props(h.copy)}>
+          <div {...stylex.props(h.row)}><Tag tone="blue" shape="pill">v2 preview</Tag><Text variant="caption">StyleX · React 19 · Radix</Text></div>
+          <h1 {...stylex.props(h.title)}>Admin UI that feels <span {...stylex.props(h.grad)}>good to press.</span></h1>
+          <p {...stylex.props(h.lede)}>Keel is a tactile, dense design system for admin products — {total} documented components with live code, every state, AI primitives and full templates. Styled with StyleX, themed with tokens, built to be copied.</p>
+          <div {...stylex.props(h.ctas)}>
+            <Button variant="primary" size="lg" trailing={<IconArrowRight />} onClick={() => go("#/docs/installation")}>Get started</Button>
+            <Button size="lg" onClick={() => go("#/docs/button")}>Browse components</Button>
+            <Text variant="caption">or press <Kbd>⌘K</Kbd></Text>
+          </div>
+        </div>
+        <div {...stylex.props(h.mosaic)} aria-hidden>
+          <div {...stylex.props(h.tile)}><Stat label="MRR" value="$84,320" delta={6.2} baseline="vs Oct" chart={<Sparkline values={[60, 62, 64, 63, 68, 71, 74, 79, 84]} width={180} />} /></div>
+          <div {...stylex.props(h.tile)}>
+            <SegmentedControl size="sm" value={plan} onValueChange={setPlan} items={[{ value: "monthly", label: "Monthly" }, { value: "yearly", label: "Yearly" }]} fullWidth />
+            <Switch label="Auto-renew" defaultChecked />
+            <div {...stylex.props(h.row)}><Button variant="primary" size="sm">Upgrade</Button><Button size="sm">Later</Button></div>
+          </div>
+          <div {...stylex.props(h.tile)}>
+            <div {...stylex.props(h.row)}><StatusPill status="active">Live</StatusPill><Tag tone="violet">Beta</Tag><Tag tone="green" dot>Paid</Tag></div>
+            <div {...stylex.props(h.row)}><Token label="Ana Lima" avatar={{ name: "Ana Lima" }} onRemove={() => {}} /><AvatarGroup people={[{ name: "Bo Chen" }, { name: "Cy Diaz" }, { name: "Dee Eko" }, { name: "Eli Fox" }]} max={3} /></div>
+            <ProgressBar value={68} label="Seats" showValue />
+          </div>
+          <div {...stylex.props(h.tile)}>
+            <Thinking />
+            <ToggleButtonGroup type="multiple" defaultValue={["b"]} items={[{ value: "b", label: "", icon: <IconBold />, ariaLabel: "Bold" }, { value: "i", label: "", icon: <IconItalic />, ariaLabel: "Italic" }, { value: "u", label: "", icon: <IconUnderline />, ariaLabel: "Underline" }]} />
+            <div {...stylex.props(h.row)}><Avatar name="Ana Lima" status="online" size="lg" /><Text weight="medium">Ana Lima</Text></div>
+          </div>
+          <div {...stylex.props(h.span2)}><ChatComposer value="" onValueChange={() => {}} onSubmit={() => {}} placeholder="Ask about your billing…" dictation={false} /></div>
         </div>
       </section>
 
-      <section className="flex flex-col gap-3" aria-label="Sample">
-        <div className="flex flex-wrap items-center gap-2">
-          <SearchInput size="sm" shellClassName="w-full sm:w-56" placeholder="Search customers" />
-          <FilterMenu mode="multi" label="Plan" value={plan} onChange={setPlan} options={["Starter", "Growth", "Scale", "Enterprise"].map((p) => ({ value: p, label: p }))} />
-        </div>
-        <TableContainer className="rounded-lg shadow-card">
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableHead className="pl-4">Customer</TableHead><TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Plan</TableHead><TableHead className="hidden lg:table-cell">Health</TableHead>
-                <TableHead className="hidden sm:table-cell">Usage</TableHead><TableHead align="right" className="pr-4">MRR</TableHead>
-              </tr>
-            </TableHeader>
-            <TableBody>
-              {rows.map((c) => (
-                <TableRow key={c.id} className="last:[&>td]:border-b-0">
-                  <TableCell className="h-11 pl-4"><span className="flex items-center gap-2.5"><Avatar name={c.name} shape="square" /><span className="truncate">{c.name}</span></span></TableCell>
-                  <TableCell><StatusPill status={customerTone[c.status]}>{customerLabel[c.status]}</StatusPill></TableCell>
-                  <TableCell className="hidden md:table-cell"><Tag tone={planTone[c.plan]}>{c.plan}</Tag></TableCell>
-                  <TableCell className="hidden lg:table-cell"><SegmentBar value={c.health} tone="auto" className="w-24" label="Health" /></TableCell>
-                  <TableCell className="hidden sm:table-cell"><Sparkline values={c.trend} tone={c.health < 40 ? "danger" : "data"} /></TableCell>
-                  <TableCell align="right" className="pr-4">{fmtMoney(c.mrr)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      <section {...stylex.props(h.stats)}>
+        {[[`${total}`, "documented components"], [`${fresh}`, "new in v2"], [`${componentGroups.length}`, "categories"], ["0", "Tailwind classes"]].map(([n, l]) => (
+          <Card key={l}><span {...stylex.props(h.big)}>{n}</span><Text tone="muted">{l}</Text></Card>
+        ))}
       </section>
 
-      <section className="flex flex-col gap-5">
-        <SectionTitle>Principles</SectionTitle>
-        <div className="grid gap-x-10 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
-          {principles.map(([t, d], i) => (
-            <div key={t} className="flex flex-col gap-1.5">
-              <span className="tabular font-mono text-caption text-faint">{String(i + 1).padStart(2, "0")}</span>
-              <span className="text-body font-medium">{t}</span>
-              <span className="text-small text-subtle">{d}</span>
-            </div>
-          ))}
+      <section>
+        <h2 {...stylex.props(h.h2)}>Components</h2>
+        <div {...stylex.props(h.cats)}>
+          {componentGroups.map((grp) => {
+            const list = componentPages.filter((p) => p.group === grp);
+            return (
+              <ClickableCard key={grp} onClick={() => go(`#/docs/${list[0].slug}`)}>
+                <span style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <span {...stylex.props(h.catHead)}><Text weight="semibold">{grp}</Text><Tag size="sm">{list.length}</Tag></span>
+                  <Text variant="caption" maxLines={2}>{list.map((p) => p.title).join(" · ")}</Text>
+                </span>
+              </ClickableCard>
+            );
+          })}
         </div>
       </section>
 
-      <section className="flex flex-col gap-5">
-        <SectionTitle>Templates</SectionTitle>
-        <div className="grid gap-px overflow-hidden rounded-lg bg-border shadow-card sm:grid-cols-2 lg:grid-cols-3">
-          {templates.map((t) => (
-            <a key={t.id} href={`#/templates/${t.id}`} className="group flex flex-col gap-1 bg-background p-4 outline-none hover:bg-surface focus-visible:shadow-[inset_0_0_0_2px_var(--ring)]">
-              <span className="flex items-center justify-between text-small font-medium">{t.title}<IconArrowRight size={14} className="text-faint transition-transform duration-fast group-hover:translate-x-0.5" /></span>
-              <span className="line-clamp-2 text-caption text-subtle">{t.description}</span>
-            </a>
-          ))}
-        </div>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))", gap: 16 }}>
+        <InsightCard title="Net revenue retention" value="112%" trend={[96, 98, 101, 103, 105, 108, 112]} explanation="AI primitives are first-class: insights, approvals, diffs, tool calls and a full chat kit." onAsk={() => go("#/docs/insight-card")} />
+        <ApprovalCard title="Send 2 payment reminders?" description="Agents ask before they act." onApprove={() => {}} onReject={() => {}} details={"To: billing@acme.com\nSubject: INV-1042 is overdue"} />
       </section>
+      <span hidden><IconSparkles /></span>
     </div>
   );
 }
