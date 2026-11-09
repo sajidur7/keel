@@ -56,7 +56,7 @@ export function InvoiceFormTemplate({ go }: { go?: (to: Nav) => void }) {
           </Card>
           <Card padding="lg" variant="raised" style={{ position: "sticky", top: 72 }}>
             <Text variant="eyebrow">Preview</Text>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 8 }}><Text variant="h3">Fernhill</Text><Text variant="mono" tone="muted">INV-2072</Text></div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}><Text variant="h3">Fernhill</Text><Text variant="mono" tone="muted">INV-2072</Text></div>
             <Text tone="muted">Bill to {c?.name ?? "—"}</Text>
             <Divider style={{ margin: "14px 0" }} />
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

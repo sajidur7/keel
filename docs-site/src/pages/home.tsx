@@ -21,9 +21,9 @@ const h = stylex.create({
   fact: { display: "inline-flex", gap: 6, alignItems: "baseline" },
   factN: { color: color.fg, fontWeight: font.semibold, fontVariantNumeric: "tabular-nums" },
   section: { display: "flex", flexDirection: "column", gap: 14, scrollMarginTop: 72 },
-  secHead: { display: "flex", alignItems: "baseline", gap: 10 },
+  secHead: { display: "flex", alignItems: "center", gap: 10 },
   h2: { fontSize: font.h3, fontWeight: font.semibold, letterSpacing: "-0.01em" },
-  count: { fontFamily: font.mono, fontSize: "11px", color: color.fgFaint },
+  count: { fontFamily: font.mono, fontSize: "11px", lineHeight: 1, color: color.fgFaint },
   grid: { display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))" },
   card: {
     display: "flex", flexDirection: "column", padding: 4, borderRadius: radius.xxl, backgroundColor: color.surfaceSunken, cursor: "pointer", outline: "none", textAlign: "start", width: "100%",

@@ -21,7 +21,7 @@ const s = stylex.create({
   chipOn: { color: color.onInk, backgroundImage: `linear-gradient(180deg, ${color.inkTop}, ${color.inkBottom})`, boxShadow: { default: depth.ink, ":hover": depth.ink } },
   count: { fontSize: font.xs, opacity: 0.7, fontVariantNumeric: "tabular-nums" },
   section: { display: "flex", flexDirection: "column", gap: 12, scrollMarginTop: 120 },
-  secHead: { display: "flex", alignItems: "baseline", gap: 10 },
+  secHead: { display: "flex", alignItems: "center", gap: 10 },
   h2: { fontSize: font.h3, fontWeight: font.semibold, letterSpacing: "-0.01em" },
   grid: { display: "grid", gap: 16, gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 700px)": "repeat(2, minmax(0, 1fr))", "@media (min-width: 1180px)": "repeat(3, minmax(0, 1fr))" } },
   card: {

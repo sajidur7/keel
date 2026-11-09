@@ -56,7 +56,7 @@ const d = stylex.create({
   help: { textDecorationLine: "underline", textDecorationStyle: "dashed", textDecorationColor: color.fgFaint, textUnderlineOffset: "4px", cursor: "help", borderRadius: radius.xs, outline: "none", ":focus-visible": { boxShadow: depth.focus } },
   action: { display: "flex", alignItems: "center", marginBlock: -4, marginInlineEnd: -4, flexShrink: 0 },
   valueCol: { display: "flex", flexDirection: "column", gap: 4, minWidth: 0 },
-  valueInline: { flexDirection: "row", flexWrap: "wrap", alignItems: "baseline", columnGap: 10, rowGap: 4 },
+  valueInline: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 4 },
   value: { fontWeight: font.semibold, letterSpacing: "-0.025em", lineHeight: 1.1, color: color.fg, fontVariantNumeric: "tabular-nums", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   vsm: { fontSize: font.h3 }, vmd: { fontSize: "26px" }, vlg: { fontSize: "34px" },
   deltaRow: { display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 6, rowGap: 2, fontSize: font.sm, fontVariantNumeric: "tabular-nums" },
