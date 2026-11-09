@@ -13,6 +13,7 @@ import { Home } from "./pages/home";
 import { componentGroups, componentPages, pageBySlug, pages } from "./registry";
 import { templateById, templates, TemplatesPage } from "./templates";
 import { ScreensPage } from "./screens";
+import { KeelLogo } from "./logo";
 import { GoProvider, screenById, screens } from "@keel/templates/screens";
 
 function useHash() {
@@ -64,7 +65,7 @@ function Docs() {
   return (
     <AppShell sideNav={
       <Sidebar label="Documentation">
-        <SidebarBrand logo="K" name="Keel" meta="v2 · StyleX" action={<Tag size="sm" variant="outline" shape="pill">Preview</Tag>} />
+        <SidebarBrand logo={<KeelLogo size={14} />} name="Keel" meta="v2 · StyleX" />
         <SidebarContent>
           <SidebarSection>
             <SidebarItem icon={<IconHome />} label="Overview" active={route === "/" || route === ""} onClick={() => go("#/")} />
@@ -82,7 +83,7 @@ function Docs() {
             </SidebarSection>
           ))}
         </SidebarContent>
-        <SidebarFooter><Text variant="caption">No Tailwind · StyleX atomic CSS</Text></SidebarFooter>
+        <SidebarFooter><Text variant="caption">StyleX atomic CSS</Text></SidebarFooter>
       </Sidebar>
     }>
       <Header title={title} start={<SidebarTrigger />}

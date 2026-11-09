@@ -3,12 +3,12 @@
  * Every screen is built only from @keel/components; nothing here is special-cased.
  */
 import * as stylex from "@stylexjs/stylex";
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, forwardRef, useContext, useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import {
   AppShell, Avatar, Button, CommandPalette, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Header,
   IconAgent, IconBell, IconBuilding, IconCalendar, IconChartBar, IconHome, IconInbox, IconLogOut, IconMoon, IconSearch, IconSettings, IconSun, IconTarget, IconUser,
   IconUsers, IconWorkflow, IconButton, IconLifeBuoy, IconReceipt, IconBook, Kbd, NavHeadingMenu, Page, ProgressBar, Sidebar, SidebarContent, SidebarFooter, SidebarItem,
-  SidebarSection, SidebarTrigger, Text, useCommandShortcut, type CommandItem, type HeaderProps,
+  SidebarSection, SidebarTrigger, Text, useCommandShortcut, useSidebar, type CommandItem, type HeaderProps,
 } from "@keel/components";
 import { color, depth, font, radius } from "@keel/tokens/tokens.stylex";
 
@@ -36,6 +36,7 @@ const k = stylex.create({
   plan: { display: "flex", flexDirection: "column", gap: 8, padding: 12, borderRadius: radius.lg, backgroundColor: color.surface, boxShadow: depth.card },
   planTitle: { fontSize: font.md, fontWeight: font.semibold },
   user: { display: "flex", alignItems: "center", gap: 8, width: "100%", padding: 6, borderRadius: radius.md, cursor: "pointer", outline: "none", textAlign: "start", backgroundColor: { default: "transparent", ":hover": color.hover }, ":focus-visible": { boxShadow: depth.focus } },
+  userRail: { justifyContent: "center" },
   userText: { display: "flex", flexDirection: "column", minWidth: 0, flex: 1, lineHeight: 1.25 },
   userName: { fontSize: font.md, fontWeight: font.medium, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   userMail: { fontSize: font.xs, color: color.fgMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
@@ -90,9 +91,7 @@ export function ScreenShell({ active, header, children, flush, pageWidth = "full
         <div style={{ padding: "8px 8px 0" }}>
           <NavHeadingMenu name="Northwind" meta="Revenue workspace" items={[{ id: "nw", name: "Northwind" }, { id: "ac", name: "Acme Labs" }, { id: "fx", name: "Foxglove" }]} onSelect={() => {}} />
         </div>
-        <div style={{ padding: "8px 8px 0" }}>
-          <button type="button" onClick={() => setCmd(true)} {...stylex.props(k.search)}><IconSearch size={14} /><span {...stylex.props(k.searchText)}>Quick search</span><Kbd>⌘K</Kbd></button>
-        </div>
+        <QuickSearch onOpen={() => setCmd(true)} />
         <SidebarContent>
           <SidebarSection>{NAV.map(item)}</SidebarSection>
           <SidebarSection title="Customers">{NAV_CRM.map(item)}</SidebarSection>
@@ -104,18 +103,10 @@ export function ScreenShell({ active, header, children, flush, pageWidth = "full
           </SidebarSection>
         </SidebarContent>
         <SidebarFooter>
-          <div {...stylex.props(k.plan)}>
-            <span {...stylex.props(k.planTitle)}>Growth plan</span>
-            <ProgressBar value={72} size="sm" />
-            <Text variant="caption">72 of 100 seats used</Text>
-            <Button size="sm" variant="primary" onClick={() => go("com-pricing")}>Upgrade</Button>
-          </div>
+          <PlanCard onUpgrade={() => go("com-pricing")} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button type="button" {...stylex.props(k.user)}>
-                <Avatar name="Maya Okafor" size="sm" status="online" />
-                <span {...stylex.props(k.userText)}><span {...stylex.props(k.userName)}>Maya Okafor</span><span {...stylex.props(k.userMail)}>maya@northwind.io</span></span>
-              </button>
+              <AccountButton />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="top" style={{ minWidth: 220 }}>
               <DropdownMenuLabel>maya@northwind.io</DropdownMenuLabel>
@@ -137,6 +128,34 @@ export function ScreenShell({ active, header, children, flush, pageWidth = "full
     </AppShell>
   );
 }
+
+/* Sidebar pieces that shrink to icons in the collapsed rail. */
+function QuickSearch({ onOpen }: { onOpen: () => void }) {
+  const { collapsed } = useSidebar();
+  if (collapsed) return <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}><IconButton label="Quick search" shortcut="⌘K" size="sm" onClick={onOpen}><IconSearch /></IconButton></div>;
+  return <div style={{ padding: "8px 8px 0" }}><button type="button" onClick={onOpen} {...stylex.props(k.search)}><IconSearch size={14} /><span {...stylex.props(k.searchText)}>Quick search</span><Kbd>⌘K</Kbd></button></div>;
+}
+function PlanCard({ onUpgrade }: { onUpgrade: () => void }) {
+  const { collapsed } = useSidebar();
+  if (collapsed) return null;
+  return (
+    <div {...stylex.props(k.plan)}>
+      <span {...stylex.props(k.planTitle)}>Growth plan</span>
+      <ProgressBar value={72} size="sm" />
+      <Text variant="caption">72 of 100 seats used</Text>
+      <Button size="sm" variant="primary" onClick={onUpgrade}>Upgrade</Button>
+    </div>
+  );
+}
+const AccountButton = forwardRef<HTMLButtonElement, ComponentProps<"button">>(function AccountButton(props, ref) {
+  const { collapsed } = useSidebar();
+  return (
+    <button ref={ref} type="button" aria-label={collapsed ? "Account — Maya Okafor" : undefined} {...props} {...stylex.props(k.user, collapsed && k.userRail)}>
+      <Avatar name="Maya Okafor" size="sm" status="online" />
+      {!collapsed && <span {...stylex.props(k.userText)}><span {...stylex.props(k.userName)}>Maya Okafor</span><span {...stylex.props(k.userMail)}>maya@northwind.io</span></span>}
+    </button>
+  );
+});
 
 /* ------------------------------------------------------------------ sample data (deterministic) */
 

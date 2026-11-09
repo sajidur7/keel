@@ -35,6 +35,7 @@ const L = stylex.create({
   },
   headerLine: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
   headRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, height: sz.header, paddingInline: { default: 12, "@media (min-width: 768px)": 20 } },
+  srOnly: { position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" },
   headStart: { display: "flex", alignItems: "center", gap: 8, minWidth: { default: 96, "@media (min-width: 640px)": 0 }, flexShrink: 1 },
   headTitleCol: { display: "flex", flexDirection: "column", justifyContent: "center", minWidth: 0 },
   headTitleRow: { display: "flex", alignItems: "center", gap: 8, minWidth: 0 },
@@ -173,8 +174,10 @@ export type HeaderProps = StyleProps & {
   title: ReactNode;
   /** Pill or count beside the title (hidden under 640px). */
   status?: ReactNode;
-  /** Breadcrumbs above the title. */
+  /** Breadcrumbs. When present they ARE the title line — the big title is hidden on screen (kept for screen readers). */
   breadcrumb?: ReactNode;
+  /** Show the big title even with a breadcrumb. */
+  showTitle?: boolean;
   /** Before the title — usually <SidebarTrigger />. */
   start?: ReactNode;
   actions?: ReactNode;
@@ -185,7 +188,8 @@ export type HeaderProps = StyleProps & {
 };
 
 /** The sticky top bar of a screen: title, status, actions, profile. Frosted when content scrolls under it. */
-export function Header({ title, status, breadcrumb, start, actions, end, tabs, ...p }: HeaderProps) {
+export function Header({ title, status, breadcrumb, showTitle, start, actions, end, tabs, ...p }: HeaderProps) {
+  const titleHidden = Boolean(breadcrumb) && !showTitle;
   return (
     <header {...sx(p, L.header, !tabs && L.headerLine)}>
       <div {...px(L.headRow)}>
@@ -193,7 +197,9 @@ export function Header({ title, status, breadcrumb, start, actions, end, tabs, .
           {start}
           <div {...px(L.headTitleCol)}>
             {breadcrumb}
-            <div {...px(L.headTitleRow)}><h1 {...px(L.headTitle)}>{title}</h1>{status && <span {...px(L.headStatus)}>{status}</span>}</div>
+            {titleHidden
+              ? <h1 {...px(L.srOnly)}>{title}</h1>
+              : <div {...px(L.headTitleRow)}><h1 {...px(L.headTitle)}>{title}</h1>{status && <span {...px(L.headStatus)}>{status}</span>}</div>}
           </div>
         </div>
         <div {...px(L.headEnd)}>{actions}{end}</div>

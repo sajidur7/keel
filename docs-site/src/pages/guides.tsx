@@ -36,7 +36,7 @@ const P = ({ children }: { children: ReactNode }) => <p {...stylex.props(g.p)}>{
 
 function Install() {
   const steps: [string, ReactNode, string?][] = [
-    ["Install", "Keel's runtime is React 19, Radix primitives, Lucide icons and StyleX. No Tailwind.", "npm i react react-dom radix-ui lucide-react @stylexjs/stylex @fontsource-variable/geist @fontsource-variable/geist-mono\nnpm i -D @stylexjs/unplugin"],
+    ["Install", "Keel's runtime is React 19, Radix primitives, Lucide icons and StyleX.", "npm i react react-dom radix-ui lucide-react @stylexjs/stylex @fontsource-variable/geist @fontsource-variable/geist-mono\nnpm i -D @stylexjs/unplugin"],
     ["Copy Keel in", "Copy the components/ and tokens/ folders into your app (or add the repo as a workspace package). Keel is source you own, not a black box.", "src/keel/components/…\nsrc/keel/tokens/tokens.stylex.ts"],
     ["Add the StyleX plugin", "Put it before React in vite.config.ts so Fast Refresh keeps working.", `import stylex from "@stylexjs/unplugin";\nimport react from "@vitejs/plugin-react";\n\nexport default defineConfig({\n  plugins: [\n    stylex.vite({\n      useCSSLayers: false,\n      unstable_moduleResolution: { type: "commonJS", rootDir: __dirname },\n    }),\n    react(),\n  ],\n});`],
     ["Target modern browsers", "So light-dark() colors ship as-is (no polyfill). Add to package.json:", `"browserslist": ["chrome >= 123", "edge >= 123", "safari >= 17.5", "firefox >= 120"]`],

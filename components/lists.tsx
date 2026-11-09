@@ -3,9 +3,10 @@
  * List · ListItem · MetadataList (DescriptionList) · OverflowList · TreeList (Tree) · Timeline
  */
 import * as stylex from "@stylexjs/stylex";
-import { Children, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Children, isValidElement, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
 import { Checkbox } from "./choice";
+import { Avatar } from "./content";
 import { IconChevronRight, IconFile, IconFolder, IconSizeContext } from "./icons";
 import { px, sx, type StyleProps } from "./lib/sx";
 import { Popover, PopoverContent, PopoverTrigger } from "./overlay";
@@ -63,6 +64,8 @@ const l = stylex.create({
   rail: { position: "absolute", left: 11, top: 26, bottom: 2, width: 1, backgroundColor: color.border },
   marker: { position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0 },
   dot: { width: 10, height: 10, borderRadius: "50%", boxShadow: `0 0 0 3px ${color.surface}` },
+  // An Avatar marker already has its own ring — don't add a second one.
+  bareMarker: { backgroundImage: "none", boxShadow: `0 0 0 3px ${color.surface}` },
   iconMarker: {
     display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", color: color.icon,
     backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`, boxShadow: depth.raised,
@@ -267,7 +270,7 @@ export function Timeline({ events, ...p }: StyleProps & { events: TimelineEvent[
       {events.map((e, i) => (
         <li key={e.id} {...px(l.ev)}>
           {i < events.length - 1 && <span aria-hidden {...px(l.rail)} />}
-          <span {...px(l.marker)}>{e.marker ? <span {...px(l.iconMarker)}><IconSizeContext.Provider value={12}>{e.marker}</IconSizeContext.Provider></span> : <span {...px(l.dot, l[e.tone ?? "default"])} />}</span>
+          <span {...px(l.marker)}>{e.marker ? <span {...px(l.iconMarker, isValidElement(e.marker) && e.marker.type === Avatar && l.bareMarker)}><IconSizeContext.Provider value={12}>{e.marker}</IconSizeContext.Provider></span> : <span {...px(l.dot, l[e.tone ?? "default"])} />}</span>
           <div {...px(l.evBody)}>
             <div {...px(l.evHead)}><span {...px(l.evTitle)}>{e.title}</span><span {...px(l.evTime)}>{e.time}</span></div>
             {e.body && <div {...px(l.evText)}>{e.body}</div>}

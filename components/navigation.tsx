@@ -27,6 +27,8 @@ type SidebarCtx = { collapsed: boolean; setCollapsed: (v: boolean | ((c: boolean
 const Ctx = createContext<SidebarCtx | null>(null);
 const MIN = 200, MAX = 360, DEFAULT = 244, RAIL = 56;
 
+/** Like useSidebar, but returns null outside a SidebarProvider (for parts that also work elsewhere). */
+export function useSidebarOptional() { return useContext(Ctx); }
 export function useSidebar() {
   const c = useContext(Ctx);
   if (!c) throw new Error("useSidebar must be used inside <SidebarProvider> (AppShell adds one)");

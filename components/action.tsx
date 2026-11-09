@@ -97,7 +97,8 @@ const b = stylex.create({
   sm: { height: sz.sm, paddingInline: 10, fontSize: font.sm, gap: 5, borderRadius: radius.sm },
   md: { height: sz.md, paddingInline: 12, fontSize: font.md },
   lg: { height: sz.lg, paddingInline: 16, fontSize: font.lg, gap: 8, borderRadius: radius.lg },
-  full: { width: "100%" },
+  // Fills its line; several fullWidth buttons in one row share it equally instead of overflowing.
+  full: { width: "100%", flexShrink: 1, minWidth: 0 },
   loading: { cursor: "progress" },
   hidden: { visibility: "hidden", display: "inline-flex", alignItems: "center", gap: "inherit" },
   spinner: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" },

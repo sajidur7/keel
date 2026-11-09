@@ -5,12 +5,14 @@ import { screens } from "@keel/templates/screens";
 import { color, depth, font, motion, radius } from "@keel/tokens/tokens.stylex";
 import type { DocPage } from "../docs/types";
 import { InPreview } from "../docs/kit";
+import { KeelLogo } from "../logo";
 import { componentGroups, componentPages } from "../registry";
 
 /* The overview, Astryx-style: a short intro, then every component as a live preview card, grouped by category. */
 const h = stylex.create({
   page: { display: "flex", flexDirection: "column", gap: 44, maxWidth: 1240, marginInline: "auto", width: "100%", paddingBottom: 96 },
   intro: { display: "flex", flexDirection: "column", gap: 14, maxWidth: 720, paddingTop: 12 },
+  brand: { color: color.fg, marginBottom: 4 },
   eyebrow: { fontFamily: font.mono, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: color.fgMuted },
   h1: { fontSize: { default: "32px", "@media (min-width: 768px)": "44px" }, lineHeight: 1.05, fontWeight: font.semibold, letterSpacing: "-0.04em", textWrap: "balance" },
   lede: { fontSize: font.xl, color: color.fgMuted, lineHeight: 1.55 },
@@ -89,6 +91,7 @@ export function Home({ go }: { go: (to: string) => void }) {
   return (
     <div {...stylex.props(h.page)}>
       <section {...stylex.props(h.intro)}>
+        <span {...stylex.props(h.brand)}><KeelLogo size={28} title="Keel" /></span>
         <span {...stylex.props(h.eyebrow)}>Keel v2 · StyleX · React 19</span>
         <h1 {...stylex.props(h.h1)}>Browse the library</h1>
         <p {...stylex.props(h.lede)}>Every component, with copy-ready examples for each variant, state and pattern — plus {screens.length} full SaaS screens built only from them.</p>
@@ -98,7 +101,7 @@ export function Home({ go }: { go: (to: string) => void }) {
           <Text variant="caption">or press <Kbd>⌘K</Kbd></Text>
         </div>
         <div {...stylex.props(h.facts)}>
-          {[[componentPages.length, "component pages"], [fresh, "new in v2"], [componentGroups.length, "categories"], [screens.length, "screens"], [0, "Tailwind classes"]].map(([n, l]) => <span key={l} {...stylex.props(h.fact)}><span {...stylex.props(h.factN)}>{n}</span>{l}</span>)}
+          {[[componentPages.length, "component pages"], [fresh, "new in v2"], [componentGroups.length, "categories"], [screens.length, "screens"]].map(([n, l]) => <span key={l} {...stylex.props(h.fact)}><span {...stylex.props(h.factN)}>{n}</span>{l}</span>)}
         </div>
         <SearchInput placeholder="Filter components" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 360 }} />
       </section>

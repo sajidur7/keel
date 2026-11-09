@@ -1,3 +1,5 @@
+<p><img src="assets/keel-logo.svg" width="48" alt="Keel" /></p>
+
 # Keel v2
 
 A tactile, dense design system for admin products and AI-assistant screens.

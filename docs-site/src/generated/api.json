@@ -13725,7 +13725,13 @@
     "name": "breadcrumb",
     "type": "ReactNode",
     "required": false,
-    "description": "Breadcrumbs above the title."
+    "description": "Breadcrumbs. When present they ARE the title line — the big title is hidden on screen (kept for screen readers)."
+   },
+   {
+    "name": "showTitle",
+    "type": "boolean",
+    "required": false,
+    "description": "Show the big title even with a breadcrumb."
    },
    {
     "name": "start",

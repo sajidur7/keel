@@ -29,7 +29,7 @@ import {
 import { Label } from "./inputs";
 import { KeyHint } from "./keys";
 import { px, sx, type StyleProps } from "./lib/sx";
-import { SidebarBrand, SidebarItem, SidebarSection, SidebarTrigger, useSidebar } from "./navigation";
+import { SidebarBrand, SidebarItem, SidebarSection, SidebarTrigger, useSidebar, useSidebarOptional } from "./navigation";
 import { AlertDialog, Dialog, DialogContent } from "./overlay";
 
 const s = stylex.create({
@@ -136,6 +136,7 @@ const s = stylex.create({
     display: "flex", alignItems: "center", gap: 10, width: "100%", minWidth: 0, padding: 6, borderRadius: radius.lg, cursor: "pointer", outline: "none", textAlign: "start",
     backgroundColor: { default: "transparent", ":hover": color.hover, ":is([data-state=open])": color.selected }, ":focus-visible": { boxShadow: depth.focus },
   },
+  headingRail: { justifyContent: "center", width: "auto", padding: 4 },
   logo: { display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: radius.md, flexShrink: 0, fontWeight: font.bold, color: color.onInk, backgroundImage: `linear-gradient(180deg, ${color.inkTop}, ${color.inkBottom})`, boxShadow: depth.ink },
   hmText: { display: "flex", flexDirection: "column", minWidth: 0, flex: 1, lineHeight: 1.2 },
   hmName: { fontWeight: font.semibold, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
@@ -490,13 +491,15 @@ export function NavIcon({ icon, count, dot, ...p }: StyleProps & { icon: ReactNo
 export function NavHeadingMenu({ logo, name, meta, items, onSelect, footer }: {
   logo?: ReactNode; name: string; meta?: string; items: { id: string; name: string; meta?: string; logo?: ReactNode }[]; onSelect: (id: string) => void; footer?: ReactNode;
 }) {
+  // In a collapsed sidebar rail only the logo shows.
+  const rail = useSidebarOptional()?.collapsed;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" {...px(s.headingMenu)}>
+        <button type="button" aria-label={rail ? `${name} — switch workspace` : undefined} {...px(s.headingMenu, rail && s.headingRail)}>
           <span {...px(s.logo)}>{logo ?? name.slice(0, 1)}</span>
-          <span {...px(s.hmText)}><span {...px(s.hmName)}>{name}</span>{meta && <span {...px(s.hmMeta)}>{meta}</span>}</span>
-          <IconChevronsUpDown size={14} />
+          {!rail && <><span {...px(s.hmText)}><span {...px(s.hmName)}>{name}</span>{meta && <span {...px(s.hmMeta)}>{meta}</span>}</span>
+          <IconChevronsUpDown size={14} /></>}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" style={{ minWidth: 240 }}>

@@ -1,0 +1,11 @@
+/** The Keel mark: four quarter-leaves meeting at the centre. Inherits `currentColor`. */
+export function KeelLogo({ size = 16, title }: { size?: number; title?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 305 304" fill="currentColor" role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true} style={{ display: "block" }}>
+      <path d="M157.135 303.572C157.135 222.53 223.131 156.832 304.174 156.832V303.572H157.135Z" />
+      <path d="M147.039 303.572C147.039 222.53 81.0425 156.832 0 156.832V303.572H147.039Z" />
+      <path d="M304.174 146.74C223.131 146.74 157.135 81.0426 157.135 0C238.178 0 304.174 65.698 304.174 146.74Z" />
+      <path d="M0 146.74C81.0425 146.74 147.039 81.0426 147.039 0C65.9962 0 0 65.698 0 146.74Z" />
+    </svg>
+  );
+}
