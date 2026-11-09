@@ -90,8 +90,10 @@ const k = stylex.create({
     gap: 2, borderRadius: radius.xs, fontFamily: font.sans, fontSize: font.xs, fontWeight: font.medium, lineHeight: 1,
     color: color.fgSoft, backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`,
     boxShadow: `inset 0 -1px 0 ${color.borderStrong}, 0 0 0 1px ${color.border}`, whiteSpace: "nowrap",
+    marginInline: "0.3em", // breathing room when a key sits inside a sentence
   },
-  group: { display: "inline-flex", alignItems: "center", gap: 3 },
+  group: { display: "inline-flex", alignItems: "center", gap: 3, marginInline: "0.3em" },
+  flush: { marginInline: 0 },
 });
 
 /** A key, drawn like a key. Symbols (⌘ ⇧ ⌥ ⌃ ↵ ↑ ↓ ← → ⌫ ⇥) and names ("shift", "enter", "mod") render as icons. */
@@ -102,7 +104,7 @@ export function Kbd({ xstyle, className, style, children, ...rest }: ComponentPr
 /** Several keys, one cap each: ["mod", "K"] or "⌘K". */
 export function KbdGroup({ keys, xstyle }: { keys: string[] | string } & StyleProps) {
   const list = typeof keys === "string" ? (keys.includes("+") && keys.length > 1 ? keys.split("+") : Array.from(keys.match(/[A-Za-z]{2,}|./gu) ?? [])) : keys;
-  return <span {...sx({ xstyle }, k.group)}>{list.map((key, i) => <Kbd key={i}>{key}</Kbd>)}</span>;
+  return <span {...sx({ xstyle }, k.group)}>{list.map((key, i) => <Kbd key={i} xstyle={k.flush}>{key}</Kbd>)}</span>;
 }
 
 /* ============================================================== Code & CodeBlock */
@@ -560,13 +562,16 @@ const tg = stylex.create({
   label: { display: "inline-flex", alignItems: "center", gap: 4, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" },
   // token
   token: {
-    display: "inline-flex", alignItems: "center", gap: 6, height: 24, paddingInlineStart: 4, paddingInlineEnd: 8, borderRadius: radius.full,
+    display: "inline-flex", alignItems: "center", gap: 6, height: 28, paddingInlineStart: 8, paddingInlineEnd: 10, borderRadius: radius.full,
     fontSize: font.sm, fontWeight: font.medium, color: color.fg, maxWidth: "100%", whiteSpace: "nowrap", verticalAlign: "middle",
     backgroundImage: `linear-gradient(180deg, ${color.buttonTop}, ${color.buttonBottom})`, boxShadow: depth.raised,
   },
-  tokenPlain: { paddingInlineStart: 8 },
+  tokenPlain: { paddingInlineStart: 10 },
+  // Avatar inset = (height − 18px avatar) / 2 on top, bottom AND left.
+  tokenAvatar: { paddingInlineStart: 5 },
+  tokenAvatarSm: { paddingInlineStart: 2 },
   tokenClick: { cursor: "pointer", outline: "none", ":hover": { boxShadow: depth.raisedHover }, ":focus-visible": { boxShadow: `${depth.raised}, ${depth.focus}` } },
-  tokenSm: { height: 20, fontSize: font.xs, gap: 4 },
+  tokenSm: { height: 22, fontSize: font.xs, gap: 5, paddingInlineStart: 6, paddingInlineEnd: 8 },
   tokenOff: { opacity: 0.5 },
   tokenIcon: { display: "inline-flex", color: color.icon },
   desc: { color: color.fgMuted, fontWeight: font.regular },
@@ -622,8 +627,8 @@ export function Token({ label, avatar, icon, description, size = "md", disabled,
   const El = onClick ? "button" : "span";
   return (
     <El type={onClick ? "button" : undefined} onClick={onClick} disabled={onClick ? disabled : undefined}
-      {...sx(p, tg.token, !avatar && !icon && tg.tokenPlain, size === "sm" && tg.tokenSm, onClick && tg.tokenClick, disabled && tg.tokenOff)}>
-      {avatar && <Avatar name={avatar.name} src={avatar.src} size={size === "sm" ? "xs" : "sm"} />}
+      {...sx(p, tg.token, !avatar && !icon && tg.tokenPlain, size === "sm" && tg.tokenSm, avatar && (size === "sm" ? tg.tokenAvatarSm : tg.tokenAvatar), onClick && tg.tokenClick, disabled && tg.tokenOff)}>
+      {avatar && <Avatar name={avatar.name} src={avatar.src} size="xs" />}
       {icon && <span {...px(tg.tokenIcon)}><IconSizeContext.Provider value={14}>{icon}</IconSizeContext.Provider></span>}
       <span {...px(tg.label)}>{label}</span>
       {description && <span {...px(tg.desc)}>{description}</span>}

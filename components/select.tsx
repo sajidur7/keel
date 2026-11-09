@@ -16,6 +16,8 @@ const popIn = stylex.keyframes({ from: { opacity: 0, transform: "scale(0.97) tra
 
 /** Shared listbox look (also used by date pickers and menus). */
 export const lb = stylex.create({
+  // 32px control, 18px avatar → 7px inset on the left, same as top and bottom.
+  avatarInset: { paddingInlineStart: 7 },
   pop: {
     zIndex: 60, overflow: "hidden", borderRadius: radius.lg, backgroundColor: color.surfaceRaised, color: color.fg, fontSize: font.md,
     boxShadow: depth.popover, outline: "none", animationName: popIn, animationDuration: motion.fast, animationTimingFunction: motion.ease,
@@ -287,7 +289,7 @@ export function ComplexSelector({ options, value, onValueChange, multiple, place
   return (
     <IconSizeContext.Provider value={14}>
       <P.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQ(""); }}>
-        <P.Trigger {...sx(p, field.shell, lb.trigger, lb.ghost)} style={{ width: "auto", maxWidth: "100%", ...p.style }}>
+        <P.Trigger {...sx(p, field.shell, lb.trigger, lb.ghost, chosen.length === 1 && chosen[0].avatar ? lb.avatarInset : null)} style={{ width: "auto", maxWidth: "100%", ...p.style }}>
           <span {...px(lb.value)}>
             {chosen.length === 0 ? <span {...px(lb.placeholder)}>{placeholder}</span>
               : chosen.length === 1 ? <>{chosen[0].avatar && <Avatar size="xs" name={chosen[0].avatar.name} src={chosen[0].avatar.src} />}{chosen[0].icon}<span {...px(lb.label)}>{chosen[0].label}</span></>
