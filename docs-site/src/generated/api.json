@@ -1531,7 +1531,7 @@
    },
    {
     "name": "size",
-    "type": "16 | 12 | 14",
+    "type": "12 | 14 | 16",
     "required": false,
     "default": "14",
     "description": ""

@@ -366,7 +366,7 @@ export function Icon({ icon: I, size = 16, tone = "default", label, tile, xstyle
 
 /* ============================================================== Avatar */
 
-const AV = { xs: 16, sm: 20, md: 24, lg: 32, xl: 40, "2xl": 56 } as const;
+const AV = { xs: 18, sm: 24, md: 28, lg: 36, xl: 44, "2xl": 64 } as const;
 type AvatarSize = keyof typeof AV;
 const TONES = ["blue", "teal", "green", "amber", "orange", "red", "pink", "violet", "lime", "gray"] as const;
 export type Tone = (typeof TONES)[number];
@@ -404,14 +404,14 @@ export const resolveTone = (x?: string): Tone => {
 const a = stylex.create({
   root: {
     position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-    borderRadius: "50%", fontWeight: font.semibold, userSelect: "none", lineHeight: 1, verticalAlign: "middle",
+    borderRadius: "50%", fontWeight: font.medium, letterSpacing: "0.02em", userSelect: "none", lineHeight: 1, verticalAlign: "middle",
   },
   square: { borderRadius: "28%" },
   img: { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" },
   ring: { boxShadow: `0 0 0 2px ${color.surface}` },
   dot: { position: "absolute", right: -1, bottom: -1, width: "30%", height: "30%", minWidth: 6, minHeight: 6, borderRadius: "50%", boxShadow: `0 0 0 2px ${color.surface}` },
   online: { backgroundColor: color.successSolid }, away: { backgroundColor: color.warningSolid }, busy: { backgroundColor: color.danger }, offline: { backgroundColor: color.fgFaint },
-  dim: (n: number) => ({ width: n, height: n, fontSize: Math.max(8, Math.round(n * 0.38)) }),
+  dim: (n: number) => ({ width: n, height: n, fontSize: Math.max(8, Math.round(n * 0.34)) }),
   group: { display: "inline-flex", alignItems: "center" },
   overlap: (n: number) => ({ marginInlineStart: -Math.round(n * 0.28) }),
   more: { color: color.fgSoft, backgroundColor: color.muted, boxShadow: `inset 0 0 0 1px ${color.border}` },
@@ -435,7 +435,7 @@ export function Avatar({ name = "", src, size = "md", shape = "circle", status, 
   const el = (
     <AP.Root {...sx(p, a.root, a.dim(AV[size]), toneStyles[colored ? toneFor(name) : "gray"], shape === "square" && a.square)} aria-label={name || undefined}>
       {src && <AP.Image src={src} alt={name} {...px(a.img)} />}
-      <AP.Fallback delayMs={src ? 300 : 0}>{initials(name)}</AP.Fallback>
+      <AP.Fallback delayMs={src ? 300 : 0}>{AV[size] <= 18 ? initials(name).slice(0, 1) : initials(name)}</AP.Fallback>
       {status && <span aria-label={status} {...px(a.dot, a[status])} />}
     </AP.Root>
   );
