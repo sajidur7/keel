@@ -109,7 +109,7 @@ export function OverflowListDemo() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
       <input type="range" min={140} max={680} value={w} onChange={(e) => setW(Number(e.target.value))} aria-label="Width" />
-      <div style={{ width: w, padding: 8, borderRadius: 10, boxShadow: "0 0 0 1px rgba(127,127,127,.25)" }}><OverflowList>{tags.map((t) => <Tag key={t}>{t}</Tag>)}</OverflowList></div>
+      <div style={{ width: w, maxWidth: "100%", padding: 8, borderRadius: 10, boxShadow: "0 0 0 1px rgba(127,127,127,.25)" }}><OverflowList>{tags.map((t) => <Tag key={t}>{t}</Tag>)}</OverflowList></div>
     </div>
   );
 }

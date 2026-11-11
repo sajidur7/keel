@@ -32,3 +32,7 @@ React 19 · TypeScript · Radix primitives (`radix-ui`) · Lucide icons via Keel
 
 When you add or change a component: export it from `components/index.ts`, add a demo in `docs-site/src/demos/<category>.tsx`,
 register a page in `docs-site/src/registry.tsx`, and run `npm run api && node scripts/gen-skill-catalog.mjs`.
+
+## Setup in a new app
+
+Follow `skills/keel/references/setup.md` exactly (tested in an empty folder): install the packages including `@types/react`, copy `components/` and `tokens/` side by side, add the StyleX Vite plugin before React, import `components/styles.css`, wrap the app in `<KeelProvider>`. Verify with `npx tsc --noEmit` and `npx vite build`.

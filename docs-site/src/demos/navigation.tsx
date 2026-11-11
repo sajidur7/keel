@@ -2,17 +2,18 @@ import { useState } from "react";
 import {
   Avatar, Breadcrumbs, Button, FilterMenu, IconBell, IconBook, IconChartBar, IconCode, IconCompass, IconHome, IconInbox, IconSearch, IconUser, IconUsers,
   IconWebhook, IconWorkflow, IconZap, MegaMenu, MegaMenuFeaturedCard, MobileNav, Outline, Pagination, SearchInput, Stepper, TabList, Tabs, TabsContent, TabsList, TabsTrigger,
-  Text, TopNav, TopNavItem, TopNavMenu, IconButton,
+  Text, TopNav, TopNavItem, TopNavMenu, IconButton, useIsMobile,
 } from "@keel/components";
 import { State, StateGrid } from "../docs/kit";
 
 
 /* ---------------- TopNav ---------------- */
 export function TopNavDemo() {
+  const mobile = useIsMobile();
   return (
-    <div style={{ width: "100%", minHeight: 320, borderRadius: 14, boxShadow: "0 0 0 1px rgba(127,127,127,.2)", overflow: "visible" }}>
+    <div style={{ width: "100%", minHeight: 320, borderRadius: 14, boxShadow: "inset 0 0 0 1px rgba(127,127,127,.2)", overflow: "visible" }}>
       <TopNav heading={<><span style={{ display: "inline-grid", placeItems: "center", width: 26, height: 26, borderRadius: 8, background: "#17171b", color: "#fff", fontSize: 12 }}>K</span>Keel</>}
-        end={<><SearchInput size="sm" placeholder="Search" style={{ width: 180 }} /><IconButton label="Notifications" size="sm"><IconBell /></IconButton><Avatar name="Ana Lima" size="md" /></>}>
+        end={<><SearchInput size="sm" placeholder="Search" style={{ width: 180, display: mobile ? "none" : undefined }} /><IconButton label="Notifications" size="sm"><IconBell /></IconButton><Avatar name="Ana Lima" size="md" /></>}>
         <TopNavItem href="#" active>Dashboard</TopNavItem>
         <MegaMenu label="Product" columns={[
           { title: "Billing", links: [{ title: "Invoices", description: "Send and track invoices", icon: <IconInbox /> }, { title: "Subscriptions", description: "Plans, trials and seats", icon: <IconZap /> }] },

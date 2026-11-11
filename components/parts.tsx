@@ -16,7 +16,7 @@
 import * as stylex from "@stylexjs/stylex";
 import {
   createContext, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ComponentProps, type ComponentType, type ElementType,
-  type KeyboardEvent, type ReactNode,
+  type CSSProperties, type KeyboardEvent, type ReactNode,
 } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, IconButton } from "./action";
@@ -114,6 +114,10 @@ const s = stylex.create({
   panelBorderStart: { borderInlineEndWidth: 1, borderInlineEndStyle: "solid", borderInlineEndColor: color.border },
   panelBorderEnd: { borderInlineStartWidth: 1, borderInlineStartStyle: "solid", borderInlineStartColor: color.border },
   resizable: { display: "flex", width: "100%", height: "100%", minHeight: 0 },
+  resizableX: { flexDirection: { default: "column", "@media (min-width: 640px)": "row" }, overflowY: { default: "auto", "@media (min-width: 640px)": "visible" } },
+  paneX: { flexBasis: { default: "auto", "@media (min-width: 640px)": "var(--pane-size)" }, flexShrink: { default: 0, "@media (min-width: 640px)": 1 }, overflow: { default: "visible", "@media (min-width: 640px)": "auto" } },
+  paneEndX: { flexGrow: 1, flexBasis: { default: "auto", "@media (min-width: 640px)": 0 }, flexShrink: { default: 0, "@media (min-width: 640px)": 1 }, overflow: { default: "visible", "@media (min-width: 640px)": "auto" } },
+  handleHideMobile: { display: { default: "none", "@media (min-width: 640px)": "block" } },
   resizableY: { flexDirection: "column" },
   pane: { minWidth: 0, minHeight: 0, overflow: "auto" },
   handle: {
@@ -426,7 +430,7 @@ export function LayoutContent({ children, ...p }: StyleProps & { children: React
 export function LayoutFooter({ children, ...p }: StyleProps & { children: ReactNode }) { return <footer {...sx(p, s.layFoot)}>{children}</footer>; }
 /** A side pane. `side` draws the divider on the correct edge. */
 export function LayoutPanel({ side = "start", width = 280, children, ...p }: StyleProps & { side?: "start" | "end"; width?: number | string; children: ReactNode }) {
-  return <aside {...sx(p, s.layPanel, side === "start" ? s.panelBorderStart : s.panelBorderEnd)} style={{ width, flexShrink: 0, ...p.style }}>{children}</aside>;
+  return <aside {...sx(p, s.layPanel, side === "start" ? s.panelBorderStart : s.panelBorderEnd)} style={{ width, flexShrink: 0, maxWidth: "100%", ...p.style }}>{children}</aside>;
 }
 
 /** Two panes with a draggable, keyboard-resizable divider. */
@@ -444,13 +448,13 @@ export function Resizable({ start, end, defaultSize = 50, min = 15, max = 85, ax
     window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
   };
   return (
-    <div ref={ref} {...sx(p, s.resizable, axis === "y" && s.resizableY)}>
-      <div {...px(s.pane)} style={{ flexBasis: `${size}%` }}>{start}</div>
+    <div ref={ref} {...sx(p, s.resizable, axis === "y" ? s.resizableY : s.resizableX)}>
+      <div {...px(s.pane, axis === "x" && s.paneX)} style={axis === "x" ? ({ "--pane-size": `${size}%` } as CSSProperties) : { flexBasis: `${size}%` }}>{start}</div>
       <div role="separator" tabIndex={0} aria-label={label} aria-orientation={axis === "x" ? "vertical" : "horizontal"} aria-valuenow={Math.round(size)} aria-valuemin={min} aria-valuemax={max}
         onPointerDown={down} onDoubleClick={() => setSize(defaultSize)}
         onKeyDown={(e) => { const d = e.key === (axis === "x" ? "ArrowLeft" : "ArrowUp") ? -2 : e.key === (axis === "x" ? "ArrowRight" : "ArrowDown") ? 2 : 0; if (d) { e.preventDefault(); setSize((v) => clamp(v + d)); } }}
-        {...px(s.handle, axis === "x" ? s.handleX : s.handleY)} />
-      <div {...px(s.pane)} style={{ flex: 1 }}>{end}</div>
+        {...px(s.handle, axis === "x" ? s.handleX : s.handleY, axis === "x" && s.handleHideMobile)} />
+      <div {...px(s.pane, axis === "x" && s.paneEndX)} style={axis === "x" ? undefined : { flex: 1 }}>{end}</div>
     </div>
   );
 }

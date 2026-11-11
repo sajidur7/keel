@@ -14,3 +14,7 @@ alwaysApply: true
 - Black, white and one flat blue (`color.accent`) — no gradients, glows or sparkle icons (use `IconAgent`); red only for errors. Keys via `<Kbd>`/`shortcut` (rendered as icons).
 - One primary button per view (ink). Every IconButton has `label`. Every control sits in a `Field`.
 - Before finishing, follow `skills/keel/references/qa.md` (both themes, 390/768/1440, keyboard).
+
+## Setup in a new app
+
+Follow `skills/keel/references/setup.md` exactly (tested in an empty folder): install the packages including `@types/react`, copy `components/` and `tokens/` side by side, add the StyleX Vite plugin before React, import `components/styles.css`, wrap the app in `<KeelProvider>`. Verify with `npx tsc --noEmit` and `npx vite build`.

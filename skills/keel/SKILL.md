@@ -32,8 +32,19 @@ reserved for meaning.
 
 ## Setup (if the project doesn't have Keel yet)
 
-Read `references/setup.md`. In short: `@stylexjs/stylex` + `@stylexjs/unplugin` (Vite plugin before React,
-`useCSSLayers: false`), a modern `browserslist`, import `components/styles.css` once, wrap the app in `<KeelProvider>`.
+Follow `references/setup.md` step by step — it is tested in an empty folder. In short: install the packages (including
+`@types/react`), copy `components/` and `tokens/` side by side into `src/keel/`, add `@stylexjs/unplugin` before React
+in `vite.config.ts` (`useCSSLayers: false`), add a modern `browserslist`, import `components/styles.css` once and wrap
+the app in `<KeelProvider>`. Finish by running `npx tsc --noEmit` and `npx vite build`; both must pass.
+
+**Where the Keel source is**
+- Already in the project: look for `src/keel/components` (or search for `tokens.stylex.ts`). Use what is there.
+- This skill uploaded as a zip: `assets/components`, `assets/tokens`, `assets/templates` next to this file.
+- Installed as a Claude Code plugin or cloned repo: `components/`, `tokens/`, `templates/` at the repo root.
+- None of the above: `npx degit sajidur7/keel/components src/keel/components` and the same for `tokens`.
+
+**Import path.** Examples here use `@keel/components` and `@keel/tokens/tokens.stylex`. If the project has no such
+alias, import from the relative path of the copied folder instead (`./keel/components`). Never mix the two in one app.
 
 ## How to build a screen
 
@@ -59,6 +70,7 @@ const s = stylex.create({ panel: { backgroundColor: color.surface, boxShadow: de
 - Lists of records: `DataTable` (sort, filter, select + floating `TableSelectionToolbar`, expand, paginate, density, columns).
 - Details: `Drawer` + `DrawerContent` with `DrawerSection`s; confirmations: `AlertDialog`; quick confirm: `Popconfirm`.
 - Feedback: `useToast()` after actions (with Undo), `Banner` for persistent page state, `EmptyState` for nothing-yet.
+- Sub-parts and headless hooks (`CommandMenu`, `Resizable`, `Item`, `useDisclosure`, `useTableSelection`, `useClipboard`, `useHotkeys`…) are listed under `parts.tsx` and `hooks.ts` in the catalog.
 - AI: `ChatLayout` + `ChatMessage` + `ChatComposer`; `Thinking`, `ChatToolCalls`, `ApprovalCard`, `DiffTable`, `TaskList`, `InsightCard`.
 - Icons: Lucide via Keel names (`IconSearch`, `IconTrash`…). Inside controls they size themselves.
 

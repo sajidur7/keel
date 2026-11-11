@@ -16,7 +16,7 @@ const s = stylex.create({
   main: { display: "flex", flexDirection: "column", gap: 16, minWidth: 0 },
   rail: { display: "flex", flexDirection: "column", gap: 16, minWidth: 0, position: { default: "static", "@media (min-width: 1100px)": "sticky" }, top: 76 },
   id: { display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" },
-  idText: { display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 },
+  idText: { display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flexGrow: 1, flexShrink: 1, flexBasis: 200 },
   h1: { fontSize: { default: "22px", "@media (min-width: 768px)": "26px" }, fontWeight: font.semibold, letterSpacing: "-0.02em", lineHeight: 1.15 },
   row: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" },
   doc: { maxWidth: 820, width: "100%", marginInline: "auto", padding: { default: 20, "@media (min-width: 768px)": 40 }, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.dialog, display: "flex", flexDirection: "column", gap: 28 },

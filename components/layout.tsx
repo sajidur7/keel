@@ -5,7 +5,7 @@
  */
 import * as stylex from "@stylexjs/stylex";
 import { ScrollArea as SA } from "radix-ui";
-import { createElement, useRef, useState, type ComponentProps, type ElementType, type ReactNode } from "react";
+import { createElement, useRef, useState, type ComponentProps, type CSSProperties, type ElementType, type ReactNode } from "react";
 import { color, depth, font, motion, radius, size as sz, z } from "../tokens/tokens.stylex";
 import { px, sx, type StyleProps } from "./lib/sx";
 import { SidebarProvider } from "./navigation";
@@ -21,9 +21,11 @@ const L = stylex.create({
   banner: { flexShrink: 0 },
   // Layout (panes)
   layout: { display: "grid", gridTemplateRows: "auto 1fr auto", minHeight: 0, height: "100%", width: "100%" },
-  lMid: { display: "flex", minHeight: 0, minWidth: 0 },
+  lMid: { display: "flex", minHeight: 0, minWidth: 0, flexDirection: { default: "column", "@media (min-width: 640px)": "row" }, overflowY: { default: "auto", "@media (min-width: 640px)": "visible" } },
   lContent: { flex: 1, minWidth: 0, overflowY: "auto" },
-  lSide: { flexShrink: 0, overflowY: "auto" },
+  lSide: { flexShrink: 0, overflowY: { default: "visible", "@media (min-width: 640px)": "auto" }, width: { default: "100%", "@media (min-width: 640px)": "var(--pane-w)" }, maxWidth: "100%" },
+  lSideStart: { borderInlineEndWidth: { default: 0, "@media (min-width: 640px)": 1 }, borderBottomWidth: { default: 1, "@media (min-width: 640px)": 0 } },
+  lSideEnd: { borderInlineStartWidth: { default: 0, "@media (min-width: 640px)": 1 }, borderTopWidth: { default: 1, "@media (min-width: 640px)": 0 } },
   lDividers: { borderColor: color.border, borderStyle: "solid", borderWidth: 0 },
   // page & header
   page: { flex: 1, width: "100%", marginInline: "auto", paddingInline: { default: 16, "@media (min-width: 768px)": 24, "@media (min-width: 1200px)": 32 }, paddingBlock: 24, display: "flex", flexDirection: "column", gap: 20 },
@@ -41,7 +43,7 @@ const L = stylex.create({
   headTitleRow: { display: "flex", alignItems: "center", gap: 8, minWidth: 0 },
   headTitle: { fontSize: font.lg, fontWeight: font.semibold, letterSpacing: "-0.005em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   headStatus: { display: { default: "none", "@media (min-width: 640px)": "inline-flex" }, flexShrink: 0, alignItems: "center" },
-  headEnd: { display: "flex", alignItems: "center", gap: 8, flexShrink: { default: 1, "@media (min-width: 640px)": 0 }, minWidth: 0, overflowX: { default: "auto", "@media (min-width: 640px)": "visible" }, scrollbarWidth: "none", paddingBlock: { default: 4, "@media (min-width: 640px)": 0 } },
+  headEnd: { display: "flex", alignItems: "center", gap: 8, flexShrink: { default: 1, "@media (min-width: 640px)": 0 }, minWidth: 0, overflowX: { default: "auto", "@media (min-width: 640px)": "visible" }, scrollbarWidth: "none", paddingBlock: { default: 4, "@media (min-width: 640px)": 0 }, paddingInline: { default: 4, "@media (min-width: 640px)": 0 }, marginInline: { default: -4, "@media (min-width: 640px)": 0 } },
   headTabs: { paddingInline: { default: 12, "@media (min-width: 768px)": 20 }, borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
   heading: { display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 12 },
   headingText: { display: "flex", flexDirection: "column", gap: 4, minWidth: 0 },
@@ -154,9 +156,9 @@ export function Layout({ header, footer, start, end, children, startWidth = 280,
     <div {...sx(p, L.layout)}>
       <div {...px(dividers && L.lDividers)} style={line("b")}>{header}</div>
       <div {...px(L.lMid)}>
-        {start && <aside {...px(L.lSide, dividers && L.lDividers)} style={{ width: startWidth, ...line("e") }}>{start}</aside>}
+        {start && <aside {...px(L.lSide, dividers && L.lDividers, dividers && L.lSideStart)} style={{ "--pane-w": `${startWidth}px` } as CSSProperties}>{start}</aside>}
         <div {...px(L.lContent)}>{children}</div>
-        {end && <aside {...px(L.lSide, dividers && L.lDividers)} style={{ width: endWidth, ...line("s") }}>{end}</aside>}
+        {end && <aside {...px(L.lSide, dividers && L.lDividers, dividers && L.lSideEnd)} style={{ "--pane-w": `${endWidth}px` } as CSSProperties}>{end}</aside>}
       </div>
       <div {...px(dividers && L.lDividers)} style={line("t")}>{footer}</div>
     </div>

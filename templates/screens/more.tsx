@@ -62,7 +62,7 @@ function Compare() {
     <ScreenShell active="set-billing" header={{ title: "Compare plans" }}>
       <DataTable data={rows.map(([n, v], i) => ({ id: String(i), n, v }))} getRowId={(r) => r.id} hideViewMenu caption="Plan comparison" columns={[
         { id: "n", header: "Feature", required: true, cell: (r) => <Text weight="medium">{r.n}</Text> },
-        ...PLANS.map((p, pi) => ({ id: p.n, header: <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>{p.n}{p.hot && <Tag size="sm" tone="blue">Popular</Tag>}</span>, align: "center" as const, cell: (r: { v: (string | boolean)[] }) => typeof r.v[pi] === "boolean" ? (r.v[pi] ? <IconCheck size={16} /> : <Text tone="muted">—</Text>) : r.v[pi] })),
+        ...PLANS.map((p, pi) => ({ id: p.n, header: <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>{p.n}{p.hot && <Tag size="sm" tone="blue">Popular</Tag>}</span>, align: "center" as const, cell: (r: { v: (string | boolean)[] }) => typeof r.v[pi] === "boolean" ? (r.v[pi] ? <span style={{ display: "inline-flex", verticalAlign: "middle" }}><IconCheck size={16} /></span> : <Text tone="muted">—</Text>) : r.v[pi] })),
       ]} />
     </ScreenShell>
   );

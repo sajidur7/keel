@@ -189,10 +189,11 @@ const tn = stylex.create({
     borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border,
   },
   heading: { display: "flex", alignItems: "center", gap: 10, fontWeight: font.semibold, flexShrink: 0 },
-  start: { display: "flex", alignItems: "center", gap: 8, minWidth: 0 },
+  start: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
+  nav: { position: "relative", flexShrink: 1, minWidth: 0 },
   center: { flex: 1, display: { default: "none", "@media (min-width: 768px)": "flex" }, justifyContent: "center" },
-  end: { display: "flex", alignItems: "center", gap: 8, marginInlineStart: "auto" },
-  list: { display: "flex", alignItems: "center", gap: 2, listStyle: "none" },
+  end: { display: "flex", alignItems: "center", gap: 8, marginInlineStart: "auto", flexShrink: 0 },
+  list: { display: "flex", alignItems: "center", gap: 2, listStyle: "none", overflowX: "auto", scrollbarWidth: "none", padding: 4, margin: -4 },
   item: {
     display: "inline-flex", alignItems: "center", gap: 6, height: 32, paddingInline: 10, borderRadius: radius.md, fontSize: font.md, fontWeight: font.medium,
     color: { default: color.fgSoft, ":hover": color.fg, ":is([data-state=open])": color.fg }, backgroundColor: { default: "transparent", ":hover": color.hover, ":is([data-state=open])": color.hover },
@@ -252,7 +253,7 @@ export function TopNav({ heading, start, children, center, end, label = "Primary
   return (
     <header {...sx(p, tn.bar)}>
       <div {...px(tn.start)}>{start}{heading && <span {...px(tn.heading)}>{heading}</span>}</div>
-      <NM.Root aria-label={label} style={{ position: "relative" }}>
+      <NM.Root aria-label={label} {...px(tn.nav)}>
         <NM.List {...px(tn.list)}>{children}</NM.List>
         <div {...px(tn.viewportWrap)}><NM.Viewport {...px(tn.viewport)} /></div>
       </NM.Root>
@@ -456,7 +457,9 @@ export function pageRange(page: number, pageCount: number, siblings = 1): (numbe
 
 const pg = stylex.create({
   root: { display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, fontSize: font.sm, color: color.fgMuted },
-  pages: { display: "flex", alignItems: "center", gap: 2 },
+  pages: { display: "flex", alignItems: "center", gap: 2, marginInlineStart: "auto" },
+  wide: { display: { default: "none", "@media (min-width: 520px)": "inline-block" } },
+  narrow: { display: { default: "inline", "@media (min-width: 520px)": "none" }, paddingInline: 4, fontVariantNumeric: "tabular-nums" },
   num: {
     minWidth: 28, height: 28, paddingInline: 6, borderRadius: radius.md, fontVariantNumeric: "tabular-nums", fontSize: font.sm, fontWeight: font.medium, outline: "none", cursor: "pointer",
     color: { default: color.fgSoft, ":hover": color.fg }, backgroundColor: { default: "transparent", ":hover": color.hover }, ":focus-visible": { boxShadow: depth.focus },
@@ -499,8 +502,9 @@ export function Pagination({ page, pageCount, onPageChange, total, pageSize, pag
         {firstLast && <IconButton label="First page" size="sm" disabled={page <= 1} onClick={() => go(1)}><IconChevronsLeft /></IconButton>}
         <IconButton label="Previous page" size="sm" disabled={page <= 1} onClick={() => go(page - 1)}><IconChevronLeft /></IconButton>
         {variant === "simple" ? <span style={{ paddingInline: 8, fontVariantNumeric: "tabular-nums" }}>Page {page} of {pageCount}</span>
-          : pageRange(page, pageCount, siblings).map((n, i) => n === "…" ? <span key={`d${i}`} {...px(pg.dots)}>…</span>
-            : <button key={n} type="button" aria-current={n === page ? "page" : undefined} aria-label={`Page ${n}`} onClick={() => go(n)} {...px(pg.num, n === page && pg.on)}>{n}</button>)}
+          : pageRange(page, pageCount, siblings).map((n, i) => n === "…" ? <span key={`d${i}`} {...px(pg.dots, pg.wide)}>…</span>
+            : <button key={n} type="button" aria-current={n === page ? "page" : undefined} aria-label={`Page ${n}`} onClick={() => go(n)} {...px(pg.num, n === page ? pg.on : pg.wide)}>{n}</button>)}
+        {variant !== "simple" && <span {...px(pg.narrow)}>of {pageCount}</span>}
         <IconButton label="Next page" size="sm" disabled={page >= pageCount} onClick={() => go(page + 1)}><IconChevronRight /></IconButton>
         {firstLast && <IconButton label="Last page" size="sm" disabled={page >= pageCount} onClick={() => go(pageCount)}><IconChevronsRight /></IconButton>}
       </div>
@@ -514,6 +518,9 @@ const st = stylex.create({
   row: { display: "flex", alignItems: "flex-start", gap: 0, width: "100%" },
   col: { display: "flex", flexDirection: "column", gap: 0 },
   step: { display: "flex", alignItems: "flex-start", gap: 10, flex: 1, minWidth: 0, position: "relative" },
+  stepH: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
+  stepLast: { flexGrow: 0, flexShrink: 0, flexBasis: "auto" },
+  stepCur: { flexShrink: { default: 0, "@media (min-width: 720px)": 1 }, flexBasis: { default: "auto", "@media (min-width: 720px)": 0 } },
   stepV: { paddingBottom: 20 },
   btn: { display: "flex", alignItems: "flex-start", gap: 10, textAlign: "start", minWidth: 0, borderRadius: radius.md, outline: "none", ":focus-visible": { boxShadow: depth.focus } },
   dot: {
@@ -524,7 +531,7 @@ const st = stylex.create({
   dotDone: { color: color.onAccent, backgroundImage: `linear-gradient(180deg, ${color.accentTop}, ${color.accentBottom})`, boxShadow: depth.solid },
   dotError: { color: "#fff", backgroundColor: color.danger, boxShadow: "none" },
   text: { display: "flex", flexDirection: "column", gap: 2, minWidth: 0, paddingTop: 2 },
-  title: { fontSize: font.md, fontWeight: font.medium, color: color.fg, whiteSpace: "nowrap" },
+  title: { fontSize: font.md, fontWeight: font.medium, color: color.fg, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
   titleMuted: { color: color.fgMuted },
   desc: { fontSize: font.sm, color: color.fgMuted, overflow: "hidden", textOverflow: { default: null, "@media (min-width: 640px)": "ellipsis" } },
   barH: { flex: 1, height: 2, marginTop: 11, marginInline: 10, borderRadius: 2, backgroundColor: color.border, minWidth: 16 },
@@ -532,6 +539,7 @@ const st = stylex.create({
   barDone: { backgroundColor: color.accent },
   optional: { fontSize: font.xs, color: color.fgFaint },
   // Horizontal steppers on phones: numbers only, plus the current step's label.
+  descHideMobile: { display: { default: "none", "@media (min-width: 720px)": "block" } },
   textHideMobile: { display: { default: "none", "@media (min-width: 720px)": "flex" } },
   barMobile: { marginInline: { default: 6, "@media (min-width: 720px)": 10 } },
 });
@@ -545,10 +553,10 @@ export function Stepper({ steps, current, onStepClick, orientation = "horizontal
       {steps.map((s, i) => {
         const done = i < current; const cur = i === current;
         const dot = <span {...px(st.dot, cur && st.dotCurrent, done && st.dotDone, s.error && st.dotError)}>{done && !s.error ? <IconCheck size={12} /> : s.error ? <IconX size={12} /> : i + 1}</span>;
-        const text = <span {...px(st.text, !V && !cur && st.textHideMobile)}><span {...px(st.title, !done && !cur && st.titleMuted)}>{s.title}{s.optional && <span {...px(st.optional)}> · Optional</span>}</span>{s.description && <span {...px(st.desc)}>{s.description}</span>}</span>;
+        const text = <span {...px(st.text, !V && !cur && st.textHideMobile)}><span {...px(st.title, !done && !cur && st.titleMuted)}>{s.title}{s.optional && <span {...px(st.optional)}> · Optional</span>}</span>{s.description && <span {...px(st.desc, !V && st.descHideMobile)}>{s.description}</span>}</span>;
         return (
           <Fragment key={i}>
-            <li aria-current={cur ? "step" : undefined} {...px(st.step, V && st.stepV)} style={!V ? { flex: i === steps.length - 1 ? "0 0 auto" : 1 } : undefined}>
+            <li aria-current={cur ? "step" : undefined} {...px(st.step, V ? st.stepV : st.stepH, !V && cur && st.stepCur, !V && i === steps.length - 1 && st.stepLast)}>
               {onStepClick && done ? <button type="button" onClick={() => onStepClick(i)} {...px(st.btn)}>{dot}{text}</button> : <>{dot}{text}</>}
               {V && i < steps.length - 1 && <span aria-hidden {...px(st.barV, done && st.barDone)} />}
               {!V && i < steps.length - 1 && <span aria-hidden {...px(st.barH, st.barMobile, done && st.barDone)} />}

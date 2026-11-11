@@ -112,7 +112,7 @@ export function KbdGroup({ keys, xstyle }: { keys: string[] | string } & StylePr
 const c = stylex.create({
   inline: {
     fontFamily: font.mono, fontSize: "0.9em", paddingInline: 5, paddingBlock: 1, borderRadius: radius.xs,
-    backgroundColor: color.muted, color: color.fgSoft, boxShadow: `inset 0 0 0 1px ${color.border}`, whiteSpace: "nowrap",
+    backgroundColor: color.muted, color: color.fgSoft, boxShadow: `inset 0 0 0 1px ${color.border}`, overflowWrap: "anywhere", boxDecorationBreak: "clone",
   },
   accent: { backgroundColor: color.accentSoft, color: color.accentStrong, boxShadow: `inset 0 0 0 1px ${color.accentBorder}` },
   block: {

@@ -41,7 +41,7 @@ const s = stylex.create({
   nodeOn: { boxShadow: `0 0 0 1.5px ${color.accent}, 0 0 0 5px ${color.focusRing}, ${depth.card}` },
   pillLabel: { display: "inline-flex", alignItems: "center", gap: 6, height: 22, paddingInline: 8, borderRadius: radius.full, fontSize: font.xs, fontWeight: font.medium, color: color.accentStrong, backgroundColor: color.accentSoft, boxShadow: `inset 0 0 0 1px ${color.accentBorder}` },
   wire: { width: 1.5, height: 28, backgroundColor: color.borderStrong },
-  files: { display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fill, minmax(min(180px, 100%), 1fr))" },
+  files: { display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fill, minmax(min(140px, 100%), 1fr))" },
   file: { display: "flex", flexDirection: "column", gap: 8, padding: 4, borderRadius: radius.xl, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}`, cursor: "pointer", textAlign: "start" },
   fileThumb: { aspectRatio: "4 / 3", borderRadius: radius.lg, backgroundColor: color.surface, boxShadow: depth.card, display: "flex", alignItems: "center", justifyContent: "center", color: color.icon },
   fileMeta: { display: "flex", flexDirection: "column", paddingInline: 8, paddingBottom: 6, minWidth: 0 },

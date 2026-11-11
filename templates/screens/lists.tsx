@@ -163,7 +163,7 @@ add("Finance", {
   id: "list-invoices", title: "Invoices", noun: "invoice", data: invoices, search: (r) => `${r.id} ${r.customer}`, filter: { label: "Status", key: "status" },
   tabs: [{ value: "all", label: "All" }, { value: "due", label: "Outstanding", filter: (r) => r.status === "Due" || r.status === "Overdue" }, { value: "paid", label: "Paid", filter: (r) => r.status === "Paid" }, { value: "draft", label: "Drafts", filter: (r) => r.status === "Draft" }],
   columns: [
-    { id: "id", header: "Invoice", required: true, sortable: true, value: (r) => r.id, cell: (r) => <Text variant="mono">{r.id}</Text> },
+    { id: "id", header: "Invoice", required: true, sortable: true, value: (r) => r.id, cell: (r) => <Text variant="mono" style={{ whiteSpace: "nowrap" }}>{r.id}</Text> },
     { id: "customer", header: "Customer", sortable: true, value: (r) => r.customer, cell: (r) => logo(r.customer) },
     { id: "issued", header: "Issued", value: (r) => r.issued, cell: (r) => r.issued, showFrom: "lg" },
     { id: "due", header: "Due", value: (r) => r.due, cell: (r) => r.due, showFrom: "md" },
@@ -176,7 +176,7 @@ add("Commerce", {
   id: "list-orders", title: "Orders", noun: "order", data: orders, search: (r) => `${r.id} ${r.customer}`, filter: { label: "Channel", key: "channel" },
   tabs: [{ value: "all", label: "All" }, { value: "open", label: "Unfulfilled", filter: (r) => r.status === "Processing" || r.status === "On hold" }, { value: "ref", label: "Refunds", filter: (r) => r.status === "Refunded" }],
   columns: [
-    { id: "id", header: "Order", required: true, value: (r) => r.id, cell: (r) => <Text variant="mono" weight="medium">{r.id}</Text> },
+    { id: "id", header: "Order", required: true, value: (r) => r.id, cell: (r) => <Text variant="mono" weight="medium" style={{ whiteSpace: "nowrap" }}>{r.id}</Text> },
     { id: "date", header: "Date", value: (r) => r.date, cell: (r) => r.date, showFrom: "md" },
     { id: "customer", header: "Customer", sortable: true, value: (r) => r.customer, cell: (r) => who(r.customer) },
     { id: "channel", header: "Channel", value: (r) => r.channel, cell: (r) => <Tag size="sm">{r.channel}</Tag>, showFrom: "lg" },
@@ -334,7 +334,7 @@ add("Finance", {
 add("Security", {
   id: "list-audit", title: "Audit log", nav: "set-security", noun: "event", primary: "Export log", data: audit, search: (r) => `${r.actor} ${r.action} ${r.target}`, filter: { label: "Action", key: "action" },
   columns: [
-    { id: "time", header: "Time", value: (r) => r.time, cell: (r) => <Text tabular tone="muted">{r.time}</Text>, width: 150 },
+    { id: "time", header: "Time", value: (r) => r.time, cell: (r) => <Text tabular tone="muted" style={{ whiteSpace: "nowrap" }}>{r.time}</Text>, width: 150 },
     { id: "actor", header: "Actor", required: true, value: (r) => r.actor, cell: (r) => who(r.actor) },
     { id: "action", header: "Action", value: (r) => r.action, cell: (r) => <Text variant="mono">{r.action}</Text> },
     { id: "target", header: "Target", value: (r) => r.target, cell: (r) => r.target, showFrom: "md" },

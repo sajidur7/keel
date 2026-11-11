@@ -42,7 +42,7 @@ const d = stylex.create({
   badgeSlot: { display: "inline-flex", alignItems: "center", marginInlineStart: 4 },
   cmp: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: font.sm, color: color.fgMuted, paddingTop: 8, borderTopWidth: 1, borderTopStyle: "dashed", borderTopColor: color.border },
   cmpVal: { color: color.fgSoft, fontWeight: font.medium, fontVariantNumeric: "tabular-nums" },
-  side: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, minWidth: 0 },
+  side: { display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", columnGap: 12, rowGap: 8, minWidth: 0 },
   arrowOnly: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.medium },
   textDelta: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.semibold },
   targetWrap: { position: "relative" },

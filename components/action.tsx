@@ -321,7 +321,7 @@ export function ToggleButtonGroup({ size = "sm", items, xstyle, className, style
 
 const sg = stylex.create({
   root: {
-    position: "relative", display: "inline-flex", alignItems: "stretch", padding: 2, gap: 0, borderRadius: radius.md,
+    position: "relative", display: "inline-flex", alignItems: "stretch", padding: 2, gap: 0, borderRadius: radius.md, maxWidth: "100%", overflowX: "auto", scrollbarWidth: "none",
     backgroundColor: color.muted, boxShadow: `inset 0 1px 2px ${color.shadeXs}, inset 0 0 0 1px ${color.border}`, isolation: "isolate",
   },
   full: { display: "flex", width: "100%" },

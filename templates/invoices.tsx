@@ -35,17 +35,17 @@ export function InvoiceFormTemplate({ go }: { go?: (to: Nav) => void }) {
                 <Field label="Issued"><DateInput value={issued} onValueChange={setIssued} /></Field>
                 <Field label="Due" error={due && issued && due < issued ? "Due date is before the issue date" : undefined}><DateInput value={due} onValueChange={setDue} /></Field>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: 12 }}>
                 <Field label="Currency"><Select value={currency} onValueChange={setCurrency} options={[{ value: "usd", label: "USD — US dollar" }, { value: "eur", label: "EUR — Euro" }, { value: "bdt", label: "BDT — Taka" }]} /></Field>
                 <Field label="Terms"><SegmentedControl fullWidth value={terms} onValueChange={setTerms} items={[{ value: "15", label: "Net 15" }, { value: "30", label: "Net 30" }, { value: "60", label: "Net 60" }]} /></Field>
               </div>
               <Divider />
               <Text weight="semibold">Line items</Text>
               {lines.map((l) => (
-                <div key={l.id} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 84px 120px 32px", gap: 8, alignItems: "center" }}>
-                  <Input aria-label="Item" value={l.item} onChange={(e) => set(l.id, { item: e.target.value })} />
-                  <NumberInput aria-label="Quantity" value={l.qty} onValueChange={(v) => set(l.id, { qty: v ?? 0 })} min={0} integer steppers="none" />
-                  <NumberInput aria-label="Price" value={l.price} onValueChange={(v) => set(l.id, { price: v ?? 0 })} min={0} prefix="$" steppers="none" />
+                <div key={l.id} style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                  <div style={{ flex: "1 1 200px", minWidth: 0 }}><Input aria-label="Item" value={l.item} onChange={(e) => set(l.id, { item: e.target.value })} /></div>
+                  <div style={{ flex: "1 1 64px", maxWidth: 84, minWidth: 0 }}><NumberInput aria-label="Quantity" value={l.qty} onValueChange={(v) => set(l.id, { qty: v ?? 0 })} min={0} integer steppers="none" /></div>
+                  <div style={{ flex: "1 1 96px", maxWidth: 120, minWidth: 0 }}><NumberInput aria-label="Price" value={l.price} onValueChange={(v) => set(l.id, { price: v ?? 0 })} min={0} prefix="$" steppers="none" /></div>
                   <IconButton label="Remove line" size="sm" onClick={() => setLines((ls) => ls.filter((x) => x.id !== l.id))}><IconTrash /></IconButton>
                 </div>
               ))}

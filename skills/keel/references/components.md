@@ -122,9 +122,9 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **StreamingText** — Reveals text at a reading pace with a caret — for demos and for smoothing bursty streams.
   `text*`: string · `speed`: number = 40 · `onDone`: () => void
 - **TaskList** — An agent's plan and progress, one row per task.
-  `tasks*`: AgentTask[]
+  `tasks*`: AgentTask[] · `plain`: boolean
 - **TaskRows** — v1-style alias (beautifului calls these task rows).
-  `tasks*`: AgentTask[]
+  `tasks*`: AgentTask[] · `plain`: boolean
 - **Thinking** — "Thinking…" with a moving sheen and elapsed time. Click to show the reasoning if you have it.
   `label`: string = "Thinking" · `startTime`: number · `reasoning`: string · `done`: boolean · `doneLabel`: string
 - **ToolChips** — Tools the assistant can use; toggle them, and see which one is running now.
@@ -210,7 +210,7 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **ForbiddenPage** — —
   `actions`: ReactNode · `role`: string
 - **InfoTip** — A "?" that explains a term. Opens on click/tap (works on touch), unlike Tooltip.
-  `children*`: ReactNode · `label`: string = "More info" · `size`: 16 | 12 | 14 = 14
+  `children*`: ReactNode · `label`: string = "More info" · `size`: 12 | 14 | 16 = 14
 - **InlineMessage** — One line of status beside a field or row: "Saved", "Couldn't sync".
   `tone`: "success" | "warning" | "danger" | "neutral" | "info" = "info" · `children*`: ReactNode
 - **NotFoundPage** — —
@@ -371,7 +371,7 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **Grid** — Equal columns that collapse on small screens, or an auto-fill grid with a minimum item width.
   `columns`: number | "auto" · `minItemWidth`: number = 240 · `gap`: number = 16 · `cols`: number
 - **Header** — The sticky top bar of a screen: title, status, actions, profile. Frosted when content scrolls under it.
-  `title*`: ReactNode · `status`: ReactNode · `breadcrumb`: ReactNode · `start`: ReactNode · `actions`: ReactNode · `end`: ReactNode · `tabs`: ReactNode
+  `title*`: ReactNode · `status`: ReactNode · `breadcrumb`: ReactNode · `showTitle`: boolean · `start`: ReactNode · `actions`: ReactNode · `end`: ReactNode · `tabs`: ReactNode
 - **HStack** — —
   `gap`: number · `wrap`: boolean · `justify`: "end" | "start" | "center" | "between" | "around" · `as`: ElementType · `align`: "end" | "start" | "center" | "baseline" | "stretch"
 - **Inline** — A wrapping row (tags, buttons).
@@ -620,3 +620,136 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 
 - **Spinner** — A small ring that spins. Inherits the text color unless `tone="muted"`.
   `size`: number = 14 · `label`: string = "Loading" · `tone`: "current" | "muted" = "current"
+
+## parts.tsx
+
+- **AvatarGroupOverflow** — "+N" chip at the end of an avatar row.
+  `count*`: number · `size`: number = 28 · `onClick`: () => void
+- **AvatarStatusDot** — The presence dot on its own — for custom avatar layouts and people lists.
+  `status`: "online" | "away" | "busy" | "offline" = "online" · `label`: string
+- **BreadcrumbItem** — One crumb, for building breadcrumbs by hand. The last one is `current`.
+  `href`: string · `current`: boolean · `icon`: ReactNode · `children*`: ReactNode
+- **ChatComposerDrawer** — A tray that slides out above the composer — attachments, context, a slash-command menu.
+  `children*`: ReactNode · `open`: boolean = true
+- **ChatComposerInput** — The auto-growing textarea of a composer. Enter submits, Shift+Enter adds a line.
+  `value*`: string · `onValueChange*`: (v: string) => void · `onSubmit`: () => void · `maxRows`: number = 8 · `placeholder`: string = "Message…"
+- **ChatLayoutScrollButton** — "Jump to latest" pill. Show it when the reader has scrolled up and new messages arrive.
+  `onClick*`: () => void · `visible`: boolean = true · `label`: string = "Jump to latest"
+- **ChatMessageBubble** — A single bubble — user (ink, right) or assistant (sunken, left). For compact chat UIs.
+  `role`: "user" | "assistant" = "assistant" · `children*`: ReactNode
+- **ChatMessageList** — A live log of messages; announces new ones politely.
+  `children*`: ReactNode
+- **ChatSendButton** — Send, or Stop while streaming.
+  `onClick*`: () => void · `onStop`: () => void · `streaming`: boolean · `disabled`: boolean
+- **ChatTokenizedText** — Plain text with
+  `text*`: string · `tokens`: string[] · `onTokenClick`: (t: string) => void
+- **CheckboxIndicator** — —
+  `checked*`: boolean | "indeterminate"
+- **CheckboxListItem** — One checkbox row with label and description, divided — compose your own lists.
+  `size`: "sm" | "md" · `label`: ReactNode · `invalid`: boolean · `description`: ReactNode · `divider`: boolean = true · `disabled`: boolean · `checked`: boolean | "indeterminate" · `onCheckedChange`: { bivarianceHack(checked: CheckedState): void; }['bivarianceHack'] | undefined
+- **CheckIndicator** — —
+  `checked*`: boolean | "indeterminate"
+- **CollapsibleGroup** — Several collapsibles that behave as one: `type="single"` keeps one open.
+  `items*`: { value: string; title: ReactNode; meta?: ReactNode; content: ReactNode; disabled?: boolean }[] · `variant`: "divided" | "separated" = "divided"
+- **CommandMenu** — The composable command menu. Put it in a Dialog, a Popover or inline. Items filter by `value` (or their text) as you type.
+  `children*`: ReactNode · `label`: string = "Commands"
+- **CommandPaletteEmpty** — Shown when nothing matches.
+- **CommandPaletteFooter** — Key hints along the bottom.
+- **CommandPaletteGroup** — A titled group. Hides itself when none of its items match.
+  `heading`: ReactNode · `children*`: ReactNode
+- **CommandPaletteInput** — —
+  `placeholder`: string = "Search or jump to…"
+- **CommandPaletteItem** — —
+  `onSelect*`: () => void · `icon`: ReactNode · `shortcut`: string · `end`: ReactNode · `children*`: ReactNode
+- **CommandPaletteList** — —
+  `children*`: ReactNode
+- **DialogHeader** — A rich header for dialog bodies: icon tile, title, description, actions.
+  `title*`: ReactNode · `icon`: ReactNode · `description`: ReactNode · `actions`: ReactNode
+- **DrawerHeader** — —
+  `title*`: ReactNode · `icon`: ReactNode · `description`: ReactNode · `actions`: ReactNode
+- **FieldLabel** — —
+- **GridSpan** — Make a Grid child span columns (or rows). `span="full"` spans the row.
+  `span`: number | "full" = 1 · `rowSpan`: number · `children*`: ReactNode
+- **Indicator** — Visual-only selection marks for custom rows (selectable cards, table-like pickers). Not focusable.
+  `checked*`: boolean | "indeterminate"
+- **InputGroupText** — Text inside an InputGroup edge: "https://", "USD", "@acme.com".
+  `children*`: ReactNode
+- **Item** — A generic row: leading visual, title + description, trailing meta/actions. Link, button or static.
+  `title*`: ReactNode · `leading`: ReactNode · `description`: ReactNode · `trailing`: ReactNode · `href`: string · `onClick`: () => void · `as`: ElementType
+- **LayoutContent** — —
+  `children*`: ReactNode
+- **LayoutFooter** — —
+  `children*`: ReactNode
+- **LayoutHeader** — —
+  `children*`: ReactNode
+- **LayoutPanel** — A side pane. `side` draws the divider on the correct edge.
+  `side`: "end" | "start" = "start" · `width`: number | string = 280 · `children*`: ReactNode
+- **LinkProvider** — Route every Keel link through your router: <LinkProvider component={NextLink}>.
+  `component*`: LinkComp · `children*`: ReactNode
+- **MegaMenuItem** — One rich link in a mega menu column.
+  `title*`: ReactNode · `href*`: string · `icon`: ReactNode · `description`: ReactNode
+- **MetadataListItem** — One label/value row, for building a MetadataList by hand.
+  `label*`: ReactNode · `children*`: ReactNode
+- **MobileNavToggle** — The hamburger that opens the side nav drawer on phones.
+  `label`: string = "Open navigation"
+- **NavHeadingMenu** — Workspace/app switcher at the top of a side nav or top nav.
+  `name*`: string · `items*`: { id: string; name: string; meta?: string; logo?: ReactNode }[] · `onSelect*`: (id: string) => void · `logo`: ReactNode · `meta`: string · `footer`: ReactNode
+- **NavIcon** — An icon with an optional count or dot — for nav items, toolbars, tab bars.
+  `icon*`: ReactNode · `count`: number · `dot`: boolean
+- **RadioIndicator** — —
+  `checked*`: boolean | "indeterminate"
+- **RadioListItem** — One radio row (use inside RadioGroup).
+  `value*`: string · `label`: ReactNode · `description`: ReactNode · `divider`: boolean = true · `disabled`: boolean · `checked`: boolean
+- **Resizable** — Two panes with a draggable, keyboard-resizable divider.
+  `start*`: ReactNode · `end*`: ReactNode · `defaultSize`: number = 50 · `min`: number = 15 · `max`: number = 85 · `axis`: "x" | "y" = "x" · `label`: string = "Resize panes" · `onSizeChange`: (n: number) => void
+- **SideNavCollapseButton** — —
+- **SideNavHeading** — —
+  `logo*`: ReactNode · `name*`: ReactNode · `meta`: ReactNode · `action`: ReactNode
+- **SideNavItem** — —
+  `label*`: string · `icon`: ReactNode · `count`: number · `active`: boolean · `href`: string · `onClick`: () => void · `trailing`: ReactNode
+- **SideNavSection** — —
+  `title`: string · `action`: ReactNode · `children*`: ReactNode
+- **StackItem** — A Stack child that grows, shrinks or stays put.
+  `grow`: boolean | number · `shrink`: boolean | number · `basis`: string | number · `align`: "end" | "start" | "center" | "stretch" · `children*`: ReactNode
+- **TabMenu** — Tabs that never wrap: the ones that don't fit move into a "More" menu.
+  `items*`: { value: string; label: ReactNode; count?: number; icon?: ReactNode }[] · `value*`: string · `onValueChange*`: (v: string) => void
+- **Toast** — A toast you place yourself (inline confirmations, docs). For real notifications use `useToast()`.
+  `title*`: ReactNode · `description`: ReactNode · `icon`: ReactNode · `tone`: "default" | "danger" = "default" · `action`: ReactNode · `onClose`: () => void
+- **TopNavHeading** — Logo + product name for a TopNav.
+  `name*`: ReactNode · `logo`: ReactNode · `href`: string = "/"
+
+## hooks.ts
+
+Headless behavior. Import from `@keel/components`.
+
+- **useAnnounce** — Say something to screen readers without moving focus ("3 results", "Saved").
+- **useCalendarDays** — The 6×7 (or fewer) day grid for a month, starting on `weekStartsOn` (0 = Sunday).
+- **useClipboard** — Copy text; `copied` is true for `timeout` ms afterwards.
+- **useCollapsible** — Collapsible state plus the ARIA wiring for a custom trigger and region.
+- **useCollator** — A memoized Intl.Collator for sorting and searching names correctly.
+- **useCombobox** — Headless combobox: query, filtered options, active index and the keyboard handler for your input.
+- **useDebouncedValue** — A value that settles `ms` after it stops changing (search boxes).
+- **useDisclosure** — Open/closed state for any overlay. Spread `{ open, onOpenChange }` onto Dialog, Drawer, Popover, Tooltip…
+- **useFocusTrap** — Keeps Tab inside a container while active; restores focus when it ends.
+- **useHotkeys** — Global shortcuts: { "mod+k": open, "shift+?": help, "g i": goInbox }. `mod` is ⌘ on Mac, Ctrl elsewhere. Ignored while typing unless `inInputs`.
+- **useHoverCard**
+- **useIsMobile** — Under 768px — Keel's phone breakpoint.
+- **useLightbox** — Lightbox state: `show(i)` opens at an index; spread `props` onto <Lightbox items=…>.
+- **useLocale** — The user's locale (from <html lang> or the browser).
+- **useLongPress** — Press-and-hold (touch context menus, "hold to confirm"). Spread the returned handlers.
+- **useMediaQuery** — Matches a media query, live. SSR-safe (false on the server).
+- **useMergedRefs** — Combine refs (yours + a library's) onto one element.
+- **useMultiCombobox** — Like useCombobox but keeps a set of picked values; Backspace on an empty query removes the last one.
+- **useOutlineFromMarkdown** — Headings from a Markdown string, for an <Outline>: [{ id, title, level }].
+- **useOverflow** — Whether an element's content overflows it (to show fades, "more" buttons, tooltips on truncated text).
+- **useOverlay**
+- **usePopover**
+- **useResizable** — A size you can drag or nudge with arrow keys, clamped. Spread `handleProps` onto a separator.
+- **useScrollLock** — Stops the page scrolling behind a custom overlay.
+- **useSnapPaging** — Page through a scroll-snap row (carousels, card rails).
+- **useStreamingText** — Reveals `text` progressively (for bursty model streams). Returns the visible slice and whether it's done.
+- **useTableFiltering** — Text query across chosen fields plus per-column value filters.
+- **useTablePagination** — Client-side paging. Resets to page 1 when the row count changes.
+- **useTableSelection** — Row selection by id: toggle one, toggle all (on the visible rows), clear. `allState` drives a header checkbox.
+- **useTableSort** — Sorts rows by a column. Click cycles asc → desc → none. Numbers, dates and strings (locale-aware) all sort correctly.
+- **useTooltip**
