@@ -5,10 +5,10 @@
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { color, depth, font, motion, radius } from "../tokens/tokens.stylex";
-import { Button, CopyButton, IconButton } from "./action";
+import { Button, CopyButton, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, IconButton } from "./action";
 import { Avatar, KbdGroup, Markdown, Thumbnail, Token, type CitationSource } from "./content";
 import {
-  IconAlertCircle, IconArrowDown, IconArrowUp, IconCheck, IconChevronDown, IconMic, IconPaperclip, IconRefresh, IconSizeContext, IconStop,
+  IconAlertCircle, IconArrowDown, IconArrowUp, IconCheck, IconChevronDown, IconMic, IconPaperclip, IconPlus, IconRefresh, IconSizeContext, IconStop,
   IconThumbsDown, IconThumbsUp, IconWrench, IconX,
 } from "./icons";
 import { px, sx, type StyleProps } from "./lib/sx";
@@ -63,12 +63,32 @@ const c = stylex.create({
   stOk: { display: "inline-flex", color: color.success }, stErr: { display: "inline-flex", color: color.danger }, stRun: { display: "inline-flex", color: color.accent },
   // composer
   composer: {
-    display: "flex", flexDirection: "column", gap: 8, padding: 10, borderRadius: radius.xxl, backgroundColor: color.surfaceRaised,
-    boxShadow: { default: `${depth.popover}`, ":focus-within": `inset 0 1px 0 ${color.highlight}, 0 0 0 1px ${color.accent}, 0 0 0 4px ${color.focusRing}, 0 16px 32px -12px ${color.shadeLg}` },
+    display: "flex", flexDirection: "column", minWidth: 0, padding: 4, borderRadius: radius.xxl, backgroundColor: color.surfaceSunken,
+    boxShadow: `inset 0 0 0 1px ${color.border}, inset 0 1px 2px ${color.shadeXs}`,
+  },
+  chead: { display: "flex", alignItems: "center", gap: 8, minHeight: 30, paddingInline: 10, paddingBottom: 2, minWidth: 0 },
+  clabel: {
+    display: "inline-flex", alignItems: "center", gap: 6, minWidth: 0, fontFamily: font.mono, fontSize: "10.5px", fontWeight: font.medium,
+    letterSpacing: "0.06em", textTransform: "uppercase", color: color.fgMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+  },
+  cmeta: { marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontSize: font.sm, color: color.fgMuted },
+  sugg: { display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", paddingInline: 6, paddingTop: 2, paddingBottom: 6 },
+  suggChip: {
+    display: "inline-flex", alignItems: "center", gap: 6, height: 26, paddingInline: 10, flexShrink: 0, borderRadius: radius.full, cursor: "pointer", outline: "none",
+    fontSize: font.sm, fontWeight: font.medium, color: color.fgSoft, whiteSpace: "nowrap", backgroundColor: color.surface,
+    boxShadow: { default: `inset 0 0 0 1px ${color.border}`, ":hover": `inset 0 0 0 1px ${color.borderStrong}`, ":focus-visible": depth.focus },
+  },
+  field: {
+    display: "flex", flexDirection: "column", gap: 8, minWidth: 0, padding: 12, borderRadius: radius.xl, backgroundColor: color.surface, cursor: "text",
+    boxShadow: { default: depth.card, ":focus-within": `0 0 0 1px ${color.accent}, 0 0 0 4px ${color.focusRing}` },
     transitionProperty: "box-shadow", transitionDuration: motion.fast,
   },
-  input: { width: "100%", minHeight: 24, maxHeight: 220, resize: "none", outline: "none", fontSize: font.lg, lineHeight: 1.55, color: color.fg, paddingInline: 4, "::placeholder": { color: color.fgFaint } },
-  cbar: { display: "flex", alignItems: "center", gap: 4 },
+  input: { width: "100%", minHeight: 24, maxHeight: 220, resize: "none", outline: "none", fontSize: font.lg, lineHeight: 1.55, color: color.fg, paddingInline: 2, "::placeholder": { color: color.fgFaint } },
+  pill: { borderRadius: radius.full, maxWidth: 360, transitionProperty: "border-radius, max-width", transitionDuration: motion.base },
+  pillField: { flexDirection: "row", alignItems: "center", borderRadius: radius.full, paddingBlock: 8, paddingInlineStart: 16, paddingInlineEnd: 8 },
+  pillMic: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, borderRadius: radius.full, flexShrink: 0, color: color.fgMuted, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}` },
+  srcDesc: { marginInlineStart: 8, color: color.fgFaint, fontSize: font.sm },
+  cbar: { display: "flex", alignItems: "center", gap: 4, minHeight: 40, paddingInline: 4, paddingTop: 4 },
   cend: { display: "flex", alignItems: "center", gap: 6, marginInlineStart: "auto" },
   hint: { alignItems: "center", gap: 6, whiteSpace: "nowrap", flexShrink: 0, fontSize: font.xs, color: color.fgFaint, display: { default: "none", "@media (min-width: 640px)": "inline-flex" } },
   send: { width: 32, height: 32, paddingInline: 0, borderRadius: radius.full },
@@ -241,6 +261,24 @@ export type ChatComposerProps = StyleProps & {
   attachments?: ChatAttachment[];
   onAttach?: (files: File[]) => void;
   onRemoveAttachment?: (name: string) => void;
+  /** Mono label on the top strip of the shell ("Reply to Emma", "Ask Northwind"). */
+  label?: ReactNode;
+  icon?: ReactNode;
+  /** Right side of the top strip: a model picker, a token count, a status. */
+  meta?: ReactNode;
+  /** One-tap starters shown above the field. Picking one fills the field (or calls `onSuggestion`). */
+  suggestions?: string[];
+  onSuggestion?: (text: string) => void;
+  /** A "+" menu of things to add: files, data sources, web search, connected apps. */
+  sources?: { id: string; label: string; description?: string; icon?: ReactNode; onSelect?: () => void }[];
+  /** `pill`: a single-line capsule that opens into the full box when focused or filled. */
+  variant?: "box" | "pill";
+  /** Text for the send button ("Send", "Reply"). Without it the button is a round arrow. */
+  sendLabel?: string;
+  /** Lines the field starts with. */
+  minRows?: number;
+  /** Small hint beside the send button; `false` hides it. */
+  hint?: ReactNode | false;
   /** Extra controls on the left of the bar: a model Select, tool toggles. */
   tools?: ReactNode;
   dictation?: boolean;
@@ -249,34 +287,53 @@ export type ChatComposerProps = StyleProps & {
 };
 
 /** Where the person writes. Grows with the text; ↵ sends, ⇧↵ adds a line; attach, dictate, stop. */
-export function ChatComposer({ value, onValueChange, onSubmit, placeholder = "Ask anything…", streaming, onStop, attachments, onAttach, onRemoveAttachment, tools, dictation = true, disabled, autoFocus, ...p }: ChatComposerProps) {
+export function ChatComposer({ value, onValueChange, onSubmit, placeholder = "Ask anything…", streaming, onStop, attachments, onAttach, onRemoveAttachment, tools, dictation = true, disabled, autoFocus, label, icon, meta, suggestions, onSuggestion, sendLabel, minRows = 1, hint, sources, variant = "box", ...p }: ChatComposerProps) {
+  const [focused, setFocused] = useState(false);
+  const pill = variant === "pill" && !focused && !value && !streaming;
   const ta = useRef<HTMLTextAreaElement>(null);
   const file = useRef<HTMLInputElement>(null);
   const base = useRef("");
   useEffect(() => { const el = ta.current; if (!el) return; el.style.height = "auto"; el.style.height = `${Math.min(220, el.scrollHeight)}px`; }, [value]);
   const send = () => { const v = value.trim(); if (!v || streaming || disabled) return; onSubmit(v); };
   return (
-    <div {...sx(p, c.composer)} onClick={(e) => { if (e.target === e.currentTarget) ta.current?.focus(); }}>
-      {attachments && attachments.length > 0 && (
-        <div {...px(c.atts)}>{attachments.map((a) => a.type === "image" && a.src ? <Thumbnail key={a.name} src={a.src} alt={a.name} width={56} height={56} onRemove={onRemoveAttachment && (() => onRemoveAttachment(a.name))} /> : <Token key={a.name} label={a.name} icon={<IconPaperclip />} onRemove={onRemoveAttachment && (() => onRemoveAttachment(a.name))} />)}</div>
+    <div {...sx(p, c.composer, pill && c.pill)} onFocus={() => setFocused(true)} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocused(false); }}>
+      {!pill && (label || meta) && <div {...px(c.chead)}><span {...px(c.clabel)}>{icon}{label}</span>{meta && <span {...px(c.cmeta)}>{meta}</span>}</div>}
+      {!pill && suggestions && suggestions.length > 0 && !value && (
+        <div {...px(c.sugg)}>{suggestions.map((t) => <button key={t} type="button" disabled={disabled} onClick={() => { (onSuggestion ?? onValueChange)(t); ta.current?.focus(); }} {...px(c.suggChip)}>{t}</button>)}</div>
       )}
-      <textarea ref={ta} rows={1} value={value} placeholder={placeholder} disabled={disabled} autoFocus={autoFocus} aria-label="Message"
-        onChange={(e) => onValueChange(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); } }} {...px(c.input)} />
-      <div {...px(c.cbar)}>
+      <div {...px(c.field, pill && c.pillField)} onClick={(e) => { if (e.target === e.currentTarget) ta.current?.focus(); }}>
+        {attachments && attachments.length > 0 && (
+          <div {...px(c.atts)}>{attachments.map((a) => a.type === "image" && a.src ? <Thumbnail key={a.name} src={a.src} alt={a.name} width={56} height={56} onRemove={onRemoveAttachment && (() => onRemoveAttachment(a.name))} /> : <Token key={a.name} label={a.name} icon={<IconPaperclip />} onRemove={onRemoveAttachment && (() => onRemoveAttachment(a.name))} />)}</div>
+        )}
+        <textarea ref={ta} rows={minRows} value={value} placeholder={placeholder} disabled={disabled} autoFocus={autoFocus} aria-label={typeof label === "string" ? label : "Message"}
+          onChange={(e) => onValueChange(e.target.value)} style={{ minHeight: minRows * 24 }}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); } }} {...px(c.input)} />
+        {pill && <span {...px(c.pillMic)} aria-hidden><IconMic size={16} /></span>}
+      </div>
+      {!pill && <div {...px(c.cbar)}>
+        {sources && sources.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild><IconButton label="Add" size="sm"><IconPlus /></IconButton></DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="start" style={{ minWidth: 260 }}>
+              {sources.map((x) => <DropdownMenuItem key={x.id} icon={x.icon} onSelect={x.onSelect}><span>{x.label}</span>{x.description && <span {...px(c.srcDesc)}>{x.description}</span>}</DropdownMenuItem>)}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         {onAttach && <>
           <IconButton label="Attach files" size="sm" onClick={() => file.current?.click()}><IconPaperclip /></IconButton>
           <input ref={file} type="file" multiple hidden onChange={(e) => { if (e.target.files) onAttach(Array.from(e.target.files)); e.target.value = ""; }} />
         </>}
         {tools}
         <div {...px(c.cend)}>
-          <span {...px(c.hint)}><KbdGroup keys={["⇧", "↵"]} /> new line</span>
+          {hint !== false && <span {...px(c.hint)}>{hint ?? <><KbdGroup keys={["⇧", "↵"]} /> new line</>}</span>}
           {dictation && <ChatDictationButton onTranscript={(t, fin) => { if (!base.current) base.current = value ? `${value} ` : ""; onValueChange(base.current + t); if (fin) base.current = ""; }} />}
           {streaming
             ? <IconButton label="Stop" variant="secondary" onClick={onStop} xstyle={c.send}><IconStop size={12} fill="currentColor" /></IconButton>
-            : <IconButton label="Send" shortcut="↵" variant="primary" disabled={!value.trim() || disabled} onClick={send} xstyle={c.send}><IconArrowUp /></IconButton>}
+            : sendLabel
+              ? <Button size="sm" variant="primary" disabled={!value.trim() || disabled} onClick={send} trailing={<IconArrowUp />}>{sendLabel}</Button>
+              : <IconButton label="Send" shortcut="↵" variant="primary" disabled={!value.trim() || disabled} onClick={send} xstyle={c.send}><IconArrowUp /></IconButton>}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

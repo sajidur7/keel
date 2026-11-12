@@ -17,6 +17,7 @@ export * from "./navigation";
 export * from "./table";
 export * from "./lists";
 export * from "./data";
+export * from "./charts";
 export * from "./chat";
 export * from "./ai";
 export * from "./utility";

@@ -48,7 +48,13 @@ const k = stylex.create({
   // demo
   demo: { display: "flex", flexDirection: "column", borderRadius: radius.xxl, backgroundColor: color.surface, boxShadow: depth.card, overflow: "hidden", minWidth: 0 },
   demoBar: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, paddingInline: 14, height: 44, borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
-  demoTitle: { fontWeight: font.semibold, fontSize: font.md },
+  demoTitle: { fontWeight: font.semibold, fontSize: font.md, display: "inline-flex", alignItems: "baseline", gap: 8 },
+  demoNo: { fontFamily: font.mono, fontSize: "11px", fontWeight: font.regular, color: color.fgFaint },
+  pager: { display: "grid", gap: 12, gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 640px)": "repeat(2, minmax(0, 1fr))" }, paddingTop: 8 },
+  pagerCard: { display: "flex", flexDirection: "column", gap: 2, padding: 14, borderRadius: radius.xl, cursor: "pointer", outline: "none", textAlign: "start", backgroundColor: color.surface, boxShadow: { default: `inset 0 0 0 1px ${color.border}`, ":hover": `inset 0 0 0 1px ${color.borderStrong}`, ":focus-visible": depth.focus } },
+  pagerEnd: { textAlign: "end", alignItems: "flex-end", gridColumnStart: { default: "auto", "@media (min-width: 640px)": 2 } },
+  pagerKicker: { fontFamily: font.mono, fontSize: "10.5px", letterSpacing: "0.06em", textTransform: "uppercase", color: color.fgFaint },
+  pagerTitle: { fontWeight: font.semibold, fontSize: font.md, color: color.fg },
   demoDesc: { paddingInline: 14, paddingTop: 10, fontSize: font.md, color: color.fgMuted },
   stage: {
     position: "relative", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 16, padding: { default: 20, "@media (min-width: 768px)": 32 }, minHeight: 140,
@@ -81,7 +87,7 @@ const k = stylex.create({
   chevOpen: { transform: "rotate(180deg)" },
 });
 
-export function DemoCard({ demo }: { demo: Demo }) {
+export function DemoCard({ demo, index }: { demo: Demo; index?: number }) {
   const [view, setView] = useState<"preview" | "code">("preview");
   const code = useMemo(() => extractFn(demo.file, demo.id), [demo]);
   const full = useMemo(() => { const im = importLine(importsFor(code)); return `${im ? im + "\n\n" : ""}${code}`; }, [code]);
@@ -90,7 +96,7 @@ export function DemoCard({ demo }: { demo: Demo }) {
     <section id={demo.id} {...stylex.props(k.section)}>
       <div {...stylex.props(k.demo)}>
         <div {...stylex.props(k.demoBar)}>
-          <span {...stylex.props(k.demoTitle)}>{demo.title}</span>
+          <span {...stylex.props(k.demoTitle)}>{index !== undefined && <span {...stylex.props(k.demoNo)}>{String(index + 1).padStart(2, "0")}</span>}{demo.title}</span>
           <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <SegmentedControl size="sm" value={view} onValueChange={(v) => setView(v as "preview" | "code")} label={`${demo.title} view`}
               items={[{ value: "preview", label: "Preview" }, { value: "code", label: "Code", icon: <IconCode /> }]} />
@@ -148,7 +154,7 @@ function SourceBlock({ file }: { file: string }) {
   );
 }
 
-export function DocPageView({ page }: { page: DocPage }) {
+export function DocPageView({ page, prev, next, go }: { page: DocPage; prev?: DocPage; next?: DocPage; go?: (to: string) => void }) {
   if (page.render) { const R = page.render; return <R />; }
   const files = [...new Set(page.components.map((c) => API[c]?.file).filter(Boolean))] as string[];
   const outline = [
@@ -165,7 +171,7 @@ export function DocPageView({ page }: { page: DocPage }) {
           <p {...stylex.props(k.lede)}>{page.description}</p>
           <CodeBlock code={importLine(page.components.filter((c) => API[c]))} language="tsx" />
         </header>
-        {page.demos.map((d) => <DemoCard key={d.id} demo={d} />)}
+        {page.demos.map((d, i) => <DemoCard key={d.id} demo={d} index={page.demos.length > 1 ? i : undefined} />)}
         {(page.dos || page.donts) && (
           <section id="usage" {...stylex.props(k.section)}>
             <h2 {...stylex.props(k.h2)}>Usage</h2>
@@ -185,6 +191,12 @@ export function DocPageView({ page }: { page: DocPage }) {
           <p {...stylex.props(k.h2desc)}>The full component source — copy it into your project or read how it's built.</p>
           {files.map((f) => <SourceBlock key={f} file={f} />)}
         </section>
+        {(prev || next) && (
+          <nav aria-label="More pages" {...stylex.props(k.pager)}>
+            {prev && <button type="button" onClick={() => go?.(`#/docs/${prev.slug}`)} {...stylex.props(k.pagerCard)}><span {...stylex.props(k.pagerKicker)}>Previous</span><span {...stylex.props(k.pagerTitle)}>{prev.title}</span></button>}
+            {next && <button type="button" onClick={() => go?.(`#/docs/${next.slug}`)} {...stylex.props(k.pagerCard, k.pagerEnd)}><span {...stylex.props(k.pagerKicker)}>Next</span><span {...stylex.props(k.pagerTitle)}>{next.title}</span></button>}
+          </nav>
+        )}
       </div>
       <aside {...stylex.props(k.aside)}><Outline items={outline} /></aside>
     </div>

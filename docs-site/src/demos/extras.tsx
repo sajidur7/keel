@@ -9,6 +9,7 @@ import {
   Stat, StatusPill, Tab, TabList, TabMenu, Tag, Text, Toast, TopNavHeading, useClipboard, useDisclosure, useHotkeys, useImperativeDialog, useMediaQuery, useStreamingText,
   useTablePagination, useTableSelection, useTableSort, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Pagination, Checkbox, Token, Grid, useToast,
   useCalendarDays, IconCopy, IconCheck,
+  PillBarChart, ValueChart, UsageMeter, ChatComposer as Composer2, TaskList as TaskList2, IconPaperclip as IcClip, IconGlobe as IcGlobe, IconDatabase as IcData,
 } from "@keel/components";
 import { Row, State, StateGrid } from "../docs/kit";
 
@@ -32,7 +33,8 @@ export function StatOptions() {
   return (
     <StateGrid min={240}>
       <State label="Icon tile + badge"><Stat variant="card" iconTile icon={<IconUsers />} label="Active users" badge={<StatusPill status="active" pulse>Live</StatusPill>} value="1,920" /></State>
-      <State label="Trend beside"><Stat variant="card" label="Weekly actives" value="18,402" delta={4.1} trend={trend} trendPosition="side" /></State>
+      <State label="Trend beside (default)"><Stat variant="card" label="Weekly actives" value="18,402" delta={4.1} trend={trend} /></State>
+      <State label="Trend below"><Stat variant="card" label="Weekly actives" value="18,402" delta={4.1} trend={trend} trendPosition="below" /></State>
       <State label="Mini bars"><Stat variant="card" label="Orders" value="3,914" delta={6.1} trend={[4, 6, 5, 7, 8, 6, 9, 11, 10, 12]} trendType="bars" /></State>
       <State label="Ring"><Stat variant="card" label="CSAT" value="94%" progress={{ value: 94, style: "ring" }} /></State>
       <State label="Segments"><Stat variant="card" label="Activation" value="63%" progress={{ value: 63, style: "segments" }} /></State>
@@ -247,3 +249,73 @@ export function KbdIconsDemo() {
   return <Row gap={16}><Kbd>⌘K</Kbd><Kbd>⇧↵</Kbd><Kbd>⌥</Kbd><Kbd>⌃</Kbd><Kbd>↑</Kbd><Kbd>↓</Kbd><Kbd>⌫</Kbd><Kbd>⇥</Kbd><Kbd>Esc</Kbd><KbdGroup keys="mod+shift+p" /><KbdGroup keys={["⌘", "⇧", "P"]} /></Row>;
 }
 void [IconAgent];
+
+/* ---------------------------------------------------------------- charts with a header */
+const days = Array.from({ length: 20 }, (_, i) => new Date(2026, 8, 22 + i).toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+const wave = (base: number, amp: number, k: number) => days.map((_, i) => Math.round(base + amp * Math.sin(i / k) + ((i * 37) % 11) * (amp / 14)));
+export function PillBarDemo() {
+  const [by, setBy] = useState("day");
+  return (
+    <Row>
+      <Card style={{ width: 380, maxWidth: "100%" }}>
+        <PillBarChart label="Traffic by source, last 20 days" title="Traffic" description="Last 20 days" unit="visits"
+          action={<SegmentedControl size="sm" value={by} onValueChange={setBy} items={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }]} />}
+          labels={days}
+          series={[{ name: "Direct", values: wave(520, 180, 2.1) }, { name: "Search", values: wave(330, 120, 1.6) }, { name: "Social", values: wave(170, 60, 2.8) }, { name: "Email", values: wave(210, 90, 1.3) }]}
+          negative={{ name: "Bounced", values: wave(150, 60, 1.9) }} />
+      </Card>
+      <Card style={{ width: 380, maxWidth: "100%" }}>
+        <PillBarChart label="Signups by plan" title="Signups" description="Two series, no negatives" unit="signups" height={150}
+          labels={days.slice(0, 12)} series={[{ name: "Self-serve", values: wave(42, 16, 1.7).slice(0, 12) }, { name: "Sales-led", values: wave(18, 8, 2.4).slice(0, 12) }]} />
+      </Card>
+    </Row>
+  );
+}
+const walk = (n: number, start: number, drift: number, vol: number) => { let v = start; return Array.from({ length: n }, (_, i) => (v += drift + Math.sin(i * 1.7) * vol + Math.cos(i * 0.6) * vol * 0.6)); };
+export function ValueChartDemo() {
+  return (
+    <Row>
+      <Card style={{ width: 380, maxWidth: "100%" }}>
+        <ValueChart label="Account balance" title="Balance"
+          ranges={[{ label: "1H", values: walk(24, 58610, 9, 30), caption: "past hour" }, { label: "4H", values: walk(32, 58200, 20, 60), caption: "past 4 hours" }, { label: "1D", values: walk(40, 57630, 30, 90), caption: "today" }]} />
+      </Card>
+      <Card style={{ width: 380, maxWidth: "100%" }}>
+        <ValueChart label="Monthly recurring revenue" title="MRR" area={false} format={(n) => `$${Math.round(n).toLocaleString()}`}
+          ranges={[{ label: "30d", values: walk(30, 81200, 104, 220), caption: "last 30 days" }, { label: "90d", values: walk(45, 74800, 212, 380), caption: "last 90 days" }, { label: "12m", values: walk(48, 52100, 670, 900), caption: "last 12 months" }]} defaultRange="90d" />
+      </Card>
+    </Row>
+  );
+}
+
+export function UsageMeterDemo() {
+  return (
+    <Row>
+      <Card style={{ width: 340, maxWidth: "100%" }}>
+        <UsageMeter title="Context" max={200000} action={<Button size="xs">Compact</Button>}
+          items={[{ name: "Chat", value: 92000 }, { name: "Files", value: 41000 }, { name: "Tools", value: 14600 }, { name: "System", value: 6000 }, { name: "Memory", value: 22000 }]} />
+      </Card>
+      <Card style={{ width: 340, maxWidth: "100%" }}>
+        <UsageMeter title="Seats" max={100} format={(n) => `${n}`} action={<Button size="xs" variant="primary">Upgrade</Button>}
+          items={[{ name: "Admins", value: 6 }, { name: "Members", value: 58 }, { name: "Guests", value: 8 }]} />
+      </Card>
+    </Row>
+  );
+}
+export function ComposerStylesDemo() {
+  const [a, setA] = useState(""); const [b, setB] = useState(""); const [c, setC] = useState("");
+  const sources = [{ id: "f", label: "Add photos & files", description: "From your computer", icon: <IcClip /> }, { id: "d", label: "Workspace data", description: "Deals, people, invoices", icon: <IcData /> }, { id: "w", label: "Web search", description: "Live results", icon: <IcGlobe /> }];
+  return (
+    <StateGrid min={320}>
+      <State label="Pill — opens when you click it"><div style={{ width: "100%", minHeight: 120 }}><Composer2 variant="pill" value={a} onValueChange={setA} onSubmit={() => setA("")} sources={sources} /></div></State>
+      <State label="Label, suggestions and a Send button"><div style={{ width: "100%" }}><Composer2 value={b} onValueChange={setB} onSubmit={() => setB("")} label="Reply to Emma" placeholder="Write a reply…" minRows={2} dictation={false} sendLabel="Send" suggestions={["Sounds good", "Can we move it to Friday?", "Send the contract"]} /></div></State>
+      <State label="Add menu (+) with sources"><div style={{ width: "100%" }}><Composer2 value={c} onValueChange={setC} onSubmit={() => setC("")} sources={sources} label="Ask Northwind" meta="Fast" /></div></State>
+    </StateGrid>
+  );
+}
+export function TaskCapsulesDemo() {
+  return (
+    <div style={{ width: "100%", maxWidth: 520 }}>
+      <TaskList2 variant="capsule" tasks={[{ id: "1", title: "Verified vendor records", status: "done", meta: "12 suppliers" }, { id: "2", title: "Build reorder task list", status: "running", meta: "7 SKUs" }, { id: "3", title: "Draft supplier emails", status: "queued", meta: "2 messages" }, { id: "4", title: "Sync to ERP", status: "failed", meta: "Timeout" }]} />
+    </div>
+  );
+}

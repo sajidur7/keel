@@ -8230,7 +8230,7 @@
     "name": "trendPosition",
     "type": "\"side\" | \"below\"",
     "required": false,
-    "default": "\"below\"",
+    "default": "\"side\"",
     "description": "Put the trend to the right of the number instead of under it."
    },
    {
@@ -10107,6 +10107,13 @@
     "description": ""
    },
    {
+    "name": "variant",
+    "type": "\"list\" | \"capsule\"",
+    "required": false,
+    "default": "\"list\"",
+    "description": ""
+   },
+   {
     "name": "xstyle",
     "type": "XStyle | XStyle[]",
     "required": false,
@@ -10192,6 +10199,12 @@
     "description": ""
    },
    {
+    "name": "variant",
+    "type": "\"list\" | \"capsule\"",
+    "required": false,
+    "description": ""
+   },
+   {
     "name": "xstyle",
     "type": "XStyle | XStyle[]",
     "required": false,
@@ -10238,6 +10251,236 @@
     "type": "ReactNode",
     "required": false,
     "description": ""
+   },
+   {
+    "name": "xstyle",
+    "type": "XStyle | XStyle[]",
+    "required": false,
+    "description": "StyleX overrides, applied last: `xstyle={styles.wide}`."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "style",
+    "type": "CSSProperties",
+    "required": false,
+    "description": ""
+   }
+  ]
+ },
+ "PillBarChart": {
+  "file": "charts.tsx",
+  "description": "Stacked capsule bars: each series is its own rounded segment with a gap, so the stack reads at a glance.",
+  "props": [
+   {
+    "name": "labels",
+    "type": "string[]",
+    "required": true,
+    "description": ""
+   },
+   {
+    "name": "series",
+    "type": "PillBarSeries[]",
+    "required": true,
+    "description": "Stacked upwards, first series at the bottom."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "For screen readers."
+   },
+   {
+    "name": "negative",
+    "type": "{ name: string; values: number[] }",
+    "required": false,
+    "description": "Drawn below the baseline as hollow capsules: refunds, bounces, churn. Pass positive numbers."
+   },
+   {
+    "name": "title",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "description",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "unit",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "action",
+    "type": "ReactNode",
+    "required": false,
+    "description": "Top-right slot: a SegmentedControl for Day / Week, a menu."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "required": false,
+    "default": "180",
+    "description": ""
+   },
+   {
+    "name": "format",
+    "type": "(n: number) => string",
+    "required": false,
+    "default": "(n) => n.toLocaleString()",
+    "description": ""
+   },
+   {
+    "name": "legend",
+    "type": "boolean",
+    "required": false,
+    "default": "true",
+    "description": ""
+   },
+   {
+    "name": "value",
+    "type": "number",
+    "required": false,
+    "description": "Headline number. Defaults to the total of all series; follows the bar under the pointer."
+   },
+   {
+    "name": "xstyle",
+    "type": "XStyle | XStyle[]",
+    "required": false,
+    "description": "StyleX overrides, applied last: `xstyle={styles.wide}`."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "style",
+    "type": "CSSProperties",
+    "required": false,
+    "description": ""
+   }
+  ]
+ },
+ "ValueChart": {
+  "file": "charts.tsx",
+  "description": "A headline value with its line and range tabs — balances, prices, MRR. Drag across the line to read any point.",
+  "props": [
+   {
+    "name": "ranges",
+    "type": "ValueChartRange[]",
+    "required": true,
+    "description": "One series per range tab. The headline is the last value of the selected range."
+   },
+   {
+    "name": "label",
+    "type": "string",
+    "required": true,
+    "description": "For screen readers."
+   },
+   {
+    "name": "defaultRange",
+    "type": "string",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "title",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "format",
+    "type": "(n: number) => string",
+    "required": false,
+    "default": "(n) => n.toLocaleString(undefined, { style: \"currency\", curr",
+    "description": "Formats the headline; the part after the decimal point is drawn quieter."
+   },
+   {
+    "name": "height",
+    "type": "number",
+    "required": false,
+    "default": "150",
+    "description": ""
+   },
+   {
+    "name": "area",
+    "type": "boolean",
+    "required": false,
+    "default": "true",
+    "description": "Dot-textured fill under the line."
+   },
+   {
+    "name": "xstyle",
+    "type": "XStyle | XStyle[]",
+    "required": false,
+    "description": "StyleX overrides, applied last: `xstyle={styles.wide}`."
+   },
+   {
+    "name": "className",
+    "type": "string",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "style",
+    "type": "CSSProperties",
+    "required": false,
+    "description": ""
+   }
+  ]
+ },
+ "UsageMeter": {
+  "file": "charts.tsx",
+  "description": "What is using a limited budget — seats, storage, tokens, API calls — as one bar of parts with a chip per part.",
+  "props": [
+   {
+    "name": "items",
+    "type": "{ name: string; value: number; /** Index into the chart palette. */ color?: number }[]",
+    "required": true,
+    "description": ""
+   },
+   {
+    "name": "max",
+    "type": "number",
+    "required": true,
+    "description": "Capacity. The unused part is drawn as a dotted track."
+   },
+   {
+    "name": "title",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "action",
+    "type": "ReactNode",
+    "required": false,
+    "description": "Top-right slot: a Button such as \"Compact\" or \"Upgrade\"."
+   },
+   {
+    "name": "format",
+    "type": "(n: number) => string",
+    "required": false,
+    "default": "fmtCompact",
+    "description": ""
+   },
+   {
+    "name": "values",
+    "type": "boolean",
+    "required": false,
+    "default": "true",
+    "description": "Show each part's value on its chip."
    },
    {
     "name": "xstyle",
@@ -10601,6 +10844,68 @@
     "type": "(name: string) => void",
     "required": false,
     "description": ""
+   },
+   {
+    "name": "label",
+    "type": "ReactNode",
+    "required": false,
+    "description": "Mono label on the top strip of the shell (\"Reply to Emma\", \"Ask Northwind\")."
+   },
+   {
+    "name": "icon",
+    "type": "ReactNode",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "meta",
+    "type": "ReactNode",
+    "required": false,
+    "description": "Right side of the top strip: a model picker, a token count, a status."
+   },
+   {
+    "name": "suggestions",
+    "type": "string[]",
+    "required": false,
+    "description": "One-tap starters shown above the field. Picking one fills the field (or calls `onSuggestion`)."
+   },
+   {
+    "name": "onSuggestion",
+    "type": "(text: string) => void",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "sources",
+    "type": "{ id: string; label: string; description?: string; icon?: ReactNode; onSelect?: () => void }[]",
+    "required": false,
+    "description": "A \"+\" menu of things to add: files, data sources, web search, connected apps."
+   },
+   {
+    "name": "variant",
+    "type": "\"pill\" | \"box\"",
+    "required": false,
+    "default": "\"box\"",
+    "description": "`pill`: a single-line capsule that opens into the full box when focused or filled."
+   },
+   {
+    "name": "sendLabel",
+    "type": "string",
+    "required": false,
+    "description": "Text for the send button (\"Send\", \"Reply\"). Without it the button is a round arrow."
+   },
+   {
+    "name": "minRows",
+    "type": "number",
+    "required": false,
+    "default": "1",
+    "description": "Lines the field starts with."
+   },
+   {
+    "name": "hint",
+    "type": "ReactNode | false",
+    "required": false,
+    "description": "Small hint beside the send button; `false` hides it."
    },
    {
     "name": "tools",

@@ -7,8 +7,9 @@ import {
 
 /* Two rows that never leave holes: 2fr + 1fr on wide screens, one column below 1100px. */
 const g = stylex.create({
-  row: { display: "grid", gap: 16, gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 1100px)": "minmax(0, 2fr) minmax(0, 1fr)" }, alignItems: "start" },
+  row: { display: "grid", gap: 16, gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 1100px)": "minmax(0, 2fr) minmax(0, 1fr)" }, alignItems: "stretch" },
   stack: { display: "flex", flexDirection: "column", gap: 16, minWidth: 0 },
+  grow: { display: "grid", gridTemplateColumns: "minmax(0, 1fr)", flexGrow: 1, minWidth: 0 },
 });
 import { customers, fmtMoney, invoiceLabel, invoices, invoiceTone, revenue, revenuePrev, revenueWeeks } from "./data";
 import { AdminShell, type Nav } from "./shell";
@@ -43,13 +44,13 @@ export function OverviewTemplate({ go }: { go?: (to: Nav) => void }) {
             <Section variant="card" title="Plan mix" description={`${customers.length} customers`}>
               <BreakdownBar items={["Starter", "Growth", "Scale", "Enterprise"].map((p) => ({ name: p, value: customers.filter((c) => c.plan === p).length }))} format={(n) => `${n}`} />
             </Section>
-            <Section variant="card" title="Activity">
+            <div {...stylex.props(g.grow)}><Section variant="card" title="Activity">
               <Timeline events={[
                 { id: "1", title: <span><b>INV-2063</b> sent to Tidewater</span>, time: "14:22", marker: <Avatar name="Rafi Ahmed" size="xs" /> },
                 { id: "2", title: "Payment failed · Riverbend", time: "09:00", tone: "danger" },
                 { id: "3", title: "SSO enabled with Okta", time: "Yesterday", tone: "info" },
               ]} />
-            </Section>
+            </Section></div>
           </div>
         </div>
       </Page>

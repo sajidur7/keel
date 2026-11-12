@@ -59,7 +59,7 @@ const components: DocPage[] = [
   p("Chat", "chat-system-message", "Chat System Message", ["ChatSystemMessage"], "A neutral notice in the thread — a date divider, someone joining, context reset.", [d("chat", "ChatSystemMessageDemo", "Examples")], { badge: "New" }),
   p("Chat", "chat-tool-calls", "Chat Tool Calls", ["ChatToolCalls"], "What the assistant did: each tool call with status, input and output, collapsed to one line by default.", [d("chat", "ChatToolCallsDemo", "Examples")], { badge: "New" }),
   p("Chat", "chat-composer", "Chat Composer", ["ChatComposer", "ChatDictationButton"], "Where people write. Grows with the text; Enter sends, Shift+Enter adds a line; attachments, dictation, a model picker slot, and Stop while streaming.",
-    [d("chat", "ChatComposerDemo", "Composer"), d("chat", "ChatComposerStates", "All states")], { badge: "New" }),
+    [d("extras", "ComposerStylesDemo", "Styles"), d("chat", "ChatComposerDemo", "Composer"), d("chat", "ChatComposerStates", "All states")], { badge: "New" }),
 
   /* ---------------- AI */
   p("AI", "thinking", "Thinking & Loaders", ["Thinking", "PixelLoader", "LoadingState"], "Moments of waiting: a shimmering “Thinking…” with elapsed time and expandable reasoning, a pixel loader, and a longer loading state with the current step.", [d("ai", "ThinkingDemo", "All states")], { badge: "New" }),
@@ -71,7 +71,7 @@ const components: DocPage[] = [
   p("AI", "context-cards", "Context Cards", ["ContextCard", "ContextChips"], "Files, pages and records attached to a prompt.", [d("ai", "ContextCardsDemo", "Examples")], { badge: "New" }),
   p("AI", "insight-card", "Insight Card", ["InsightCard"], "A generated finding about a metric: the number, the trend, one line of why, and a follow-up.", [d("ai", "InsightCardDemo", "Examples")], { badge: "New" }),
   p("AI", "diff-table", "Diff Table", ["DiffTable"], "AI-proposed edits to records. Old values struck, new ones highlighted; accept or reject each, or all.", [d("ai", "DiffTableDemo", "Review changes")], { badge: "New" }),
-  p("AI", "task-list", "Task List", ["TaskList"], "An agent's plan and its progress, one row per task.", [d("ai", "TaskListDemo", "All states")], { badge: "New" }),
+  p("AI", "task-list", "Task List", ["TaskList"], "An agent's plan and its progress, one row per task.", [d("ai", "TaskListDemo", "All states"), d("extras", "TaskCapsulesDemo", "Capsules")], { badge: "New" }),
   p("AI", "parameter-card", "Parameter Card", ["ParameterCard"], "Tunable model or job settings with live values.", [d("ai", "ParameterCardDemo", "Example")], { badge: "New" }),
 
   /* ---------------- Container */
@@ -217,6 +217,9 @@ const components: DocPage[] = [
   p("Data & Charts", "breakdown-bar", "Breakdown Bar", ["BreakdownBar"], "Parts of a whole as one segmented bar with a legend.", [d("extras", "BreakdownBarDemo", "Examples")], { badge: "New" }),
   p("Data & Charts", "gauge-chart", "Gauge", ["GaugeChart"], "A half-dial for a score in a range, with optional threshold ticks.", [d("extras", "GaugeDemo", "Examples")], { badge: "New" }),
   p("Data & Charts", "heatmap", "Heatmap", ["Heatmap"], "Values on a grid — activity by day and hour. Five steps from muted to blue.", [d("extras", "HeatmapDemo", "Example")], { badge: "New" }),
+  p("Data & Charts", "pill-bar-chart", "Pill Bar Chart", ["PillBarChart"], "Stacked capsule bars with a headline number. Each series is its own rounded segment; a negative series hangs below the baseline. Hover or drag to read a day.", [d("extras", "PillBarDemo", "Examples")], { badge: "New" }),
+  p("Data & Charts", "value-chart", "Value Chart", ["ValueChart"], "A headline value, its line and range tabs in one piece — balances, prices, MRR. Drag across the line to read any point.", [d("extras", "ValueChartDemo", "Examples")], { badge: "New" }),
+  p("Data & Charts", "usage-meter", "Usage Meter", ["UsageMeter"], "What is using a limited budget — seats, storage, tokens — as one bar of parts with a chip per part. The unused part is a dotted track.", [d("extras", "UsageMeterDemo", "Examples")], { badge: "New" }),
   p("Data & Charts", "funnel-chart", "Funnel", ["FunnelChart"], "Steps that narrow, with conversion between each.", [d("extras", "FunnelDemo", "Example")], { badge: "New" }),
   p("Data & Charts", "scatter-chart", "Scatter", ["ScatterChart"], "Two measures per item, optional size channel and highlighted points.", [d("extras", "ScatterDemo", "Example")], { badge: "New" }),
   p("Data & Charts", "bullet-chart", "Bullet", ["BulletChart"], "One measure against a target and bands — the compact gauge for tables and stats.", [d("extras", "BulletDemo", "Example")], { badge: "New" }),

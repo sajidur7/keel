@@ -23,6 +23,7 @@ const h = stylex.create({
   section: { display: "flex", flexDirection: "column", gap: 14, scrollMarginTop: 72 },
   secHead: { display: "flex", alignItems: "center", gap: 10 },
   h2: { fontSize: font.h3, fontWeight: font.semibold, letterSpacing: "-0.01em" },
+  rule: { flex: 1, height: 1, backgroundImage: `linear-gradient(90deg, ${color.borderStrong} 50%, transparent 0)`, backgroundSize: "6px 1px" },
   count: { fontFamily: font.mono, fontSize: "11px", lineHeight: 1, color: color.fgFaint },
   grid: { display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))" },
   card: {
@@ -111,7 +112,7 @@ export function Home({ go }: { go: (to: string) => void }) {
         if (!list.length) return null;
         return (
           <section key={grp} id={grp} {...stylex.props(h.section)}>
-            <div {...stylex.props(h.secHead)}><h2 {...stylex.props(h.h2)}>{grp}</h2><span {...stylex.props(h.count)}>{list.length}</span></div>
+            <div {...stylex.props(h.secHead)}><span {...stylex.props(h.count)}>{String(componentGroups.indexOf(grp) + 1).padStart(2, "0")}</span><h2 {...stylex.props(h.h2)}>{grp}</h2><span {...stylex.props(h.rule)} /><span {...stylex.props(h.count)}>{list.length}</span></div>
             <div {...stylex.props(h.grid)}>
               {list.map((p) => (
                 <div key={p.slug} role="link" tabIndex={0} onClick={() => go(`#/docs/${p.slug}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(`#/docs/${p.slug}`); } }} {...stylex.props(h.card)} aria-label={p.title}>

@@ -16,7 +16,14 @@ const s = stylex.create({
   split: { display: "grid", minHeight: "calc(100dvh - 68px)", gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 900px)": "320px minmax(0, 1fr)" } },
   pane: { display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, borderInlineEndWidth: { default: 0, "@media (min-width: 900px)": 1 }, borderInlineEndStyle: "solid", borderInlineEndColor: color.border },
   paneHead: { display: "flex", alignItems: "center", gap: 8, padding: 12, borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
-  read: { display: { default: "none", "@media (min-width: 900px)": "flex" }, flexDirection: "column", gap: 20, padding: { default: 16, "@media (min-width: 768px)": 28 }, minWidth: 0 },
+  read: { display: { default: "none", "@media (min-width: 900px)": "flex" }, flexDirection: "column", minWidth: 0, minHeight: 0 },
+  readHead: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, paddingInline: 28, paddingBlock: 18, borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: color.border },
+  readBody: { flex: 1, minHeight: 0, overflowY: "auto", paddingInline: 28, paddingBlock: 24 },
+  mail: { display: "flex", flexDirection: "column", gap: 18, maxWidth: 680 },
+  mailFrom: { display: "flex", alignItems: "center", gap: 12, minWidth: 0 },
+  mailText: { display: "flex", flexDirection: "column", gap: 12, fontSize: font.lg, lineHeight: 1.6, color: color.fg },
+  mailFile: { display: "inline-flex", alignItems: "center", gap: 8, height: 36, paddingInlineStart: 10, paddingInlineEnd: 6, borderRadius: radius.lg, fontSize: font.md, boxShadow: `inset 0 0 0 1px ${color.border}`, backgroundColor: color.surface },
+  readFoot: { paddingInline: 28, paddingBottom: 24, paddingTop: 4 },
   board: { display: "flex", gap: 12, overflowX: "auto", padding: { default: 16, "@media (min-width: 768px)": 24 }, alignItems: "flex-start", minHeight: "calc(100dvh - 68px)" },
   col: { display: "flex", flexDirection: "column", gap: 8, width: 284, flexShrink: 0, padding: 6, borderRadius: radius.xxl, backgroundColor: color.surfaceSunken, boxShadow: `inset 0 0 0 1px ${color.border}` },
   colHead: { display: "flex", alignItems: "center", gap: 8, paddingInline: 8, paddingTop: 6, paddingBottom: 2 },
@@ -67,8 +74,9 @@ const s = stylex.create({
 function Inbox() {
   const [sel, setSel] = useState(0);
   const [tab, setTab] = useState("all");
-  const mails = people.slice(0, 12).map((p, i) => ({ id: p.id, from: p.name, subject: ["Re: Q4 proposal", "Security questionnaire", "Can we move Thursday?", "Invoice INV-2063", "Intro — Northwind × Zoom", "Pricing for 200 seats", "Your trial ends in 3 days", "Feedback on onboarding", "Contract redlines", "Team offsite", "Webhook failures", "Thanks for the demo!"][i], preview: "Thanks — looping in our security lead so we can wrap this up before the end of the quarter…", time: ["09:41", "09:12", "Yesterday", "Yesterday", "Mon", "Mon", "Sun", "Nov 14", "Nov 13", "Nov 12", "Nov 12", "Nov 11"][i], unread: i < 3 }));
-  const m = mails[sel];
+  const mails = people.slice(0, 12).map((p, i) => ({ id: p.id, from: p.name, email: p.email, subject: ["Re: Q4 proposal", "Security questionnaire", "Can we move Thursday?", "Invoice INV-2063", "Intro — Northwind × Zoom", "Pricing for 200 seats", "Your trial ends in 3 days", "Feedback on onboarding", "Contract redlines", "Team offsite", "Webhook failures", "Thanks for the demo!"][i], preview: "Thanks — looping in our security lead so we can wrap this up before the end of the quarter…", time: ["09:41", "09:12", "Yesterday", "Yesterday", "Mon", "Mon", "Sun", "Nov 14", "Nov 13", "Nov 12", "Nov 12", "Nov 11"][i], unread: i < 3 }));
+  const m = mails[sel]; const first = m.from.split(" ")[0];
+  const [reply, setReply] = useState(""); const toast = useToast();
   return (
     <ScreenShell active="inbox" flush header={{ title: "Inbox", status: <Tag size="sm">12 unread</Tag>, actions: <Button size="sm" variant="primary" leading={<IconMail />}>Compose</Button> }}>
       <div {...stylex.props(s.split)}>
@@ -78,11 +86,42 @@ function Inbox() {
           <List>{mails.map((x, i) => <ListItem key={x.id} selected={i === sel} onClick={() => setSel(i)} leading={<Avatar name={x.from} size="sm" />} title={<span style={{ fontWeight: x.unread ? 600 : 450 }}>{x.from}</span>} description={x.subject} meta={x.time} />)}</List>
         </div>
         <div {...stylex.props(s.read)}>
-          <div {...stylex.props(s.row)} style={{ justifyContent: "space-between" }}><Text variant="h3">{m.subject}</Text><span {...stylex.props(s.row)}><IconButton label="Archive" size="sm" shortcut="E"><IconArchive /></IconButton><IconButton label="Star" size="sm"><IconStar /></IconButton><IconButton label="Delete" size="sm"><IconTrash /></IconButton></span></div>
-          <ChatMessage role="user" author={{ name: m.from }} content={`Hi Maya,\n\n${m.preview}\n\nCould you send the SOC 2 report and the DPA? Our procurement team needs both before Friday.\n\nBest,\n${m.from.split(" ")[0]}`} metadata={[m.time]} />
-          <Bezel label="Suggested reply" icon={<IconAgent size={12} />} footer={<><Button size="sm" variant="ghost">Edit</Button><span style={{ marginLeft: "auto", display: "flex", gap: 8 }}><Button size="sm" leading={<IconReply />}>Reply</Button><Button size="sm" variant="primary" leading={<IconSend />}>Send</Button></span></>}>
-            <Text>Hi {m.from.split(" ")[0]} — attached are our SOC 2 Type II report and DPA. Happy to jump on a call with procurement if useful.</Text>
-          </Bezel>
+          <header {...stylex.props(s.readHead)}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
+              <Text variant="h3" truncate>{m.subject}</Text>
+              <span {...stylex.props(s.row)}><Tag size="sm" variant="outline">Proposal</Tag><Tag size="sm">External</Tag><Text variant="caption">3 messages</Text></span>
+            </div>
+            <span {...stylex.props(s.row)}><IconButton label="Archive" size="sm" shortcut="E"><IconArchive /></IconButton><IconButton label="Star" size="sm"><IconStar /></IconButton><IconButton label="Delete" size="sm"><IconTrash /></IconButton></span>
+          </header>
+          <div {...stylex.props(s.readBody)}>
+            <article {...stylex.props(s.mail)}>
+              <div {...stylex.props(s.mailFrom)}>
+                <Avatar name={m.from} size="lg" />
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
+                  <Text weight="medium" truncate>{m.from}</Text>
+                  <Text variant="caption" truncate>{m.email} · to me</Text>
+                </div>
+                <Text variant="caption" style={{ whiteSpace: "nowrap" }}>{m.time}</Text>
+                <MoreMenu items={[{ label: "Forward" }, { label: "Mark unread" }, { label: "Block sender" }]} />
+              </div>
+              <div {...stylex.props(s.mailText)}>
+                <p>Hi Maya,</p>
+                <p>{m.preview}</p>
+                <p>Could you send the SOC 2 report and the DPA? Our procurement team needs both before Friday.</p>
+                <p>Best,<br />{first}</p>
+              </div>
+              <div {...stylex.props(s.row)} style={{ flexWrap: "wrap" }}>
+                <span {...stylex.props(s.mailFile)}><IconFileSpreadsheet size={16} /><span style={{ whiteSpace: "nowrap" }}><b style={{ fontWeight: 500 }}>Security-questionnaire.xlsx</b><Text variant="caption"> · 48 KB</Text></span><IconButton label="Download" size="xs"><IconDownload /></IconButton></span>
+              </div>
+            </article>
+          </div>
+          <div {...stylex.props(s.readFoot)}>
+            <ChatComposer value={reply} onValueChange={setReply} onSubmit={() => { setReply(""); toast({ title: "Reply sent", description: `To ${m.from}`, tone: "success" }); }}
+              label={`Reply to ${first}`} icon={<IconReply size={12} />} placeholder="Write a reply…" minRows={2} dictation={false} sendLabel="Send" onAttach={() => {}}
+              meta={<Button size="xs" variant="ghost" leading={<IconAgent />} onClick={() => setReply(`Hi ${first} — attached are our SOC 2 Type II report and DPA. Happy to jump on a call with procurement if useful.`)}>Draft with AI</Button>}
+              suggestions={[`Send SOC 2 and DPA`, "Offer a call with procurement", "Ask for more time"]}
+              onSuggestion={(t) => setReply(t === "Send SOC 2 and DPA" ? `Hi ${first} — attached are our SOC 2 Type II report and DPA. Happy to jump on a call with procurement if useful.` : t === "Offer a call with procurement" ? `Hi ${first} — happy to walk procurement through both documents. Does Thursday at 10:00 work?` : `Hi ${first} — we need until Monday to get the signed DPA back from legal. I'll send the SOC 2 report today.`)} />
+          </div>
         </div>
       </div>
     </ScreenShell>

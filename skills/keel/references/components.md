@@ -75,7 +75,7 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 ## chat.tsx
 
 - **ChatComposer** — Where the person writes. Grows with the text; ↵ sends, ⇧↵ adds a line; attach, dictate, stop.
-  `onSubmit*`: (v: string) => void · `value*`: string · `onValueChange*`: (v: string) => void · `streaming`: boolean · `onStop`: () => void · `attachments`: ChatAttachment[] · `onAttach`: (files: File[]) => void · `onRemoveAttachment`: (name: string) => void · `tools`: ReactNode · `dictation`: boolean = true · `autoFocus`: boolean · `placeholder`: string = "Ask anything…" · `disabled`: boolean
+  `onSubmit*`: (v: string) => void · `value*`: string · `onValueChange*`: (v: string) => void · `streaming`: boolean · `onStop`: () => void · `attachments`: ChatAttachment[] · `onAttach`: (files: File[]) => void · `onRemoveAttachment`: (name: string) => void · `label`: ReactNode · `icon`: ReactNode · `meta`: ReactNode · `suggestions`: string[] · `onSuggestion`: (text: string) => void · `sources`: { id: string; label: string; description?: string; icon?: ReactNode; onSelect?: () => void }[]
 - **ChatDictationButton** — Mic button that dictates into the composer (Web Speech API). Hidden when the browser can't.
   `onTranscript*`: (text: string, final: boolean) => void · `hideWhenUnsupported`: boolean = true · `size`: "xs" | "sm" | "md" = "sm"
 - **ChatLayout** — A full-height conversation: optional header, a thread that sticks to the newest message, the composer pinned below.
@@ -122,9 +122,9 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
 - **StreamingText** — Reveals text at a reading pace with a caret — for demos and for smoothing bursty streams.
   `text*`: string · `speed`: number = 40 · `onDone`: () => void
 - **TaskList** — An agent's plan and progress, one row per task.
-  `tasks*`: AgentTask[] · `plain`: boolean
+  `tasks*`: AgentTask[] · `plain`: boolean · `variant`: "list" | "capsule" = "list"
 - **TaskRows** — v1-style alias (beautifului calls these task rows).
-  `tasks*`: AgentTask[] · `plain`: boolean
+  `tasks*`: AgentTask[] · `plain`: boolean · `variant`: "list" | "capsule"
 - **Thinking** — "Thinking…" with a moving sheen and elapsed time. Click to show the reasoning if you have it.
   `label`: string = "Thinking" · `startTime`: number · `reasoning`: string · `done`: boolean · `doneLabel`: string
 - **ToolChips** — Tools the assistant can use; toggle them, and see which one is running now.
@@ -606,6 +606,15 @@ Every component also accepts `xstyle` (StyleX styles), `className` and `style`. 
   `label*`: ReactNode · `value*`: ReactNode · `help`: ReactNode · `icon`: ReactNode · `iconTile`: boolean · `badge`: ReactNode · `action`: ReactNode · `delta`: number · `deltaUnit`: string = "%" · `deltaStyle`: "text" | "pill" | "arrow" = "pill" · `baseline`: ReactNode · `lowerIsBetter`: boolean · `neutral`: boolean · `meta`: ReactNode
 - **StatGroup** — Stats side by side, split by hairlines on one surface. Two-up on phones.
   `children*`: ReactNode
+
+## charts.tsx
+
+- **PillBarChart** — Stacked capsule bars: each series is its own rounded segment with a gap, so the stack reads at a glance.
+  `labels*`: string[] · `series*`: PillBarSeries[] · `label*`: string · `negative`: { name: string; values: number[] } · `title`: ReactNode · `description`: ReactNode · `unit`: ReactNode · `action`: ReactNode · `height`: number = 180 · `format`: (n: number) => string = (n) => n.toLocaleString() · `legend`: boolean = true
+- **UsageMeter** — What is using a limited budget — seats, storage, tokens, API calls — as one bar of parts with a chip per part.
+  `items*`: { name: string; value: number; /** Index into the chart palette. */ color?: number }[] · `max*`: number · `title`: ReactNode · `action`: ReactNode · `format`: (n: number) => string = fmtCompact · `values`: boolean = true
+- **ValueChart** — A headline value with its line and range tabs — balances, prices, MRR. Drag across the line to read any point.
+  `ranges*`: ValueChartRange[] · `label*`: string · `defaultRange`: string · `title`: ReactNode · `format`: (n: number) => string = (n) => n.toLocaleString(undefined, { style: "currency", curr · `height`: number = 150 · `area`: boolean = true
 
 ## utility.tsx
 

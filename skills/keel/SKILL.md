@@ -29,6 +29,9 @@ reserved for meaning.
    headers inside rounded panels inherit the panel's corner radius.
 7. **Every interactive thing has all its states**: hover, focus-visible (accent ring), pressed (sinks 1px), disabled,
    loading, error, empty. Keel components already do; your own pieces must too.
+8. **Rows are level.** Cards side by side share one height (grid `align-items: stretch`; the last card in a stacked
+   column grows). In a row of `Stat`s keep the trend beside the value (the default) so tiles with and without a graph
+   are the same height — never leave an empty band under a number.
 
 ## Setup (if the project doesn't have Keel yet)
 
@@ -71,6 +74,8 @@ const s = stylex.create({ panel: { backgroundColor: color.surface, boxShadow: de
 - Details: `Drawer` + `DrawerContent` with `DrawerSection`s; confirmations: `AlertDialog`; quick confirm: `Popconfirm`.
 - Feedback: `useToast()` after actions (with Undo), `Banner` for persistent page state, `EmptyState` for nothing-yet.
 - Sub-parts and headless hooks (`CommandMenu`, `Resizable`, `Item`, `useDisclosure`, `useTableSelection`, `useClipboard`, `useHotkeys`…) are listed under `parts.tsx` and `hooks.ts` in the catalog.
+- Charts with a header built in: `PillBarChart` (stacked capsules, optional negative series) `ValueChart` (headline value + line + range tabs) and `UsageMeter` (parts of a budget with chips).
+- Typing box: `ChatComposer` is a sunken shell with a raised field; `label`, `meta`, `suggestions`, `sendLabel`, `minRows` turn it into a reply box; `sources` adds a + menu; `variant="pill"` is a capsule that opens on focus. Agent plans: `TaskList variant="capsule"`.
 - AI: `ChatLayout` + `ChatMessage` + `ChatComposer`; `Thinking`, `ChatToolCalls`, `ApprovalCard`, `DiffTable`, `TaskList`, `InsightCard`.
 - Icons: Lucide via Keel names (`IconSearch`, `IconTrash`…). Inside controls they size themselves.
 

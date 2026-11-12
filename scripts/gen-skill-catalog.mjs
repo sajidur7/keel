@@ -6,7 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const api = JSON.parse(fs.readFileSync(path.join(root, "docs-site/src/generated/api.json"), "utf8"));
 const byFile = {};
 for (const [name, e] of Object.entries(api)) (byFile[e.file] ??= []).push([name, e]);
-const order = ["action", "chat", "ai", "container", "content", "feedback", "inputs", "choice", "select", "dates", "pickers", "layout", "navigation", "overlay", "table", "lists", "data", "utility", "spinner", "parts"];
+const order = ["action", "chat", "ai", "container", "content", "feedback", "inputs", "choice", "select", "dates", "pickers", "layout", "navigation", "overlay", "table", "lists", "data", "charts", "utility", "spinner", "parts"];
 const skip = new Set(["className", "style", "xstyle", "children", "asChild", "defaultValue", "value", "type"]);
 let md = `# Keel components — full catalog\n\nGenerated from the TypeScript source (\`npm run api && node scripts/gen-skill-catalog.mjs\`). Import everything from \`@keel/components\` (components/index.ts).\nEvery component also accepts \`xstyle\` (StyleX styles), \`className\` and \`style\`. \`*\` = required.\n`;
 for (const f of order) {

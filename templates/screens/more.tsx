@@ -6,7 +6,7 @@ import {
   Checkbox, Citation, CodeBlock, ConfidenceMeter, ContextChips, DataTable, DiffTable, Divider, EmptyState, Field, ForbiddenPage, IconAgent, IconArrowLeft, IconArrowRight,
   IconBook, IconCheck, IconCheckCircle, IconDatabase, IconFile, IconGlobe, IconLock, IconMail, IconPlus, IconSearch, IconUsers, IconZap, Input, LineChart, List, ListItem,
   Markdown, MetadataList, NotFoundPage, OfflineState, ParameterCard, PromptBar, PromptSuggestions, RadioList, SearchInput, SegmentedControl, Select, ServerErrorPage, Stat,
-  StatGroup, StatusPill, Switch, TabMenu, Tag, TaskList, Text, Thinking, Timeline, ToolChips, BreakdownBar, BulletChart, Heatmap, InsightCard, RecommendationCard,
+  UsageMeter, IconPaperclip, StatGroup, StatusPill, Switch, TabMenu, Tag, TaskList, Text, Thinking, Timeline, ToolChips, BreakdownBar, BulletChart, Heatmap, InsightCard, RecommendationCard,
   ProgressBar, Kbd, AiBadge, Item, IconSettings, IconShield,
 } from "@keel/components";
 import { color, depth, font, radius } from "@keel/tokens/tokens.stylex";
@@ -100,7 +100,10 @@ function Usage() {
   return (
     <ScreenShell active="set-billing" header={{ title: "Usage", actions: <Select size="sm" variant="button" defaultValue="nov" options={[{ value: "nov", label: "November" }, { value: "oct", label: "October" }]} aria-label="Month" /> }}>
       <StatGroup><Stat label="API calls" value="4.1M" progress={{ value: 82, target: 100, label: "82% of 5M included" }} /><Stat label="Assistant credits" value="9,420" progress={{ value: 63, label: "of 15,000" }} /><Stat label="Storage" value="12.4 GB" progress={{ value: 25, label: "of 50 GB" }} /><Stat label="Overage" value="$0" compare={{ label: "Projected", value: "$0" }} /></StatGroup>
+      <Cols cols="1:2">
+        <Card><UsageMeter title="Assistant credits" max={15000} format={(n) => n.toLocaleString()} action={<Button size="xs">Add credits</Button>} items={[{ name: "Chat", value: 4210 }, { name: "Agent runs", value: 3180 }, { name: "Search", value: 1340 }, { name: "Summaries", value: 690 }]} /></Card>
       <Card padding="none"><CardHeader title="API calls per day" /><CardBody><LineChart label="API calls per day" labels={weeks} format={(n) => `${Math.round(n / 1000)}k`} series={[{ name: "Calls", values: series(90000, 0.02) }]} /></CardBody></Card>
+      </Cols>
       <Card padding="none"><CardHeader title="By key" /><CardBody><BarList items={[{ name: "Production", value: 3200000 }, { name: "Zapier", value: 520000 }, { name: "Data export", value: 290000 }, { name: "Staging", value: 90000 }]} /></CardBody></Card>
     </ScreenShell>
   );
@@ -127,7 +130,7 @@ function Assistant() {
   const set = (id: string, st: "accepted" | "rejected") => setRows((r) => r.map((x) => (x.id === id ? { ...x, status: st } : x)));
   return (
     <ScreenShell active="ai-assistant" flush header={{ title: "Assistant", status: <AiBadge label="Beta" icon={false} />, actions: <Select size="sm" variant="button" defaultValue="fast" options={[{ value: "fast", label: "Fast" }, { value: "deep", label: "Deep research" }]} aria-label="Mode" /> }}>
-      <ChatLayout composer={<ChatComposer value={v} onValueChange={setV} onSubmit={() => setV("")} placeholder="Ask about your pipeline…" tools={<ToolChips tools={[{ id: "crm", label: "CRM", icon: <IconDatabase />, state: "on" }, { id: "web", label: "Web", icon: <IconGlobe /> }, { id: "mail", label: "Email", icon: <IconMail /> }]} />} />} footer="The assistant proposes; you approve every change.">
+      <ChatLayout composer={<ChatComposer value={v} onValueChange={setV} onSubmit={() => setV("")} placeholder="Ask about your pipeline…" sources={[{ id: "f", label: "Add photos & files", description: "From your computer", icon: <IconPaperclip /> }, { id: "d", label: "Pipeline data", description: "Deals, stages, owners", icon: <IconDatabase /> }, { id: "w", label: "Web search", description: "Live results", icon: <IconGlobe /> }, { id: "m", label: "Email", description: "Search your inbox", icon: <IconMail /> }]} tools={<ToolChips tools={[{ id: "crm", label: "CRM", icon: <IconDatabase />, state: "on" }, { id: "web", label: "Web", icon: <IconGlobe /> }, { id: "mail", label: "Email", icon: <IconMail /> }]} />} />} footer="The assistant proposes; you approve every change.">
         <ChatMessage role="user" content="Which deals slipped this week, and fix the obvious data issues?" />
         <ChatMessage role="assistant" before={<><Thinking done reasoning="Compared close dates against last Monday's snapshot. 3 moved out; Lyft has no owner." /><ChatToolCalls calls={[{ id: "1", name: "crm.search_deals", status: "done", input: "{ changed_since: \"2026-11-10\" }", output: "28 deals", durationMs: 820 }]} /></>}
           content={"Three deals slipped, worth **$214k** together.[^1] Medium moved to negotiation without a stage update, and Lyft has no owner. I can fix both:"} sources={[{ title: "Deals changed since Nov 10", url: "#" }]}
@@ -159,7 +162,7 @@ function AgentRun() {
     <ScreenShell active="ai-assistant" header={{ title: "run_8118", status: <StatusPill status="pending">Needs approval</StatusPill>, breadcrumb: <Breadcrumbs items={[{ label: "Agent runs", href: "#" }, { label: "run_8118" }]} /> }}>
       <Cols cols="2:1">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Bezel label="Plan" padded={false}><TaskList plain tasks={[{ id: "1", title: "Find renewals in the next 30 days", status: "done", meta: "12 found · 0.8s" }, { id: "2", title: "Score churn risk", status: "done", meta: "4 at risk" }, { id: "3", title: "Draft save emails", status: "done", meta: "4 drafts" }, { id: "4", title: "Send emails", status: "running", meta: "Waiting for approval" }]} /></Bezel>
+          <Bezel label="Plan"><TaskList variant="capsule" tasks={[{ id: "1", title: "Find renewals in the next 30 days", status: "done", meta: "12 found · 0.8s" }, { id: "2", title: "Score churn risk", status: "done", meta: "4 at risk" }, { id: "3", title: "Draft save emails", status: "done", meta: "4 drafts" }, { id: "4", title: "Send emails", status: "running", meta: "Waiting for approval" }]} /></Bezel>
           <ApprovalCard state={st} title="Send 4 save emails?" description="To the owners of Lyft, Medium, Zoom and Loom, from maya@northwind.io." details={"Subject: A quick check-in before your renewal\n\nHi {first_name}, I noticed your team's usage dipped in October…"} onApprove={() => setSt("approved")} onReject={() => setSt("rejected")} onAlwaysAllow={() => setSt("approved")} />
         </div>
         <Card><MetadataList layout="stacked" items={[{ label: "Agent", value: "Renewal watcher" }, { label: "Trigger", value: "Every Monday 08:00" }, { label: "Model", value: "Fast" }, { label: "Tokens", value: "18,204" }, { label: "Confidence", value: <ConfidenceMeter value={0.82} /> }]} /></Card>

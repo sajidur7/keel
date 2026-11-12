@@ -24,7 +24,7 @@ const bz = stylex.create({
     letterSpacing: "0.06em", textTransform: "uppercase", color: color.fgMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
   },
   meta: { marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontSize: font.sm, color: color.fgMuted },
-  inner: { display: "flex", flexDirection: "column", gap: 12, minWidth: 0, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, overflow: "clip" },
+  inner: { display: "flex", flexDirection: "column", gap: 12, minWidth: 0, flexGrow: 1, borderRadius: radius.xl, backgroundColor: color.surface, boxShadow: depth.card, overflow: "clip" },
   pad: { padding: 14 },
   foot: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, minHeight: 40, paddingInline: 10, paddingTop: 6, paddingBottom: 2, fontSize: font.sm, color: color.fgMuted },
 });

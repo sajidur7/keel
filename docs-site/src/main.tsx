@@ -94,7 +94,7 @@ function Docs() {
           <Button size="sm" variant="ghost" trailing={<IconExternal />} onClick={() => window.open("https://github.com/sajidur7/keel", "_blank")}>GitHub</Button>
         </>} />
       <Page>
-        {page ? <DocPageView key={page.slug} page={page} /> : route === "/templates" ? <TemplatesPage go={go} /> : route === "/screens" ? <ScreensPage go={go} /> : <Home go={go} />}
+        {page ? <DocPageView key={page.slug} page={page} go={go} prev={componentPages[componentPages.indexOf(page) - 1]} next={componentPages.indexOf(page) > -1 ? componentPages[componentPages.indexOf(page) + 1] : undefined} /> : route === "/templates" ? <TemplatesPage go={go} /> : route === "/screens" ? <ScreensPage go={go} /> : <Home go={go} />}
       </Page>
       <CommandPalette open={cmd} onOpenChange={setCmd} items={items} placeholder="Search components, guides, templates…" />
     </AppShell>

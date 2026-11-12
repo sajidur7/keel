@@ -132,6 +132,17 @@ const a = stylex.create({
   taskTitle: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   taskDone: { color: color.fgMuted },
   taskMeta: { fontSize: font.xs, color: color.fgFaint, fontVariantNumeric: "tabular-nums" },
+  caps: { display: "flex", flexDirection: "column", gap: 6 },
+  cap: {
+    display: "flex", alignItems: "center", gap: 10, minHeight: 44, paddingInlineStart: 8, paddingInlineEnd: 14, borderRadius: radius.full,
+    backgroundColor: color.surface, boxShadow: depth.card, minWidth: 0,
+  },
+  capDisc: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: radius.full, flexShrink: 0, boxShadow: `inset 0 0 0 1px ${color.border}`, backgroundColor: color.surfaceSunken },
+  capDone: { backgroundColor: color.fg, color: color.surface, boxShadow: "none" },
+  capRun: { color: color.accent, boxShadow: `inset 0 0 0 1px ${color.accent}`, backgroundColor: color.surface },
+  capFail: { color: color.danger, boxShadow: `inset 0 0 0 1px ${color.danger}`, backgroundColor: color.surface },
+  capMeta: { marginInlineStart: "auto", fontSize: font.sm, color: color.fgMuted, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", flexShrink: 0 },
+  capState: { fontFamily: font.mono, fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase", color: color.fgFaint, flexShrink: 0, display: { default: "none", "@media (min-width: 480px)": "inline" } },
   queued: { color: color.fgFaint }, running: { color: color.accent }, done: { color: color.fg }, failed: { color: color.danger },
   // params
   param: { display: "flex", flexDirection: "column", gap: 6 },
@@ -376,8 +387,20 @@ export function DiffTable({ rows, onAccept, onReject, onAcceptAll, label = "Prop
 
 export type AgentTask = { id: string; title: ReactNode; status: "queued" | "running" | "done" | "failed"; meta?: ReactNode };
 /** An agent's plan and progress, one row per task. */
-export function TaskList({ tasks, plain, ...p }: StyleProps & { tasks: AgentTask[]; /** No card surface — inside a Bezel or Card. */ plain?: boolean }) {
+export function TaskList({ tasks, plain, variant = "list", ...p }: StyleProps & { tasks: AgentTask[]; /** No card surface — inside a Bezel or Card. */ plain?: boolean; /** `capsule`: each task is its own pill with a status disc. */ variant?: "list" | "capsule" }) {
   const icon = (s: AgentTask["status"]) => s === "running" ? <Spinner size={12} label="" /> : s === "done" ? <IconCheck size={14} /> : s === "failed" ? <IconX size={14} /> : <IconCircleDashed size={14} />;
+  if (variant === "capsule") return (
+    <ol {...sx(p, a.caps)}>
+      {tasks.map((t, i) => (
+        <li key={t.id} aria-label={`${typeof t.title === "string" ? t.title : "Task"}: ${t.status}`} {...px(a.cap)}>
+          <span {...px(a.capDisc, t.status === "done" && a.capDone, t.status === "running" && a.capRun, t.status === "failed" && a.capFail)}>{t.status === "queued" ? <span style={{ fontSize: 11, fontVariantNumeric: "tabular-nums" }}>{i + 1}</span> : icon(t.status)}</span>
+          <span {...px(a.taskTitle, t.status === "queued" && a.queued)} style={{ flex: "0 1 auto", minWidth: 0, fontWeight: 500 }}>{t.title}</span>
+          {t.meta && <span {...px(a.capMeta)}>{t.meta}</span>}
+          <span {...px(a.capState)} style={t.meta ? undefined : { marginInlineStart: "auto" }}>{t.status}</span>
+        </li>
+      ))}
+    </ol>
+  );
   return (
     <ol {...sx(p, a.tasks, plain && a.tasksPlain)}>
       {tasks.map((t) => (

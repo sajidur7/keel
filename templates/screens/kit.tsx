@@ -3,7 +3,7 @@
  * Every screen is built only from @keel/components; nothing here is special-cased.
  */
 import * as stylex from "@stylexjs/stylex";
-import { createContext, forwardRef, useContext, useMemo, useState, type ComponentProps, type ReactNode } from "react";
+import { Children, createContext, forwardRef, useContext, useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import {
   AppShell, Avatar, Button, CommandPalette, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Header,
   IconAgent, IconBell, IconBuilding, IconCalendar, IconChartBar, IconHome, IconInbox, IconLogOut, IconMoon, IconSearch, IconSettings, IconSun, IconTarget, IconUser,
@@ -201,8 +201,9 @@ export const series = (start: number, drift: number, n = 12, noise = 0.08) => { 
 
 /* ------------------------------------------------------------------ responsive columns that never leave holes */
 const cols = stylex.create({
-  base: { display: "grid", gap: 16, alignItems: "start", minWidth: 0, gridTemplateColumns: "minmax(0, 1fr)" },
-  stretch: { alignItems: "stretch" },
+  base: { display: "grid", gap: 16, alignItems: "stretch", minWidth: 0, gridTemplateColumns: "minmax(0, 1fr)" },
+  top: { alignItems: "start" },
+  grow: { display: "grid", gridTemplateColumns: "minmax(0, 1fr)", flexGrow: 1, minWidth: 0 },
   c11: { gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 900px)": "repeat(2, minmax(0, 1fr))" } },
   c21: { gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 1100px)": "minmax(0, 2fr) minmax(0, 1fr)" } },
   c12: { gridTemplateColumns: { default: "minmax(0, 1fr)", "@media (min-width: 1100px)": "minmax(0, 1fr) minmax(0, 2fr)" } },
@@ -210,10 +211,14 @@ const cols = stylex.create({
   c1111: { gridTemplateColumns: { default: "repeat(2, minmax(0, 1fr))", "@media (min-width: 1100px)": "repeat(4, minmax(0, 1fr))" } },
   stack: { display: "flex", flexDirection: "column", gap: 16, minWidth: 0 },
 });
-/** Columns that collapse to one on phones: "1:1", "2:1", "1:2", "1:1:1", "1:1:1:1". */
-export function Cols({ cols: c = "1:1", stretch, children }: { cols?: "1:1" | "2:1" | "1:2" | "1:1:1" | "1:1:1:1"; stretch?: boolean; children: ReactNode }) {
+/** Columns that collapse to one on phones: "1:1", "2:1", "1:2", "1:1:1", "1:1:1:1". Cards in a row share one height; pass `stretch={false}` to top-align instead. */
+export function Cols({ cols: c = "1:1", stretch = true, children }: { cols?: "1:1" | "2:1" | "1:2" | "1:1:1" | "1:1:1:1"; stretch?: boolean; children: ReactNode }) {
   const v = { "1:1": cols.c11, "2:1": cols.c21, "1:2": cols.c12, "1:1:1": cols.c111, "1:1:1:1": cols.c1111 }[c];
-  return <div {...stylex.props(cols.base, v, stretch && cols.stretch)}>{children}</div>;
+  return <div {...stylex.props(cols.base, v, !stretch && cols.top)}>{children}</div>;
 }
 /** A column of cards inside a Cols cell. */
-export function Col({ children }: { children: ReactNode }) { return <div {...stylex.props(cols.stack)}>{children}</div>; }
+export function Col({ children }: { children: ReactNode }) {
+  const list = Children.toArray(children);
+  // The last card grows so the column ends level with its neighbour.
+  return <div {...stylex.props(cols.stack)}>{list.map((c, i) => (i === list.length - 1 ? <div key={i} {...stylex.props(cols.grow)}>{c}</div> : c))}</div>;
+}

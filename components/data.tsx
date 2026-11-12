@@ -42,7 +42,7 @@ const d = stylex.create({
   badgeSlot: { display: "inline-flex", alignItems: "center", marginInlineStart: 4 },
   cmp: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: font.sm, color: color.fgMuted, paddingTop: 8, borderTopWidth: 1, borderTopStyle: "dashed", borderTopColor: color.border },
   cmpVal: { color: color.fgSoft, fontWeight: font.medium, fontVariantNumeric: "tabular-nums" },
-  side: { display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", columnGap: 12, rowGap: 8, minWidth: 0 },
+  side: { display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", columnGap: 12, rowGap: 8, minWidth: 0 },
   arrowOnly: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.medium },
   textDelta: { display: "inline-flex", alignItems: "center", gap: 2, fontWeight: font.semibold },
   targetWrap: { position: "relative" },
@@ -55,6 +55,7 @@ const d = stylex.create({
   label: { fontSize: font.sm, fontWeight: font.medium, color: color.fgMuted },
   help: { textDecorationLine: "underline", textDecorationStyle: "dashed", textDecorationColor: color.fgFaint, textUnderlineOffset: "4px", cursor: "help", borderRadius: radius.xs, outline: "none", ":focus-visible": { boxShadow: depth.focus } },
   action: { display: "flex", alignItems: "center", marginBlock: -4, marginInlineEnd: -4, flexShrink: 0 },
+  sideRing: { alignItems: "flex-start" },
   valueCol: { display: "flex", flexDirection: "column", gap: 4, minWidth: 0 },
   valueInline: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 4 },
   value: { fontWeight: font.semibold, letterSpacing: "-0.025em", lineHeight: 1.1, color: color.fg, fontVariantNumeric: "tabular-nums", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
@@ -66,15 +67,15 @@ const d = stylex.create({
   flat: { color: color.fgMuted, backgroundColor: color.muted },
   upText: { color: color.fg }, downText: { color: color.danger }, flatText: { color: color.fgMuted },
   quiet: { color: color.fgMuted },
-  prog: { display: "flex", flexDirection: "column", gap: 6, paddingTop: 2 },
-  chart: { minWidth: 0, paddingTop: 2 },
+  prog: { display: "flex", flexDirection: "column", gap: 6, paddingTop: 2, marginTop: "auto" },
+  chart: { minWidth: 0, paddingTop: 2, marginTop: "auto" },
   foot: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginInline: -16, marginTop: 4, paddingInline: 16, paddingTop: 12, borderTopWidth: 1, borderTopStyle: "solid", borderTopColor: color.border, fontSize: font.sm, color: color.fgMuted },
   skel: { display: "block", borderRadius: radius.sm, backgroundColor: color.muted },
   group: {
     display: "grid", gridTemplateColumns: { default: "repeat(2, minmax(0, 1fr))", "@media (min-width: 900px)": "repeat(auto-fit, minmax(170px, 1fr))" }, gap: 1, overflow: "hidden",
     borderRadius: radius.xl, backgroundColor: color.border, boxShadow: depth.card,
   },
-  groupCell: { backgroundColor: color.surface, padding: 16 },
+  groupCell: { backgroundColor: color.surface, padding: 16, display: "grid", gridTemplateColumns: "minmax(0, 1fr)" },
   // charts
   wrap: { position: "relative", width: "100%", minWidth: 0 },
   svg: { display: "block", overflow: "visible" },
@@ -160,7 +161,7 @@ export type StatProps = StyleProps & {
 /** A headline number and its comparison. Every part except label and value can be turned on or off. */
 export function Stat({
   label, value, help, icon, iconTile, badge, action, delta, deltaUnit = "%", deltaStyle = "pill", baseline, lowerIsBetter, neutral, meta, progress, trend, trendType = "line",
-  trendPosition = "below", chart, compare, breakdown, footer, layout = "stacked", size = "md", variant = "plain", href, onClick, loading, ...p
+  trendPosition = "side", chart, compare, breakdown, footer, layout = "stacked", size = "md", variant = "plain", href, onClick, loading, ...p
 }: StatProps) {
   const ink = variant === "ink";
   const good = delta === undefined ? undefined : lowerIsBetter ? delta < 0 : delta > 0;
@@ -180,8 +181,8 @@ export function Stat({
   );
   const trendEl = trend && trend.length > 1 && (
     trendType === "bars"
-      ? <div {...px(d.miniBars)} style={trendPosition === "side" ? { width: 88 } : undefined} aria-hidden>{trend.map((v, i) => { const mx = Math.max(...trend) || 1; return <span key={i} {...px(d.miniBar, i === trend.length - 1 && d.miniBarLast)} style={{ height: `${Math.max(6, (v / mx) * 100)}%` }} />; })}</div>
-      : <Sparkline values={trend} area={trendType === "area"} tone={ink ? "inverse" : "accent"} width={trendPosition === "side" ? 88 : 160} height={trendPosition === "side" ? 32 : 36} />
+      ? <div {...px(d.miniBars)} style={trendPosition === "side" ? { width: 96, height: 36 } : undefined} aria-hidden>{trend.map((v, i) => { const mx = Math.max(...trend) || 1; return <span key={i} {...px(d.miniBar, i === trend.length - 1 && d.miniBarLast)} style={{ height: `${Math.max(6, (v / mx) * 100)}%` }} />; })}</div>
+      : <Sparkline values={trend} area={trendType === "area"} tone={ink ? "inverse" : "accent"} width={trendPosition === "side" ? 96 : 160} height={36} />
   );
   const ring = progress?.style === "ring";
   const valueBlock = loading ? (
@@ -212,7 +213,7 @@ export function Stat({
         {action && <span {...px(d.action)}>{action}</span>}
       </div>
       {(ring || (trendEl && trendPosition === "side")) && !loading
-        ? <div {...px(d.side)}>{valueBlock}{ring ? <ProgressRing value={progress!.value} max={progress!.max} size={44} stroke={4} tone={progress!.tone} /> : trendEl}</div>
+        ? <div {...px(d.side, ring && d.sideRing)}>{valueBlock}{ring ? <ProgressRing value={progress!.value} max={progress!.max} size={44} stroke={4} tone={progress!.tone} /> : trendEl}</div>
         : valueBlock}
       {!loading && progress && !ring && (
         <div {...px(d.prog)}>

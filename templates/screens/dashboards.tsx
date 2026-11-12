@@ -1,7 +1,7 @@
 /* Dashboards & analytics — 8 screens. Every chart answers one question; series 1 is blue, the rest grey. */
 import { useState, type ReactNode } from "react";
 import {
-  Avatar, BarChart, BarList, Bezel, BreakdownBar, BulletChart, Button, Card, CardBody, CardHeader, ComboChart, DateRangeInput, FunnelChart, GaugeChart, Heatmap,
+  Avatar, PillBarChart, ValueChart, BarChart, BarList, Bezel, BreakdownBar, BulletChart, Button, Card, CardBody, CardHeader, ComboChart, DateRangeInput, FunnelChart, GaugeChart, Heatmap,
   IconAgent, IconArrowRight, IconCard, IconDollarSign, IconDownload, IconGlobe, IconPlus, IconTarget, IconUsers, IconZap, InsightCard, LineChart, Link, List, ListItem,
   MoreMenu, ProgressBar, RadarChart, ScatterChart, Section, SegmentedControl, Select, Sparkline, Stat, StatGroup, StatusPill, Tag, Text, Timeline, DonutChart, AreaChart,
   RecommendationCard, AvatarGroup, PageHeading, IconCalendar, TaskList, ChartLegend, type DateRange,
@@ -23,7 +23,7 @@ function HomeDash() {
       <StatGroup>
         <Stat label="Revenue" icon={<IconDollarSign />} value="$84,320" delta={6.2} baseline="vs Oct" trend={series(60, 0.03)} trendType="area" />
         <Stat label="New customers" icon={<IconUsers />} value="128" delta={12} deltaUnit="" baseline="this month" trend={series(6, 0.05)} trendType="bars" />
-        <Stat label="Pipeline" icon={<IconTarget />} value="$1.2M" delta={-3.1} baseline="vs Oct" />
+        <Stat label="Pipeline" icon={<IconTarget />} value="$1.2M" delta={-3.1} baseline="vs Oct" trend={[14, 13.6, 13.9, 13.2, 13.4, 12.8, 12.9, 12.4, 12.6, 12.1, 12]} />
         <Stat label="Quota" icon={<IconZap />} value="$412k" progress={{ value: 72, target: 85, label: "72% · target 85% by Dec 31" }} />
       </StatGroup>
       <Cols cols="2:1">
@@ -60,7 +60,7 @@ function Analytics() {
       </StatGroup>
       <Cols cols="2:1">
         {card("Activation funnel", <FunnelChart label="Signup to paid funnel" steps={[{ name: "Signed up", value: 12400 }, { name: "Created project", value: 8120 }, { name: "Invited team", value: 4310 }, { name: "Connected data", value: 2980 }, { name: "Paid", value: 1104 }]} />, undefined, "Last 30 days")}
-        {card("Health score", <div style={{ display: "flex", justifyContent: "center" }}><GaugeChart label="Product health" value={72} caption="out of 100" thresholds={[40, 70]} /></div>)}
+        {card("Health score", <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}><GaugeChart label="Product health" value={72} caption="out of 100" thresholds={[40, 70]} /></div>)}
       </Cols>
       {card("When people use Northwind", <Heatmap label="Sessions by day and hour" rows={hours} columns={Array.from({ length: 24 }, (_, i) => `${i}`)} values={hours.map((_, d) => Array.from({ length: 24 }, (_, h) => (d > 4 ? 0.3 : 1) * Math.max(0, Math.round(40 * Math.sin(((h - 6) / 14) * Math.PI) + int(-6, 6)))))} format={(n) => `${n} sessions`} />, undefined, "Sessions per hour, local time")}
       <Cols cols="1:1">
@@ -78,7 +78,7 @@ function Sales() {
   return (
     <ScreenShell active="list-deals" header={{ title: "Sales", actions: <Select size="sm" variant="button" defaultValue="q4" options={[{ value: "q4", label: "Q4 2026" }, { value: "q3", label: "Q3 2026" }]} aria-label="Quarter" /> }}>
       <StatGroup>
-        <Stat label="Closed won" value={money(byStage[3], true)} delta={18} baseline="vs Q3" variant="plain" />
+        <Stat label="Closed won" value={money(byStage[3], true)} delta={18} baseline="vs Q3" variant="plain" compare={{ label: "Q3", value: "$460K" }} />
         <Stat label="Quota attainment" value="68%" progress={{ value: 68, target: 75, label: "Target 75% by today" }} />
         <Stat label="Open pipeline" value={money(byStage[0] + byStage[1] + byStage[2], true)} breakdown={[{ name: "Discovery", value: byStage[0] }, { name: "Proposal", value: byStage[1] }, { name: "Negotiation", value: byStage[2] }]} />
         <Stat label="Avg. deal" value="$42k" delta={5.4} compare={{ label: "Last quarter", value: "$39.8k" }} />
@@ -103,7 +103,9 @@ function Marketing() {
         <Stat label="Payback" value="7.4 mo" compare={{ label: "Benchmark", value: "12 mo" }} />
       </StatGroup>
       <Cols cols="1:2">
-        {card("Channel mix", <BreakdownBar items={[{ name: "Organic", value: 52 }, { name: "Paid search", value: 21 }, { name: "Social", value: 14 }, { name: "Referral", value: 9 }, { name: "Email", value: 4 }]} format={(n) => `${n}k`} />)}
+        <Card><PillBarChart label="Visits by source, last 20 days" title="Traffic" description="Last 20 days" unit="visits" height={170} labels={Array.from({ length: 20 }, (_, k) => `Oct ${k + 1}`)}
+          series={[{ name: "Organic", values: series(520, 0.012).concat(series(560, 0.01)).slice(0, 20) }, { name: "Paid", values: series(300, 0.02).concat(series(340, 0.01)).slice(0, 20) }, { name: "Social", values: series(160, 0.03).concat(series(190, 0.02)).slice(0, 20) }]}
+          negative={{ name: "Bounced", values: series(140, 0.02).concat(series(150, 0.01)).slice(0, 20) }} /></Card>
         {card("Signups by channel", <AreaChart label="Signups by channel" labels={weeks} series={[{ name: "Organic", values: series(180, 0.02) }, { name: "Paid", values: series(90, 0.01) }, { name: "Social", values: series(60, 0.03) }]} />)}
       </Cols>
       <Cols cols="1:1:1">
@@ -125,13 +127,15 @@ function Finance() {
         <Stat variant="card" label="Runway" value="22 mo" progress={{ value: 22, max: 36, label: "Target 24 months" }} />
         <Stat variant="card" label="ARR" value="$4.8M" delta={11} compare={{ label: "Plan", value: "$4.6M" }} />
       </Cols>
-      <Cols cols="2:1">
+      <Cols cols="1:2">
+        <Card><ValueChart label="Cash balance" title="Cash balance" format={(n) => `$${Math.round(n).toLocaleString()}`}
+          ranges={[{ label: "1M", values: series(2330000, 0.002, 30, 0.012), caption: "this month" }, { label: "3M", values: series(2180000, 0.004, 36, 0.02), caption: "this quarter" }, { label: "1Y", values: series(1700000, 0.007, 52, 0.03), caption: "this year" }]} defaultRange="3M" /></Card>
         {card("Revenue vs. expenses", <BarChart label="Monthly revenue and expenses" labels={months} legend format={(n) => money(n, true)} series={[{ name: "Revenue", values: series(320000, 0.02) }, { name: "Expenses", values: series(280000, 0.005) }]} />)}
-        {card("Spend by category", <DonutChart label="Spend by category" data={[{ name: "People", value: 61 }, { name: "Software", value: 14 }, { name: "Marketing", value: 12 }, { name: "Facilities", value: 8 }, { name: "Other", value: 5 }]} centerLabel="% of spend" format={(n) => `${n}%`} />)}
       </Cols>
-      <Cols cols="1:1">
+      <Cols cols="1:1:1">
         {card("Accounts receivable aging", <BreakdownBar items={[{ name: "Current", value: 182000 }, { name: "1–30 days", value: 64000 }, { name: "31–60 days", value: 21000 }, { name: "60+ days", value: 9000 }]} format={(n) => money(n, true)} />)}
         {card("Budget vs. actual", <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>{[["Engineering", 92], ["Sales", 104], ["Marketing", 71], ["G&A", 58]].map(([n, v]) => <BulletChart key={n as string} label={`${n} · % of budget`} value={v as number} target={100} ranges={[80, 100]} max={120} format={(x) => `${x}%`} />)}</div>)}
+        {card("Spend by category", <DonutChart label="Spend by category" data={[{ name: "People", value: 61 }, { name: "Software", value: 14 }, { name: "Marketing", value: 12 }, { name: "Facilities", value: 8 }, { name: "Other", value: 5 }]} centerLabel="% of spend" format={(n) => `${n}%`} />)}
       </Cols>
     </ScreenShell>
   );
